@@ -1,0 +1,11 @@
+﻿namespace Sportswear.Core.Features.ShippingMethod.Queries.Response_DTO_
+{
+    public class GetShippingMethodsListResponse
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public decimal Price { get; set; }
+        public int EstimatedDeliveryDays { get; set; }
+    }
+}

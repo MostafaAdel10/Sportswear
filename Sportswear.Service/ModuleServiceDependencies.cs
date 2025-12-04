@@ -1,0 +1,37 @@
+﻿using Microsoft.Extensions.DependencyInjection;
+using Sportswear.Service.Abstract;
+using Sportswear.Service.AuthServices.Implementations;
+using Sportswear.Service.AuthServices.Interfaces;
+using Sportswear.Service.Implementations;
+
+namespace Sportswear.Service
+{
+    public static class ModuleServiceDependencies
+    {
+        public static IServiceCollection AddServiceDependencies(this IServiceCollection services)
+        {
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IBrandService, BrandService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IProduct_DiscountService, Product_DiscountService>();
+            services.AddScoped<IDiscountService, DiscountService>();
+            services.AddScoped<IProductVariantService, ProductVariantService>();
+            services.AddScoped<IProductImageService, ProductImageService>();
+            services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IReviewService, ReviewService>();
+            services.AddScoped<IEmailsService, EmailsService>();
+            services.AddScoped<IApplicationUserService, ApplicationUserService>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IAuthorizationService, AuthorizationService>();
+            services.AddScoped<ICartItemService, CartItemService>();
+            services.AddScoped<ICartService, CartService>();
+            services.AddScoped<IShippingMethodService, ShippingMethodService>();
+            services.AddScoped<IShipmentService, ShipmentService>();
+            services.AddScoped<IOrderItemService, OrderItemService>();
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IOrderService, OrderService>();
+            return services;
+        }
+    }
+}

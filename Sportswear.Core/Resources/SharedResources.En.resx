@@ -1,0 +1,588 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AlgorithmIsWrong" xml:space="preserve">
+    <value>Algorithm Is Wrong </value>
+  </data>
+  <data name="BadRequest" xml:space="preserve">
+    <value>Request Can't be Understand</value>
+  </data>
+  <data name="ChangePassFailed" xml:space="preserve">
+    <value>Change Password Failed</value>
+  </data>
+  <data name="AddFailed" xml:space="preserve">
+    <value>Add Failed</value>
+  </data>
+  <data name="ConfirmEmailDone" xml:space="preserve">
+    <value>Confirm Email Done</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>Created Successfully</value>
+  </data>
+  <data name="Deleted" xml:space="preserve">
+    <value>Deleted Successfully</value>
+  </data>
+  <data name="DeletedFailed" xml:space="preserve">
+    <value>Delete Operation Failed</value>
+  </data>
+  <data name="SubsubjectId" xml:space="preserve">
+    <value>Subsubject Id</value>
+  </data>
+  <data name="SubjectId" xml:space="preserve">
+    <value>Subject Id</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="EmailIsExist" xml:space="preserve">
+    <value>Email is Already Exist</value>
+  </data>
+  <data name="EmailNotConfirmed" xml:space="preserve">
+    <value>Please Confirm Your Email</value>
+  </data>
+  <data name="ErrorWhenConfirmEmail" xml:space="preserve">
+    <value>Error Occur When Confirm Email</value>
+  </data>
+  <data name="FaildToAddUser" xml:space="preserve">
+    <value>Failed To Add USer.</value>
+  </data>
+  <data name="FailedToAddNewClaims" xml:space="preserve">
+    <value>Operation is  Failed To Add New Claims</value>
+  </data>
+  <data name="FailedToAddNewRoles" xml:space="preserve">
+    <value>Operation is Failed To Add User Roles</value>
+  </data>
+  <data name="FailedToRemoveOldClaims" xml:space="preserve">
+    <value>Operation is Failed To Remove Old Claims</value>
+  </data>
+  <data name="FailedToRemoveOldRoles" xml:space="preserve">
+    <value>Operation is Failed To Remove Old Roles</value>
+  </data>
+  <data name="FailedToUpdateClaims" xml:space="preserve">
+    <value>Operation is  Failed To Update Claims</value>
+  </data>
+  <data name="FailedToUpdateUserRoles" xml:space="preserve">
+    <value>Operation is Failed To Update User Roles</value>
+  </data>
+  <data name="FailedToUploadImage" xml:space="preserve">
+    <value>Failed To Upload Image.</value>
+  </data>
+  <data name="InvaildCode" xml:space="preserve">
+    <value>Invaild Code.</value>
+  </data>
+  <data name="IsExist" xml:space="preserve">
+    <value>Is Already Exist</value>
+  </data>
+  <data name="IsNotExist" xml:space="preserve">
+    <value>is Not Exist</value>
+  </data>
+  <data name="MaxLengthis100" xml:space="preserve">
+    <value>Must not exceed 100 characters.</value>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="NoImage" xml:space="preserve">
+    <value>Please Select Image</value>
+  </data>
+  <data name="NotEmpty" xml:space="preserve">
+    <value>Must Not Empty</value>
+  </data>
+  <data name="NotFound" xml:space="preserve">
+    <value>Not Found</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="PasswordNotCorrect" xml:space="preserve">
+    <value>Password is Not Correct</value>
+  </data>
+  <data name="PasswordNotEqualConfirmPass" xml:space="preserve">
+    <value>Password And Confirm Password Not Equals.</value>
+  </data>
+  <data name="RefreshTokenIsExpired" xml:space="preserve">
+    <value>Refresh Token Is Expired</value>
+  </data>
+  <data name="RefreshTokenIsNotFound" xml:space="preserve">
+    <value>Refresh Token Is Not Found</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>This Field Is Required</value>
+  </data>
+  <data name="RoleIsUsed" xml:space="preserve">
+    <value>Role is already in use</value>
+  </data>
+  <data name="RoleNotExist" xml:space="preserve">
+    <value>Role is not exist</value>
+  </data>
+  <data name="SendEmailFailed" xml:space="preserve">
+    <value>Operation to send email failed.</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>operation is done</value>
+  </data>
+  <data name="TokenIsExpired" xml:space="preserve">
+    <value>Token Is Expired</value>
+  </data>
+  <data name="TokenIsNotExpired" xml:space="preserve">
+    <value>Token Is Not Expired</value>
+  </data>
+  <data name="TryAgainInAnotherTime" xml:space="preserve">
+    <value>Try Again In Another Time</value>
+  </data>
+  <data name="TryToRegisterAgain" xml:space="preserve">
+    <value>Operation Is Failed, Try To Register Again</value>
+  </data>
+  <data name="UnAuthorized" xml:space="preserve">
+    <value>You are not Authorized To Access This Resources</value>
+  </data>
+  <data name="UnprocessableEntity" xml:space="preserve">
+    <value>There are Validation Errors Or Syntax Errors</value>
+  </data>
+  <data name="Updated" xml:space="preserve">
+    <value>Updated Successfully</value>
+  </data>
+  <data name="UpdateFailed" xml:space="preserve">
+    <value>Update Operation Failed</value>
+  </data>
+  <data name="UserIsNotFound" xml:space="preserve">
+    <value>User Is Not Found</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>User Name</value>
+  </data>
+  <data name="UserNameIsExist" xml:space="preserve">
+    <value>UserName is Already Exist</value>
+  </data>
+  <data name="UserNameIsNotExist" xml:space="preserve">
+    <value>UserName Is Not Exist</value>
+  </data>
+  <data name="MaxLengthis300" xml:space="preserve">
+    <value>Must not exceed 300 characters.</value>
+  </data>
+  <data name="MaxLengthis13" xml:space="preserve">
+    <value>Must be 13 digits.</value>
+  </data>
+  <data name="DateTime" xml:space="preserve">
+    <value>The publication date must be in the past.</value>
+  </data>
+  <data name="MustBeGreaterThanZero" xml:space="preserve">
+    <value>must be greater than 0.</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>Author</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="PriceAfterDiscount" xml:space="preserve">
+    <value>Price After Discount</value>
+  </data>
+  <data name="PublicationDate" xml:space="preserve">
+    <value>Publication Date</value>
+  </data>
+  <data name="Unit_Instock" xml:space="preserve">
+    <value>Unit_Instock</value>
+  </data>
+  <data name="Image_url" xml:space="preserve">
+    <value>Image_url.</value>
+  </data>
+  <data name="MaxLengthis10" xml:space="preserve">
+    <value>Must be 10 digits.</value>
+  </data>
+  <data name="between200and1000" xml:space="preserve">
+    <value>must be between 200 and 1000</value>
+  </data>
+  <data name="AfterStartDate" xml:space="preserve">
+    <value>must be after start date.</value>
+  </data>
+  <data name="between0and100" xml:space="preserve">
+    <value>must be between 0 and 100.</value>
+  </data>
+  <data name="InvalidFileType" xml:space="preserve">
+    <value>Invalid file type. Allowed types: .jpg, .png, .jpeg, .svg.</value>
+  </data>
+  <data name="MaxLengthIs50" xml:space="preserve">
+    <value>Must not exceed 50 characters.</value>
+  </data>
+  <data name="RatingBetween1and5" xml:space="preserve">
+    <value>Rating should be between 1 and 5.</value>
+  </data>
+  <data name="ContainOnlyDigits" xml:space="preserve">
+    <value>must contain only digits</value>
+  </data>
+  <data name="MaxLengthIs16" xml:space="preserve">
+    <value>must be exactly 16 digits long</value>
+  </data>
+  <data name="TotalAmount" xml:space="preserve">
+    <value>must be between 0.01 and 1,000,000.</value>
+  </data>
+  <data name="MaxLengthIs15" xml:space="preserve">
+    <value>Must not exceed 15 characters.</value>
+  </data>
+  <data name="MaxLengthIs1500" xml:space="preserve">
+    <value>Must not exceed 1500 characters.</value>
+  </data>
+  <data name="PriceIsNotTrue" xml:space="preserve">
+    <value>Price Is Not True</value>
+  </data>
+  <data name="QuantityIsGreater " xml:space="preserve">
+    <value>Quantity Is Greater Than Unite in stock.</value>
+  </data>
+  <data name="TheBookIsNotAvailable" xml:space="preserve">
+    <value>The Book Is Not Available</value>
+  </data>
+  <data name="MustBeAtLeast1000" xml:space="preserve">
+    <value>Must Be At Least 1000.</value>
+  </data>
+  <data name="OrderIdOrUserIdIsNotExist" xml:space="preserve">
+    <value>OrderId Or UserId Is Not Exist</value>
+  </data>
+  <data name="QuantityCannotBe0OrLess" xml:space="preserve">
+    <value>Quantity Cannot Be 0 Or Less</value>
+  </data>
+  <data name="NoChanges" xml:space="preserve">
+    <value>No Changes</value>
+  </data>
+  <data name="MaxLengthIs25" xml:space="preserve">
+    <value>Must not exceed 25 characters.</value>
+  </data>
+  <data name="MaxLengthIs255" xml:space="preserve">
+    <value>Must not exceed 255 characters.</value>
+  </data>
+  <data name="UserNameOrPasswordIsNotExist" xml:space="preserve">
+    <value>Incorrect Username Or Password.</value>
+  </data>
+  <data name="ReferencedInAnotherTable" xml:space="preserve">
+    <value>This record cannot be deleted because it is referenced in another table. </value>
+  </data>
+  <data name="DiscountNotExist" xml:space="preserve">
+    <value>Discount Not Exist</value>
+  </data>
+  <data name="Positive" xml:space="preserve">
+    <value>Must be a positive number.</value>
+  </data>
+  <data name="YouMustUploadAtLeastOneImage" xml:space="preserve">
+    <value>You Must Upload At Least One Image.</value>
+  </data>
+  <data name="AllowedExtensions" xml:space="preserve">
+    <value>Image format is not allowed. Allowed formats: .jpg, .png, .jpeg, .svg, .webp.</value>
+  </data>
+  <data name="ThisBookAlreadyExistInTheShoppingCart" xml:space="preserve">
+    <value>This Book Already Exist In The Shopping Cart.</value>
+  </data>
+  <data name="CartItemNotFound" xml:space="preserve">
+    <value>CartItem Not Found.</value>
+  </data>
+  <data name="TheShoppingCartIsEmpty" xml:space="preserve">
+    <value>The Shopping Cart Is Empty.</value>
+  </data>
+  <data name="InvalidPhone" xml:space="preserve">
+    <value>Invalid phone number format.</value>
+  </data>
+  <data name="MaxLengthIs20" xml:space="preserve">
+    <value>Must not exceed 20 characters.</value>
+  </data>
+  <data name="OrderCannotBeCanceled" xml:space="preserve">
+    <value>This order cannot be canceled</value>
+  </data>
+  <data name="OrderCannotBeEdited" xml:space="preserve">
+    <value>This order cannot be edited.</value>
+  </data>
+  <data name="CanceledOrder" xml:space="preserve">
+    <value>The order has been canceled.</value>
+  </data>
+  <data name="TheOrderIsEmpty" xml:space="preserve">
+    <value>Your order is empty.</value>
+  </data>
+  <data name="DiscountNotActive" xml:space="preserve">
+    <value>Discount Not Active.</value>
+  </data>
+  <data name="NoReviews" xml:space="preserve">
+    <value>No reviews found.</value>
+  </data>
+  <data name="EstimatedDeliveryTime" xml:space="preserve">
+    <value>Estimated delivery time must be in the future.</value>
+  </data>
+  <data name="CurrencyLength" xml:space="preserve">
+    <value>Currency must be a 3-letter code (e.g., USD, EGP).</value>
+  </data>
+  <data name="CurrencyUppercase" xml:space="preserve">
+    <value>Currency must be uppercase 3-letter ISO code.</value>
+  </data>
+  <data name="PaymentProcessedSuccessfully" xml:space="preserve">
+    <value>Payment Processed Successfully.</value>
+  </data>
+  <data name="PaymentProcessingFailed" xml:space="preserve">
+    <value>Payment Processing Failed.</value>
+  </data>
+  <data name="PaymentNotCompleted" xml:space="preserve">
+    <value>Payment Not Completed.</value>
+  </data>
+  <data name="OrderPlacedCashOnDelivery" xml:space="preserve">
+    <value>Order Placed Cash On Delivery.</value>
+  </data>
+  <data name="UnsupportedPaymentMethod" xml:space="preserve">
+    <value>Unsupported Payment Method.</value>
+  </data>
+  <data name="OnlyEGPAndUSDCurrenciesAreSupported" xml:space="preserve">
+    <value>Only EGP and USD currencies Are Supported.</value>
+  </data>
+  <data name="CODonlySupportsEGP" xml:space="preserve">
+    <value>Cash On Delivery Only Supports EGP.</value>
+  </data>
+  <data name="NewStatus" xml:space="preserve">
+    <value>NewStatus must be either Completed or Failed for cash on delivery.</value>
+  </data>
+  <data name="CurrencyMustBeEither" xml:space="preserve">
+    <value>Currency must be either 'EGP' or 'USD'.</value>
+  </data>
+  <data name="CashOnDeliveryOnlySupportsEGP" xml:space="preserve">
+    <value>Cash On Delivery Only Supports EGP.</value>
+  </data>
+  <data name="InvalidAmount" xml:space="preserve">
+    <value>Invalid Amount.</value>
+  </data>
+  <data name="InvalidOrderId" xml:space="preserve">
+    <value>Invalid OrderId.</value>
+  </data>
+  <data name="PaymentPending" xml:space="preserve">
+    <value>Payment Pending.</value>
+  </data>
+  <data name="CODOnlySupportsConfiguredCurrencies" xml:space="preserve">
+    <value>COD Only Supports Configured Currencies.</value>
+  </data>
+  <data name="NoImagesProvided" xml:space="preserve">
+    <value>No Image Provided.</value>
+  </data>
+  <data name="ImagesUploadedSuccessfully" xml:space="preserve">
+    <value>Image Uploaded Successfully.</value>
+  </data>
+  <data name="FailedToAdd" xml:space="preserve">
+    <value>Failed To Add.</value>
+  </data>
+  <data name="FailedToUpdate" xml:space="preserve">
+    <value>Failed To Update.</value>
+  </data>
+  <data name="FailedToDelete" xml:space="preserve">
+    <value>Failed To Delete.</value>
+  </data>
+  <data name="CodeAlreadyExists" xml:space="preserve">
+    <value>This code already exists. Please use a different code.</value>
+  </data>
+  <data name="MaxLengthIs200" xml:space="preserve">
+    <value>Must not exceed 200 characters.</value>
+  </data>
+  <data name="RelatedProducts" xml:space="preserve">
+    <value>Cannot delete because it has related products.</value>
+  </data>
+  <data name="MustBeLessThanOrEqual100" xml:space="preserve">
+    <value>Must Be Less Than Or Equal 100.</value>
+  </data>
+  <data name="StartDateMustBeBeforeEndDate" xml:space="preserve">
+    <value>Start Date Must Be Before End Date.</value>
+  </data>
+  <data name="EndDateMustBeAfterStartDate" xml:space="preserve">
+    <value>End Date Must Be After Start Date.</value>
+  </data>
+  <data name="InvalidEnumValue" xml:space="preserve">
+    <value>Invalid Enum Value.</value>
+  </data>
+  <data name="PercentageAlreadyExists" xml:space="preserve">
+    <value>Percentage Already Exists.</value>
+  </data>
+  <data name="CannotEditVariantWithOrders" xml:space="preserve">
+    <value>Cannot Edit Variant With Orders.</value>
+  </data>
+  <data name="CannotDeleteVariantWithOrders" xml:space="preserve">
+    <value>Cannot Delete Variant With Orders.</value>
+  </data>
+  <data name="CannotDeleteProductRelatedToVariants" xml:space="preserve">
+    <value>Cannot Delete Product Related To Variants.</value>
+  </data>
+  <data name="SomeProductsNotFound" xml:space="preserve">
+    <value>Some Products Not Found.</value>
+  </data>
+  <data name="DiscountAlreadyApplied" xml:space="preserve">
+    <value>Discount Already Applied.</value>
+  </data>
+  <data name="NoLinksToDelete" xml:space="preserve">
+    <value>No Links To Delete.</value>
+  </data>
+  <data name="AtLeastOneImageIsRequired" xml:space="preserve">
+    <value>At least one image is required.</value>
+  </data>
+  <data name="InvalidImagesProvided" xml:space="preserve">
+    <value>Invalid images provided.</value>
+  </data>
+  <data name="ProductNotFound" xml:space="preserve">
+    <value>Product not found.</value>
+  </data>
+  <data name="NoImageToDelete" xml:space="preserve">
+    <value>No Image To Delete.</value>
+  </data>
+  <data name="YouAreNotAuthorizedToUpdateThisReview" xml:space="preserve">
+    <value>You Are Not Authorized To Update This Comment.</value>
+  </data>
+  <data name="YouAreNotAuthorizedToDeleteThisReview" xml:space="preserve">
+    <value>You Are Not Authorized To Delete This Comment.</value>
+  </data>
+  <data name="VariantNotFound" xml:space="preserve">
+    <value>Variant Not Found.</value>
+  </data>
+  <data name="InvalidQuantity" xml:space="preserve">
+    <value>Invalid Quantity.</value>
+  </data>
+  <data name="CartNotFound" xml:space="preserve">
+    <value>Cart Not Found.</value>
+  </data>
+  <data name="StockExceeded" xml:space="preserve">
+    <value>Stock Exceeded.</value>
+  </data>
+  <data name="CartItemUpdated" xml:space="preserve">
+    <value>CartItem Updated.</value>
+  </data>
+  <data name="RelatedShipments" xml:space="preserve">
+    <value>Cannot delete because it has related Shipments.</value>
+  </data>
+  <data name="MaxLengthIs400" xml:space="preserve">
+    <value>Must not exceed 400 characters.</value>
+  </data>
+  <data name="NoPaymentFound" xml:space="preserve">
+    <value>No Payment Found.</value>
+  </data>
+  <data name="InsufficientStock" xml:space="preserve">
+    <value>Insufficient Stock.</value>
+  </data>
+  <data name="InvalidStatus" xml:space="preserve">
+    <value>Invalid Status.</value>
+  </data>
+  <data name="InvalidOrderStatusTransition" xml:space="preserve">
+    <value>Invalid Order Status Transition.</value>
+  </data>
+  <data name="InvalidPaymentStatusTransition" xml:space="preserve">
+    <value>Invalid Payment Status Transition.</value>
+  </data>
+</root>

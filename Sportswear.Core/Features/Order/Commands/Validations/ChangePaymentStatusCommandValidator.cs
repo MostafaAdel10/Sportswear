@@ -1,0 +1,21 @@
+﻿using FluentValidation;
+using Microsoft.Extensions.Localization;
+using Sportswear.Core.Features.Order.Commands.Models;
+using Sportswear.Core.Resources;
+
+namespace Sportswear.Core.Features.Order.Commands.Validations
+{
+    public class ChangePaymentStatusCommandValidator : AbstractValidator<ChangePaymentStatusCommand>
+    {
+        public ChangePaymentStatusCommandValidator(IStringLocalizer<SharedResources> localizer)
+        {
+            RuleFor(x => x.OrderId)
+                .GreaterThan(0)
+                .WithMessage(localizer[SharedResourcesKeys.Required]);
+
+            RuleFor(x => x.Status)
+                .IsInEnum()
+                .WithMessage(localizer[SharedResourcesKeys.InvalidStatus]);
+        }
+    }
+}

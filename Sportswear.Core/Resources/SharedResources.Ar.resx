@@ -1,0 +1,588 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AlgorithmIsWrong" xml:space="preserve">
+    <value>هناك خطأ في الخوارزمية المستخدمة في التشفير</value>
+  </data>
+  <data name="BadRequest" xml:space="preserve">
+    <value>هذا الطلب لا يمكن فهمه</value>
+  </data>
+  <data name="ChangePassFailed" xml:space="preserve">
+    <value>حدث خطأ اثناء عملية تغيير الباسورد</value>
+  </data>
+  <data name="AddFailed" xml:space="preserve">
+    <value>حدث خطأ في الاضافة</value>
+  </data>
+  <data name="ConfirmEmailDone" xml:space="preserve">
+    <value>تم التأكيد الايميل بنجاح</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>تم الاضافة بنجاح</value>
+  </data>
+  <data name="Deleted" xml:space="preserve">
+    <value>تم الحذف بنجاح</value>
+  </data>
+  <data name="DeletedFailed" xml:space="preserve">
+    <value>حدث خطأ اثناء عملية حذف البيانات</value>
+  </data>
+  <data name="SubsubjectId" xml:space="preserve">
+    <value>معرف الموضوع الفرعي</value>
+  </data>
+  <data name="SubjectId" xml:space="preserve">
+    <value>معرف الموضوع</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>الايميل</value>
+  </data>
+  <data name="EmailIsExist" xml:space="preserve">
+    <value>الايميل الذي ادخلته موجود بالفعل</value>
+  </data>
+  <data name="EmailNotConfirmed" xml:space="preserve">
+    <value>من فضلك قم بتأكيد الايميل</value>
+  </data>
+  <data name="ErrorWhenConfirmEmail" xml:space="preserve">
+    <value>حدث خطأ اثناء تأكيد الايميل</value>
+  </data>
+  <data name="FaildToAddUser" xml:space="preserve">
+    <value>حدث خطأ اثناء اضافة المستخدم</value>
+  </data>
+  <data name="FailedToAddNewClaims" xml:space="preserve">
+    <value>حدث حطأ اثناء اضافة صلاحيات الاستخدام  جديدة للمستخدمين</value>
+  </data>
+  <data name="FailedToAddNewRoles" xml:space="preserve">
+    <value>فشلت عملية اضافة صلاحيات جديدة للمستخدم</value>
+  </data>
+  <data name="FailedToRemoveOldClaims" xml:space="preserve">
+    <value>حدث حطأ اثناء حذف صلاحيات الاستخدام القديمة للمستخدمين</value>
+  </data>
+  <data name="FailedToRemoveOldRoles" xml:space="preserve">
+    <value>فشلت عملية حذف الصلاحيات القديمة</value>
+  </data>
+  <data name="FailedToUpdateClaims" xml:space="preserve">
+    <value>حدث حطأ اثناء تحديث صلاحيات الاستخدام للمستخدمين</value>
+  </data>
+  <data name="FailedToUpdateUserRoles" xml:space="preserve">
+    <value>فشلت عملية تحديث الصلاحيات للمستخدم</value>
+  </data>
+  <data name="FailedToUploadImage" xml:space="preserve">
+    <value>حدث خطأ اثناء رفع الصورة</value>
+  </data>
+  <data name="InvaildCode" xml:space="preserve">
+    <value>هذا الكود غير صحيح</value>
+  </data>
+  <data name="IsExist" xml:space="preserve">
+    <value>موجود بالفعل</value>
+  </data>
+  <data name="IsNotExist" xml:space="preserve">
+    <value>غير موجود</value>
+  </data>
+  <data name="MaxLengthis100" xml:space="preserve">
+    <value> 100 يجب ان لا يذيد طول النص عن </value>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>الرسالة</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>الاسم</value>
+  </data>
+  <data name="NoImage" xml:space="preserve">
+    <value>من فضلك قم بإختيار صورة</value>
+  </data>
+  <data name="NotEmpty" xml:space="preserve">
+    <value>لا يمكن ترك العنصر فارغ</value>
+  </data>
+  <data name="NotFound" xml:space="preserve">
+    <value>غير متوفر</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>الباسورد</value>
+  </data>
+  <data name="PasswordNotCorrect" xml:space="preserve">
+    <value>هذا الباسورد غير صحيح</value>
+  </data>
+  <data name="PasswordNotEqualConfirmPass" xml:space="preserve">
+    <value>الباسورد والباسورد المؤكد يجب ان يكونوا متساويين</value>
+  </data>
+  <data name="RefreshTokenIsExpired" xml:space="preserve">
+    <value>رمز التنشيط الذي تستخمه انتهت صلاحية</value>
+  </data>
+  <data name="RefreshTokenIsNotFound" xml:space="preserve">
+    <value>رمز التنشيط الذي تستخمه ليس موجود</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>هذا الحقل مطلوب</value>
+  </data>
+  <data name="RoleIsUsed" xml:space="preserve">
+    <value>هذه الصلاحية مستخدمة بالفعل لا يمكن الحذف</value>
+  </data>
+  <data name="RoleNotExist" xml:space="preserve">
+    <value>هذه الصلاحية ليست موجوده</value>
+  </data>
+  <data name="SendEmailFailed" xml:space="preserve">
+    <value>حدث خطأ اثناء ارسال الايميل</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>تمت العملية بنجاح</value>
+  </data>
+  <data name="TokenIsExpired" xml:space="preserve">
+    <value>رمز الوصول الذي تستخدمة  منتهي الصلاحية</value>
+  </data>
+  <data name="TokenIsNotExpired" xml:space="preserve">
+    <value>رمز الوصول الذي تستخدمة ليس منتهي</value>
+  </data>
+  <data name="TryAgainInAnotherTime" xml:space="preserve">
+    <value>حدث خطأ اثناء العملية من فضلك حاول  مره اخري في وقت لاحق</value>
+  </data>
+  <data name="TryToRegisterAgain" xml:space="preserve">
+    <value>حدث خطأ غير متوقع اعد المحاولة مره اخري</value>
+  </data>
+  <data name="UnAuthorized" xml:space="preserve">
+    <value>لا تملك الصلاحية للوصول لتلك المصادر</value>
+  </data>
+  <data name="UnprocessableEntity" xml:space="preserve">
+    <value>يوجد مشاكل في صيغة الداتا او نوعها عن المطلوب</value>
+  </data>
+  <data name="Updated" xml:space="preserve">
+    <value>تم التعديل بنجاح</value>
+  </data>
+  <data name="UpdateFailed" xml:space="preserve">
+    <value>حدث خطأ اثناء عملية تحديث البيانات</value>
+  </data>
+  <data name="UserIsNotFound" xml:space="preserve">
+    <value>المستخدم غير موجود</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>اسم المستخدم</value>
+  </data>
+  <data name="UserNameIsExist" xml:space="preserve">
+    <value>اسم المستخدم هذا موجود بالفعل</value>
+  </data>
+  <data name="UserNameIsNotExist" xml:space="preserve">
+    <value>اسم المستخدم هذا غير موجود</value>
+  </data>
+  <data name="MaxLengthis300" xml:space="preserve">
+    <value> 300 يجب ان لا يذيد طول النص عن </value>
+  </data>
+  <data name="MaxLengthis13" xml:space="preserve">
+    <value>يجب أن يتكون من 13 رقمًا</value>
+  </data>
+  <data name="DateTime" xml:space="preserve">
+    <value>يجب أن يكون تاريخ النشر في الماضي.</value>
+  </data>
+  <data name="MustBeGreaterThanZero" xml:space="preserve">
+    <value>يجب أن يكون أكبر من 0</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>الوصف</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>المؤلف</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>السعر</value>
+  </data>
+  <data name="PriceAfterDiscount" xml:space="preserve">
+    <value>السعر بعد الخصم</value>
+  </data>
+  <data name="PublicationDate" xml:space="preserve">
+    <value>تاريخ النشر</value>
+  </data>
+  <data name="Unit_Instock" xml:space="preserve">
+    <value>الوحدة المتوفرة</value>
+  </data>
+  <data name="Image_url" xml:space="preserve">
+    <value>رابط الصورة</value>
+  </data>
+  <data name="MaxLengthis10" xml:space="preserve">
+    <value>يجب أن يتكون من 13 رقمًا</value>
+  </data>
+  <data name="between200and1000" xml:space="preserve">
+    <value>يجب أن يكون بين 200 و 1000</value>
+  </data>
+  <data name="AfterStartDate" xml:space="preserve">
+    <value>يجب أن يكون بعد تاريخ البدء</value>
+  </data>
+  <data name="between0and100" xml:space="preserve">
+    <value>يجب أن يكون بين 0 و 100</value>
+  </data>
+  <data name="InvalidFileType" xml:space="preserve">
+    <value>نوع الملف غير صالح. الأنواع المسموح بها: .jpg، .png، .jpeg، .svg.</value>
+  </data>
+  <data name="MaxLengthIs50" xml:space="preserve">
+    <value> 50 يجب ان لا يذيد طول النص عن </value>
+  </data>
+  <data name="RatingBetween1and5" xml:space="preserve">
+    <value>يجب أن يكون التقييم بين 1 و 5</value>
+  </data>
+  <data name="ContainOnlyDigits" xml:space="preserve">
+    <value>يجب أن يحتوي فقط على أرقام</value>
+  </data>
+  <data name="MaxLengthIs16" xml:space="preserve">
+    <value>يجب أن يكون طوله 16 رقمًا بالضبط</value>
+  </data>
+  <data name="TotalAmount" xml:space="preserve">
+    <value>يجب أن يكون بين 0.01 و 1،000،000</value>
+  </data>
+  <data name="MaxLengthIs15" xml:space="preserve">
+    <value>يجب ألا يتجاوز 15 حرفًا</value>
+  </data>
+  <data name="MaxLengthIs1500" xml:space="preserve">
+    <value>يجب ألا يتجاوز 1500 حرفًا.</value>
+  </data>
+  <data name="PriceIsNotTrue" xml:space="preserve">
+    <value>السعر ليس صحيحا</value>
+  </data>
+  <data name="QuantityIsGreater " xml:space="preserve">
+    <value>الكمية أكبر من الوحدة الموجودة في المخزون</value>
+  </data>
+  <data name="TheBookIsNotAvailable" xml:space="preserve">
+    <value>الكتاب غير متوفر</value>
+  </data>
+  <data name="MustBeAtLeast1000" xml:space="preserve">
+    <value>يجب أن يكون على الأقل 1000</value>
+  </data>
+  <data name="OrderIdOrUserIdIsNotExist" xml:space="preserve">
+    <value>معرف الطلب أو معرف المستخدم غير موجود</value>
+  </data>
+  <data name="QuantityCannotBe0OrLess" xml:space="preserve">
+    <value>الكمية لا يمكن أن تكون 0 أو أقل</value>
+  </data>
+  <data name="NoChanges" xml:space="preserve">
+    <value>لا يوجد تغييرات</value>
+  </data>
+  <data name="MaxLengthIs25" xml:space="preserve">
+    <value>يجب ألا يتجاوز 25 حرفًا</value>
+  </data>
+  <data name="MaxLengthIs255" xml:space="preserve">
+    <value>لا يجب أن يتجاوز 255 حرفًا</value>
+  </data>
+  <data name="UserNameOrPasswordIsNotExist" xml:space="preserve">
+    <value>اسم المستخدم أو كلمة المرور غير صحيحة</value>
+  </data>
+  <data name="ReferencedInAnotherTable" xml:space="preserve">
+    <value>لا يمكن حذف هذا السجل لأنه مشار إليه في جدول آخر</value>
+  </data>
+  <data name="DiscountNotExist" xml:space="preserve">
+    <value>الخصم غير موجود</value>
+  </data>
+  <data name="Positive" xml:space="preserve">
+    <value>يجب أن يكون رقمًا موجبًا</value>
+  </data>
+  <data name="YouMustUploadAtLeastOneImage" xml:space="preserve">
+    <value>يجب تحميل صورة واحدة على الأقل</value>
+  </data>
+  <data name="AllowedExtensions" xml:space="preserve">
+    <value>صيغة الصورة غير مسموحة. الصيغ المسموح بها: .jpg, .png, .jpeg, .svg, .webp</value>
+  </data>
+  <data name="ThisBookAlreadyExistInTheShoppingCart" xml:space="preserve">
+    <value>هذا الكتاب موجود بالفعل في سلة التسوق</value>
+  </data>
+  <data name="CartItemNotFound" xml:space="preserve">
+    <value>لم يتم العثور على عنصر سلة التسوق</value>
+  </data>
+  <data name="TheShoppingCartIsEmpty" xml:space="preserve">
+    <value>عربة التسوق فارغة</value>
+  </data>
+  <data name="InvalidPhone" xml:space="preserve">
+    <value>تنسيق رقم الهاتف غير صالح</value>
+  </data>
+  <data name="MaxLengthIs20" xml:space="preserve">
+    <value>يجب ألا يتجاوز 20 حرفًا</value>
+  </data>
+  <data name="OrderCannotBeCanceled" xml:space="preserve">
+    <value>لا يمكن إلغاء هذا الطلب</value>
+  </data>
+  <data name="OrderCannotBeEdited" xml:space="preserve">
+    <value>لا يمكن تعديل هذا الطلب</value>
+  </data>
+  <data name="CanceledOrder" xml:space="preserve">
+    <value>تم إلغاء الطلب</value>
+  </data>
+  <data name="TheOrderIsEmpty" xml:space="preserve">
+    <value>الطلب فارغ</value>
+  </data>
+  <data name="DiscountNotActive" xml:space="preserve">
+    <value>الخصم غير نشط</value>
+  </data>
+  <data name="NoReviews" xml:space="preserve">
+    <value>لم يتم العثور على أي مراجعات</value>
+  </data>
+  <data name="EstimatedDeliveryTime" xml:space="preserve">
+    <value>يجب أن يكون وقت التسليم المتوقع في المستقبل</value>
+  </data>
+  <data name="CurrencyLength" xml:space="preserve">
+    <value>يجب أن تكون العملة عبارة عن رمز مكون من 3 أحرف (على سبيل المثال، USD، EGP).</value>
+  </data>
+  <data name="CurrencyUppercase" xml:space="preserve">
+    <value>يجب أن تكون العملة عبارة عن رمز ISO مكون من 3 أحرف كبيرة.</value>
+  </data>
+  <data name="PaymentProcessedSuccessfully" xml:space="preserve">
+    <value>تمت معالجة الدفع بنجاح</value>
+  </data>
+  <data name="PaymentProcessingFailed" xml:space="preserve">
+    <value>فشل معالجة الدفع</value>
+  </data>
+  <data name="PaymentNotCompleted" xml:space="preserve">
+    <value>لم يتم إكمال الدفع</value>
+  </data>
+  <data name="OrderPlacedCashOnDelivery" xml:space="preserve">
+    <value>الطلب المقدم نقدًا عند التسليم</value>
+  </data>
+  <data name="UnsupportedPaymentMethod" xml:space="preserve">
+    <value>طريقة الدفع غير مدعومة.</value>
+  </data>
+  <data name="OnlyEGPAndUSDCurrenciesAreSupported" xml:space="preserve">
+    <value>يتم دعم العملات التالية فقط: الجنيه المصري والدولار الأمريكي</value>
+  </data>
+  <data name="CODonlySupportsEGP" xml:space="preserve">
+    <value>يدعم الدفع عند الاستلام الجنيه المصري فقط</value>
+  </data>
+  <data name="NewStatus" xml:space="preserve">
+    <value>يجب أن تكون الحالة الجديدة مكتملة أو فاشلة بالنسبة لدفع عند الاستلام</value>
+  </data>
+  <data name="CurrencyMustBeEither" xml:space="preserve">
+    <value>يجب أن تكون العملة إما "EGP" أو "USD"</value>
+  </data>
+  <data name="CashOnDeliveryOnlySupportsEGP" xml:space="preserve">
+    <value>يدعم الدفع عند الاستلام الجنيه المصري فقط</value>
+  </data>
+  <data name="InvalidAmount" xml:space="preserve">
+    <value>مبلغ غير صالح</value>
+  </data>
+  <data name="InvalidOrderId" xml:space="preserve">
+    <value>معرف الطلب غير صالح</value>
+  </data>
+  <data name="PaymentPending" xml:space="preserve">
+    <value>الدفع معلق</value>
+  </data>
+  <data name="CODOnlySupportsConfiguredCurrencies" xml:space="preserve">
+    <value>يدعم COD العملات المُهيأة فقط</value>
+  </data>
+  <data name="NoImagesProvided" xml:space="preserve">
+    <value>لم يتم توفير صورة</value>
+  </data>
+  <data name="ImagesUploadedSuccessfully" xml:space="preserve">
+    <value>تم تحميل الصورة بنجاح</value>
+  </data>
+  <data name="FailedToAdd" xml:space="preserve">
+    <value>فشل في الإضافة</value>
+  </data>
+  <data name="FailedToUpdate" xml:space="preserve">
+    <value>فشل التحديث</value>
+  </data>
+  <data name="FailedToDelete" xml:space="preserve">
+    <value>فشل الحذف</value>
+  </data>
+  <data name="CodeAlreadyExists" xml:space="preserve">
+    <value>هذا الكود موجود بالفعل. الرجاء استخدام كود آخر.</value>
+  </data>
+  <data name="MaxLengthIs200" xml:space="preserve">
+    <value> 200 يجب ان لا يذيد طول النص عن </value>
+  </data>
+  <data name="RelatedProducts" xml:space="preserve">
+    <value>لا يمكن الحذف لأنه يحتوي على منتجات ذات صلة.</value>
+  </data>
+  <data name="MustBeLessThanOrEqual100" xml:space="preserve">
+    <value>يجب أن يكون أقل من أو يساوي 100.</value>
+  </data>
+  <data name="StartDateMustBeBeforeEndDate" xml:space="preserve">
+    <value>يجب أن يكون تاريخ البدء قبل تاريخ الانتهاء.</value>
+  </data>
+  <data name="EndDateMustBeAfterStartDate" xml:space="preserve">
+    <value>يجب أن يكون تاريخ النهاية بعد تاريخ البدء.</value>
+  </data>
+  <data name="InvalidEnumValue" xml:space="preserve">
+    <value>قيمة التعداد غير صالحة.</value>
+  </data>
+  <data name="PercentageAlreadyExists" xml:space="preserve">
+    <value>النسبة موجودة بالفعل.</value>
+  </data>
+  <data name="CannotEditVariantWithOrders" xml:space="preserve">
+    <value>لا يمكن التعديل لانه مرتبط مع الطلبات.</value>
+  </data>
+  <data name="CannotDeleteVariantWithOrders" xml:space="preserve">
+    <value>لا يمكن الحذف لانه مرتبط مع الطلبات.</value>
+  </data>
+  <data name="CannotDeleteProductRelatedToVariants" xml:space="preserve">
+    <value>لا يمكن حذف المنتج المرتبط بالمتغيرات.</value>
+  </data>
+  <data name="SomeProductsNotFound" xml:space="preserve">
+    <value>لم يتم العثور على بعض المنتجات.</value>
+  </data>
+  <data name="DiscountAlreadyApplied" xml:space="preserve">
+    <value>تم تطبيق الخصم بالفعل.</value>
+  </data>
+  <data name="NoLinksToDelete" xml:space="preserve">
+    <value>لا يوجد روابط للحذف.</value>
+  </data>
+  <data name="AtLeastOneImageIsRequired" xml:space="preserve">
+    <value>يجب أن تكون هناك صورة واحدة على الأقل.</value>
+  </data>
+  <data name="InvalidImagesProvided" xml:space="preserve">
+    <value>تم تقديم صور غير صالحة.</value>
+  </data>
+  <data name="ProductNotFound" xml:space="preserve">
+    <value>لم يتم العثور على المنتج.</value>
+  </data>
+  <data name="NoImageToDelete" xml:space="preserve">
+    <value>لا يوجد صورة للحذف.</value>
+  </data>
+  <data name="YouAreNotAuthorizedToUpdateThisReview" xml:space="preserve">
+    <value>لا يحق لك تحديث هذا التعليق.</value>
+  </data>
+  <data name="YouAreNotAuthorizedToDeleteThisReview" xml:space="preserve">
+    <value>ليس لديك الحق في حذف هذا التعليق.</value>
+  </data>
+  <data name="VariantNotFound" xml:space="preserve">
+    <value>لم يتم العثور على المتغير.</value>
+  </data>
+  <data name="InvalidQuantity" xml:space="preserve">
+    <value>كمية غير صالحة.</value>
+  </data>
+  <data name="CartNotFound" xml:space="preserve">
+    <value>لم يتم العثور على عربة التسوق.</value>
+  </data>
+  <data name="StockExceeded" xml:space="preserve">
+    <value>تجاوز المخزون.</value>
+  </data>
+  <data name="CartItemUpdated" xml:space="preserve">
+    <value>تم تحديث عنصر سلة التسوق.</value>
+  </data>
+  <data name="RelatedShipments" xml:space="preserve">
+    <value>لا يمكن الحذف لأنه يحتوي على شحنات ذات صلة.</value>
+  </data>
+  <data name="MaxLengthIs400" xml:space="preserve">
+    <value>400 يجب ان لا يذيد طول النص عن </value>
+  </data>
+  <data name="NoPaymentFound" xml:space="preserve">
+    <value>لم يتم العثور على الدفع.</value>
+  </data>
+  <data name="InsufficientStock" xml:space="preserve">
+    <value>المخزون غير كاف.</value>
+  </data>
+  <data name="InvalidStatus" xml:space="preserve">
+    <value>حالة غير صالحة.</value>
+  </data>
+  <data name="InvalidOrderStatusTransition" xml:space="preserve">
+    <value>انتقال حالة الطلب غير صالح.</value>
+  </data>
+  <data name="InvalidPaymentStatusTransition" xml:space="preserve">
+    <value>انتقال حالة الدفع غير صالح.</value>
+  </data>
+</root>
