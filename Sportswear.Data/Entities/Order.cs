@@ -19,7 +19,7 @@ namespace Sportswear.DataAccess.Entities
 
         public OrderStatus Status { get; set; } // Pending, Paid, Shipped, Completed, Cancelled
 
-        public Payment Payment { get; set; }
-        public Shipment Shipment { get; set; }
+        public Payment? Payment { get; set; }
+        public Shipment? Shipment { get; set; }
     }
 }

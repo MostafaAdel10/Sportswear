@@ -18,6 +18,7 @@ namespace Sportswear.Infrastructure.Configurations
             builder.HasOne(pd => pd.Discount)
                    .WithMany(d => d.Product_Discounts)
                    .HasForeignKey(pd => pd.DiscountId)
+                   .IsRequired(false)          // ✅ مهم جدًا
                    .OnDelete(DeleteBehavior.Cascade);
         }
     }

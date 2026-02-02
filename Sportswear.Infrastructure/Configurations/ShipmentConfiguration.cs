@@ -12,6 +12,11 @@ namespace Sportswear.Infrastructure.Configurations
                    .WithMany(m => m.Shipments)
                    .HasForeignKey(s => s.ShippingMethodId)
                    .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(s => s.Order)
+                   .WithOne(o => o.Shipment)
+                   .HasForeignKey<Shipment>(s => s.OrderId)
+                   .IsRequired(false);   // ✅ مهم جدًا بسبب QueryFilter على Order
         }
     }
 }

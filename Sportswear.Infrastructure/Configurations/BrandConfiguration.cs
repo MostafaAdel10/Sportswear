@@ -11,6 +11,7 @@ namespace Sportswear.Infrastructure.Configurations
             builder.HasMany(b => b.Products)
                    .WithOne(p => p.Brand)
                    .HasForeignKey(p => p.BrandId)
+                   .IsRequired(false)          // ✅ مهم جدًا
                    .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasQueryFilter(b => !b.IsDeleted);

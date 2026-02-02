@@ -105,16 +105,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 });
 
 
-// ====================== Authorization Policies ======================
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("CreateProduct",
-        p => p.RequireClaim("Create Product", "True"));
-    options.AddPolicy("EditProduct",
-        p => p.RequireClaim("Edit Product", "True"));
-    options.AddPolicy("DeleteProduct",
-        p => p.RequireClaim("Delete Product", "True"));
-});
+//// ====================== Authorization Policies ======================
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.AddPolicy("CreateProduct",
+//        p => p.RequireClaim("Create Product", "True"));
+//    options.AddPolicy("EditProduct",
+//        p => p.RequireClaim("Edit Product", "True"));
+//    options.AddPolicy("DeleteProduct",
+//        p => p.RequireClaim("Delete Product", "True"));
+//});
 
 // ====================== CORS ======================
 const string CORS = "_cors";

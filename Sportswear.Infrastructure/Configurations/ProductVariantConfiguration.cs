@@ -16,6 +16,7 @@ namespace Sportswear.Infrastructure.Configurations
             builder.HasMany(pv => pv.CartItems)
                    .WithOne(ci => ci.ProductVariant)
                    .HasForeignKey(ci => ci.ProductVariantId)
+                   .IsRequired(false)          // ✅ مهم جدًا
                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasQueryFilter(v => !v.IsDeleted);
