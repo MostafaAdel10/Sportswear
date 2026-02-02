@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -76,14 +76,14 @@ builder.Services.AddIdentity<ApplicationUser, Role>(options =>
     options.Password.RequireUppercase = true;
     options.Password.RequireLowercase = true;
 
-    options.SignIn.RequireConfirmedEmail = false;
+    options.SignIn.RequireConfirmedEmail = true;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
 // ====================== JWT ======================
 var jwtSettings = new JwtSettings();
-builder.Configuration.GetSection(nameof(jwtSettings)).Bind(jwtSettings);
+builder.Configuration.GetSection("jwtSettings").Bind(jwtSettings);
 builder.Services.AddSingleton(jwtSettings);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -93,14 +93,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         ValidateIssuer = jwtSettings.ValidateIssuer,
         ValidIssuer = jwtSettings.Issuer,
+
         ValidateAudience = jwtSettings.ValidateAudience,
         ValidAudience = jwtSettings.Audience,
         ValidateLifetime = jwtSettings.ValidateLifeTime,
         ValidateIssuerSigningKey = jwtSettings.ValidateIssuerSigningKey,
-        IssuerSigningKey =
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
+
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtSettings.Secret))
     };
 });
+
 
 // ====================== Authorization Policies ======================
 builder.Services.AddAuthorization(options =>
@@ -115,7 +118,6 @@ builder.Services.AddAuthorization(options =>
 
 // ====================== CORS ======================
 const string CORS = "_cors";
-
 var corsSettings = builder.Configuration.GetSection("Cors");
 
 builder.Services.AddCors(options =>
@@ -124,21 +126,13 @@ builder.Services.AddCors(options =>
     {
         if (corsSettings.GetValue<bool>("AllowAll"))
         {
-            policy
-                .AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod();
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
         }
-        //else
-        //{
-        //    policy
-        //        .WithOrigins(corsSettings.GetSection("AllowedOrigins").Get<string[]>())
-        //        .AllowAnyHeader()
-        //        .AllowAnyMethod()
-        //        .AllowCredentials();
-        //}
     });
 });
+
 
 // ====================== EmailSettings ======================
 var emailSettings = new EmailSettings();
@@ -205,7 +199,9 @@ app.UseRequestLocalization(
     app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
+app.UseRouting();
 
 app.UseCors(CORS);
 
