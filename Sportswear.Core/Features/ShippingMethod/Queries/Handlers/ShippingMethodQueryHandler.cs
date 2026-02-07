@@ -11,7 +11,8 @@ namespace Sportswear.Core.Features.ShippingMethod.Queries.Handlers
 {
     public class ShippingMethodQueryHandler : ResponseHandler,
         IRequestHandler<GetShippingMethodsListQuery, Response<List<GetShippingMethodsListResponse>>>,
-        IRequestHandler<GetShippingMethodByIdQuery, Response<GetShippingMethodByIdResponse>>
+        IRequestHandler<GetShippingMethodByIdQuery, Response<GetShippingMethodByIdResponse>>,
+        IRequestHandler<GetShippingMethodByIdToEditQuery, Response<GetShippingMethodByIdToEditResponse>>
     {
         #region Fields
         private readonly IShippingMethodService _shippingMethodService;
@@ -48,6 +49,18 @@ namespace Sportswear.Core.Features.ShippingMethod.Queries.Handlers
                 return NotFound<GetShippingMethodByIdResponse>(_stringLocalizer[SharedResourcesKeys.NotFound]);
 
             var result = _mapper.Map<GetShippingMethodByIdResponse>(shippingMethod);
+
+            return Success(result);
+        }
+
+        public async Task<Response<GetShippingMethodByIdToEditResponse>> Handle(GetShippingMethodByIdToEditQuery request, CancellationToken cancellationToken)
+        {
+            var shippingMethod = await _shippingMethodService.GetByIdAsync(request.Id);
+
+            if (shippingMethod is null)
+                return NotFound<GetShippingMethodByIdToEditResponse>(_stringLocalizer[SharedResourcesKeys.NotFound]);
+
+            var result = _mapper.Map<GetShippingMethodByIdToEditResponse>(shippingMethod);
 
             return Success(result);
         }

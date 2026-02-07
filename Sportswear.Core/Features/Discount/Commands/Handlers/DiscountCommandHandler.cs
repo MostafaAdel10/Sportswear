@@ -5,6 +5,7 @@ using Sportswear.Core.Bases;
 using Sportswear.Core.Features.Discount.Commands.Models;
 using Sportswear.Core.Resources;
 using Sportswear.Service.Abstract;
+using Sportswear.Service.AuthServices.Interfaces;
 
 namespace Sportswear.Core.Features.Discount.Commands.Handlers
 {
@@ -16,16 +17,18 @@ namespace Sportswear.Core.Features.Discount.Commands.Handlers
         #region Fields
         private readonly IDiscountService _discountService;
         private readonly IProductService _productService;
+        private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
         private readonly IStringLocalizer<SharedResources> _stringLocalizer;
         #endregion
 
         #region Constructors
-        public DiscountCommandHandler(IDiscountService discountService, IMapper mapper, IProductService productService,
+        public DiscountCommandHandler(IDiscountService discountService, IMapper mapper, IProductService productService, ICurrentUserService currentUserService,
             IStringLocalizer<SharedResources> stringLocalizer) : base(stringLocalizer)
         {
             _discountService = discountService;
             _productService = productService;
+            _currentUserService = currentUserService;
             _mapper = mapper;
             _stringLocalizer = stringLocalizer;
         }
@@ -34,9 +37,13 @@ namespace Sportswear.Core.Features.Discount.Commands.Handlers
         #region Handel Functions
         public async Task<Response<string>> Handle(CreateDiscountCommand request, CancellationToken cancellationToken)
         {
+            var currentUser = await _currentUserService.GetUserAsync();
+            if (currentUser == null || string.IsNullOrEmpty(currentUser.UserName))
+                return Unauthorized<string>();
+
             var discount = _mapper.Map<DataAccess.Entities.Discount>(request);
 
-            discount.CreatedBy = "TestAdmin";
+            discount.CreatedBy = currentUser.UserName;
 
             var isSuccess = await _discountService.AddAsync(discount);
 
@@ -48,6 +55,10 @@ namespace Sportswear.Core.Features.Discount.Commands.Handlers
 
         public async Task<Response<string>> Handle(EditDiscountCommand request, CancellationToken cancellationToken)
         {
+            var currentUser = await _currentUserService.GetUserAsync();
+            if (currentUser == null || string.IsNullOrEmpty(currentUser.UserName))
+                return Unauthorized<string>();
+
             // Check if Discount exists
             var existingDiscount = await _discountService.GetActiveDiscountByIdAsync(request.Id);
             if (existingDiscount == null)
@@ -56,7 +67,7 @@ namespace Sportswear.Core.Features.Discount.Commands.Handlers
             // Map new values to existing entity
             existingDiscount = _mapper.Map(request, existingDiscount);
 
-            existingDiscount.UpdatedBy = "TestAdmin";
+            existingDiscount.UpdatedBy = currentUser.UserName;
             existingDiscount.UpdatedAt = DateTime.UtcNow;
 
             var isSuccess = await _discountService.EditAsync(existingDiscount);
@@ -69,6 +80,10 @@ namespace Sportswear.Core.Features.Discount.Commands.Handlers
 
         public async Task<Response<string>> Handle(DeleteDiscountCommand request, CancellationToken cancellationToken)
         {
+            var currentUser = await _currentUserService.GetUserAsync();
+            if (currentUser == null || string.IsNullOrEmpty(currentUser.UserName))
+                return Unauthorized<string>();
+
             // Check if Discount exists
             var existingDiscount = await _discountService.GetActiveDiscountByIdAsync(request.Id);
             if (existingDiscount == null)
@@ -82,7 +97,7 @@ namespace Sportswear.Core.Features.Discount.Commands.Handlers
             // Soft delete
             existingDiscount.IsDeleted = true;
             existingDiscount.UpdatedAt = DateTime.UtcNow;
-            existingDiscount.UpdatedBy = "TestAdmin";
+            existingDiscount.UpdatedBy = currentUser.UserName;
 
             var isSuccess = await _discountService.EditAsync(existingDiscount);
 

@@ -30,6 +30,7 @@ namespace Sportswear.Infrastructure.Repository
             var now = DateTime.UtcNow;
             return await _discounts
                 .Where(d => !d.IsDeleted && d.StartDate <= now && d.EndDate >= now)
+                .OrderByDescending(d => d.Id)
                 .ToListAsync();
         }
 

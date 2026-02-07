@@ -27,6 +27,8 @@
         public const string SomeProductsNotFound = "SomeProductsNotFound";
         public const string DiscountAlreadyApplied = "DiscountAlreadyApplied";
         public const string NoLinksToDelete = "NoLinksToDelete";
+        public const string DiscountIsNotActive = "DiscountIsNotActive";
+        public const string YouCanNotAddThisDiscountBecauseItIsGlobal = "YouCanNotAddThisDiscountBecauseItIsGlobal";
 
         public const string CodeAlreadyExists = "CodeAlreadyExists";
         public const string PercentageAlreadyExists = "PercentageAlreadyExists";

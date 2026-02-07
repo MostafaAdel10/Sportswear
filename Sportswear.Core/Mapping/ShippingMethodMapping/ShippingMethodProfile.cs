@@ -10,6 +10,7 @@ namespace Sportswear.Core.Mapping.ShippingMethodMapping
             EditShippingMethodCommandMapping();
             GetShippingMethodByIdMapping();
             GetShippingMethodsListMapping();
+            GetShippingMethodByIdToEditMapping();
         }
     }
 }

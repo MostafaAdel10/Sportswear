@@ -3,7 +3,7 @@ using Sportswear.Core.Bases;
 
 namespace Sportswear.Core.Features.Product.Commands.Models
 {
-    public class CreateProductCommand : IRequest<Response<string>>
+    public class CreateProductCommand : IRequest<Response<int>>
     {
         public string Code { get; set; }
         public string NameEn { get; set; }

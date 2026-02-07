@@ -35,6 +35,14 @@ namespace Sportswear.Api.Controllers
             return NewResult(response);
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpGet(Router.ProductRouting.GetByIdToEdit)]
+        public async Task<IActionResult> GetProductByIdToEdit([FromRoute] int id)
+        {
+            var response = await Mediator.Send(new GetProductByIdToEditQuery(id));
+            return NewResult(response);
+        }
+
         [AllowAnonymous]
         [HttpGet(Router.ProductRouting.GetByIdWithVariants)]
         public async Task<IActionResult> GetProductByIdWithVariants([FromRoute] int id)

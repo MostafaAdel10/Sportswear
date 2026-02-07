@@ -10,6 +10,9 @@ namespace Sportswear.DataAccess.Entities
         [Required, MaxLength(200)]
         public string NameAr { get; set; }
 
+        [Required]
+        public string ImageUrl { get; set; }
+
         public ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }

@@ -45,7 +45,7 @@ namespace Sportswear.Service.Implementations
         private string GetSafeFolderPath(string subFolder)
         {
             if (string.IsNullOrWhiteSpace(subFolder))
-                subFolder = "product-images";
+                throw new ValidationException("Sub Folder Is Empty!");
 
             // منع Path Traversal 100% + normalization
             var normalized = Path.Combine(_basePath, subFolder.Replace("..", "").TrimStart('/'));
@@ -66,7 +66,7 @@ namespace Sportswear.Service.Implementations
 
 
 
-        public async Task<string> UploadImageAsync(IFormFile image, string subFolder = "product-images")
+        public async Task<string> UploadImageAsync(IFormFile image, string subFolder)
         {
             ValidateImage(image);
 
@@ -89,7 +89,7 @@ namespace Sportswear.Service.Implementations
             return $"{_baseUrl}/{subFolder}/{fileName}".Replace("//", "/");
         }
 
-        public async Task<List<string>> UploadImagesAsync(IEnumerable<IFormFile> images, string subFolder = "product-images")
+        public async Task<List<string>> UploadImagesAsync(IEnumerable<IFormFile> images, string subFolder)
         {
             if (images == null || !images.Any())
                 throw new ValidationException("No Images!");
@@ -156,7 +156,7 @@ namespace Sportswear.Service.Implementations
             return false;
         }
 
-        public async Task<string> ReplaceImageAsync(string? oldImageUrl, IFormFile newImage, string subFolder = "product-images")
+        public async Task<string> ReplaceImageAsync(string? oldImageUrl, IFormFile newImage, string subFolder)
         {
             // أول حاجة نرفع الجديد (مع cleanup لو فشل)
             var newUrl = await UploadImageAsync(newImage, subFolder);

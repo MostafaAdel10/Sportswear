@@ -26,7 +26,9 @@ namespace Sportswear.Infrastructure.Repository
         }
         public async Task<List<Brand>> GetBrandsListAsync()
         {
-            return await _brands.ToListAsync();
+            return await _brands
+                .OrderByDescending(b => b.Id)
+                .ToListAsync();
         }
         #endregion
     }

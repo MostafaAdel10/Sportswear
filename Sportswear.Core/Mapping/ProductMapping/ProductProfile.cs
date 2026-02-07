@@ -10,6 +10,7 @@ namespace Sportswear.Core.Mapping.ProductMapping
             GetProductByIdMapping();
             CreateProductCommandMapping();
             EditProductCommandMapping();
+            GetProductByIdToEditMapping();
         }
     }
 }

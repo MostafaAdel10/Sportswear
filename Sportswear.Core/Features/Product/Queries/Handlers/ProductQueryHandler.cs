@@ -13,6 +13,7 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
     public class ProductQueryHandler : ResponseHandler,
         IRequestHandler<GetProductsListQuery, Response<List<GetProductsListResponse>>>,
         IRequestHandler<GetProductByIdQuery, Response<GetProductByIdResponse>>,
+        IRequestHandler<GetProductByIdToEditQuery, Response<GetProductByIdToEditResponse>>,
         IRequestHandler<GetProductByIdWithVariantsQuery, Response<GetProductByIdWithVariantsResponse>>,
         IRequestHandler<GetProductPaginatedListQuery, PaginatedResult<GetProductPaginatedListResponse>>
     {
@@ -60,6 +61,18 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
             var result = _mapper.Map<GetProductByIdResponse>(product);
 
             result.PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProduct(product) ?? product.BasePrice;
+
+            return Success(result);
+        }
+
+        public async Task<Response<GetProductByIdToEditResponse>> Handle(GetProductByIdToEditQuery request, CancellationToken cancellationToken)
+        {
+            var product = await _productService.GetByIdWithIncludesAsync(request.Id);
+
+            if (product is null)
+                return NotFound<GetProductByIdToEditResponse>(_stringLocalizer[SharedResourcesKeys.ProductNotFound]);
+
+            var result = _mapper.Map<GetProductByIdToEditResponse>(product);
 
             return Success(result);
         }

@@ -8,8 +8,7 @@ namespace Sportswear.Core.Mapping.CategoryMapping
         {
             GetCategoriesListMapping();
             GetCategoryByIdMapping();
-            CreateCategoryCommandMapping();
-            EditCategoryCommandMapping();
+            GetCategoryByIdToEditMapping();
         }
     }
 }

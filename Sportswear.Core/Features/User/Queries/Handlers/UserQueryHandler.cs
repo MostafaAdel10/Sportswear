@@ -35,7 +35,10 @@ namespace Sportswear.Core.Features.User.Queries.Handlers
         #region Handle Functions
         public async Task<PaginatedResult<GetUserPaginationReponse>> Handle(GetUserPaginationQuery request, CancellationToken cancellationToken)
         {
-            var users = _userManager.Users.AsQueryable();
+            var users = _userManager.Users
+                .OrderByDescending(u => u.Id)
+                .AsQueryable();
+
             var paginatedList = await _mapper.ProjectTo<GetUserPaginationReponse>(users)
                                             .ToPaginatedListAsync(request.PageNumber, request.PageSize);
             return paginatedList;

@@ -1,0 +1,24 @@
+﻿namespace Sportswear.Core.Features.Product.Queries.Response_DTO_
+{
+    public class GetProductByIdToEditResponse
+    {
+        public int Id { get; set; }
+        public string Code { get; set; }
+
+        public string NameEn { get; set; }
+        public string NameAr { get; set; }
+
+        public string DescriptionEn { get; set; }
+        public string DescriptionAr { get; set; }
+
+        public decimal BasePrice { get; set; }
+
+        public string? Season { get; set; }
+
+        public string? ClubEn { get; set; }
+        public string? ClubAr { get; set; }
+
+        public int BrandId { get; set; }
+        public int CategoryId { get; set; }
+    }
+}

@@ -585,4 +585,10 @@
   <data name="InvalidPaymentStatusTransition" xml:space="preserve">
     <value>Invalid Payment Status Transition.</value>
   </data>
+  <data name="DiscountIsNotActive" xml:space="preserve">
+    <value>Discount Is Not Active.</value>
+  </data>
+  <data name="YouCanNotAddThisDiscountBecauseItIsGlobal" xml:space="preserve">
+    <value>You cannot add this discount because it is a discount on all products (Global).</value>
+  </data>
 </root>

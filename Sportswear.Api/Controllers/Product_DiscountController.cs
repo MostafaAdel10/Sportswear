@@ -26,14 +26,6 @@ namespace Sportswear.Api.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPut(Router.Product_DiscountRouting.Edit)]
-        public async Task<IActionResult> UpdateProductsForDiscount([FromBody] UpdateProductsForDiscountCommand command)
-        {
-            var response = await Mediator.Send(command);
-            return NewResult(response);
-        }
-
-        [Authorize(Roles = "Admin")]
         [HttpDelete(Router.Product_DiscountRouting.Delete)]
         public async Task<IActionResult> RemoveDiscountFromProducts([FromBody] RemoveDiscountFromProductsCommand command)
         {

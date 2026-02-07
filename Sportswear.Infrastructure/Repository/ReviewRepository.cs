@@ -25,6 +25,7 @@ namespace Sportswear.Infrastructure.Repository
             return await _reviews
                 .Where(r => r.ProductId == productId)
                 .Include(r => r.User)
+                .OrderByDescending(r => r.Id)
                 .ToListAsync();
         }
         #endregion

@@ -36,6 +36,10 @@ namespace Sportswear.Core.Features.Brand.Commands.Validations
                 .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required])
                 .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
                 .MaximumLength(200).WithMessage(_localizer[SharedResourcesKeys.MaxLengthIs200]);
+
+            RuleFor(x => x.Image)
+                .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.Required])
+                .Must(img => img != null && img.Length > 0).WithMessage(_localizer[SharedResourcesKeys.InvalidImagesProvided]);
         }
 
         public void ApplyCustomValidationsRules()

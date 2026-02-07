@@ -10,7 +10,7 @@ using Sportswear.Service.AuthServices.Interfaces;
 namespace Sportswear.Core.Features.Product.Commands.Handlers
 {
     public class ProductCommandHandler : ResponseHandler,
-                        IRequestHandler<CreateProductCommand, Response<string>>,
+                        IRequestHandler<CreateProductCommand, Response<int>>,
                         IRequestHandler<EditProductCommand, Response<string>>,
                         IRequestHandler<DeleteProductCommand, Response<string>>
     {
@@ -38,22 +38,22 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
         #endregion
 
         #region Handle Functions
-        public async Task<Response<string>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+        public async Task<Response<int>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
             var currentUser = await _currentUserService.GetUserAsync();
             if (currentUser == null || string.IsNullOrEmpty(currentUser.UserName))
-                return Unauthorized<string>();
+                return Unauthorized<int>();
 
             var product = _mapper.Map<DataAccess.Entities.Product>(request);
 
             product.CreatedBy = currentUser.UserName;
 
-            var isSuccess = await _productService.AddAsync(product);
+            var productId = await _productService.AddAsync(product);
 
-            if (isSuccess)
-                return Created("");
+            if (productId <= 0)
+                return BadRequest<int>();
             else
-                return BadRequest<string>();
+                return Success(productId, _localizer[SharedResourcesKeys.Created]);
         }
 
         public async Task<Response<string>> Handle(EditProductCommand request, CancellationToken cancellationToken)

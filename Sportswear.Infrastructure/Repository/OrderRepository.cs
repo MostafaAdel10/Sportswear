@@ -25,6 +25,7 @@ namespace Sportswear.Infrastructure.Repository
             return await _orders
                 .Include(o => o.User)
                 .Include(o => o.Payment)
+                .OrderByDescending(o => o.Id)
                 .ToListAsync();
         }
 
@@ -46,6 +47,7 @@ namespace Sportswear.Infrastructure.Repository
                 .Include(o => o.OrderItems)
                 .Include(o => o.User)
                 .Include(o => o.Payment)
+                .OrderByDescending(o => o.Id)
                 .ToListAsync();
         }
         #endregion

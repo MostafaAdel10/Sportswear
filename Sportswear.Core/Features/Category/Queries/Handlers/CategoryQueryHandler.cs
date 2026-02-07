@@ -11,7 +11,8 @@ namespace Sportswear.Core.Features.Category.Queries.Handlers
 {
     public class CategoryQueryHandler : ResponseHandler,
         IRequestHandler<GetCategoriesListQuery, Response<List<GetCategoriesListResponse>>>,
-        IRequestHandler<GetCategoryByIdQuery, Response<GetCategoryByIdResponse>>
+        IRequestHandler<GetCategoryByIdQuery, Response<GetCategoryByIdResponse>>,
+        IRequestHandler<GetCategoryByIdToEditQuery, Response<GetCategoryByIdToEditResponse>>
     {
         #region Fields
         private readonly ICategoryService _categoryService;
@@ -48,6 +49,18 @@ namespace Sportswear.Core.Features.Category.Queries.Handlers
                 return NotFound<GetCategoryByIdResponse>(_stringLocalizer[SharedResourcesKeys.NotFound]);
 
             var result = _mapper.Map<GetCategoryByIdResponse>(category);
+
+            return Success(result);
+        }
+
+        public async Task<Response<GetCategoryByIdToEditResponse>> Handle(GetCategoryByIdToEditQuery request, CancellationToken cancellationToken)
+        {
+            var category = await _categoryService.GetByIdAsync(request.Id);
+
+            if (category is null)
+                return NotFound<GetCategoryByIdToEditResponse>(_stringLocalizer[SharedResourcesKeys.NotFound]);
+
+            var result = _mapper.Map<GetCategoryByIdToEditResponse>(category);
 
             return Success(result);
         }

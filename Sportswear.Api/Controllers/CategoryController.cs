@@ -26,8 +26,16 @@ namespace Sportswear.Api.Controllers
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpGet(Router.CategoryRouting.GetByIdToEdit)]
+        public async Task<IActionResult> GetCategoryByIdToEdit([FromRoute] int id)
+        {
+            var response = await Mediator.Send(new GetCategoryByIdToEditQuery(id));
+            return NewResult(response);
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpPost(Router.CategoryRouting.Create)]
-        public async Task<IActionResult> Create([FromBody] CreateCategoryCommand command)
+        public async Task<IActionResult> Create([FromForm] CreateCategoryCommand command)
         {
             var response = await Mediator.Send(command);
             return NewResult(response);
@@ -35,7 +43,7 @@ namespace Sportswear.Api.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPut(Router.CategoryRouting.Edit)]
-        public async Task<IActionResult> Edit([FromBody] EditCategoryCommand command)
+        public async Task<IActionResult> Edit([FromForm] EditCategoryCommand command)
         {
             var response = await Mediator.Send(command);
             return NewResult(response);

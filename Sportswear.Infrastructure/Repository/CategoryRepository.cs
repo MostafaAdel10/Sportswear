@@ -27,7 +27,9 @@ namespace Sportswear.Infrastructure.Repository
 
         public async Task<List<Category>> GetCategoriesListAsync()
         {
-            return await _categorys.ToListAsync();
+            return await _categorys
+                .OrderByDescending(c => c.Id)
+                .ToListAsync();
         }
         #endregion
     }

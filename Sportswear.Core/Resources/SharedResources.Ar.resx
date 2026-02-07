@@ -585,4 +585,10 @@
   <data name="InvalidPaymentStatusTransition" xml:space="preserve">
     <value>انتقال حالة الدفع غير صالح.</value>
   </data>
+  <data name="DiscountIsNotActive" xml:space="preserve">
+    <value>الخصم غير فعال.</value>
+  </data>
+  <data name="YouCanNotAddThisDiscountBecauseItIsGlobal" xml:space="preserve">
+    <value>لا يمكنك إضافة هذا الخصم لأنه خصم علي كل المنتاجات.</value>
+  </data>
 </root>

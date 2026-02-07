@@ -11,7 +11,8 @@ namespace Sportswear.Core.Features.Brand.Queries.Handlers
 {
     public class BrandQueryHandler : ResponseHandler,
         IRequestHandler<GetBrandsListQuery, Response<List<GetBrandsListResponse>>>,
-        IRequestHandler<GetBrandByIdQuery, Response<GetBrandByIdResponse>>
+        IRequestHandler<GetBrandByIdQuery, Response<GetBrandByIdResponse>>,
+        IRequestHandler<GetBrandByIdToEditQuery, Response<GetBrandByIdToEditResponse>>
     {
         #region Fields
         private readonly IBrandService _brandService;
@@ -48,6 +49,18 @@ namespace Sportswear.Core.Features.Brand.Queries.Handlers
                 return NotFound<GetBrandByIdResponse>(_stringLocalizer[SharedResourcesKeys.NotFound]);
 
             var result = _mapper.Map<GetBrandByIdResponse>(brand);
+
+            return Success(result);
+        }
+
+        public async Task<Response<GetBrandByIdToEditResponse>> Handle(GetBrandByIdToEditQuery request, CancellationToken cancellationToken)
+        {
+            var brand = await _brandService.GetByIdAsync(request.Id);
+
+            if (brand is null)
+                return NotFound<GetBrandByIdToEditResponse>(_stringLocalizer[SharedResourcesKeys.NotFound]);
+
+            var result = _mapper.Map<GetBrandByIdToEditResponse>(brand);
 
             return Success(result);
         }

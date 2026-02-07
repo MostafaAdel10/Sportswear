@@ -8,8 +8,7 @@ namespace Sportswear.Core.Mapping.BrandMapping
         {
             GetBrandsListMapping();
             GetBrandByIdMapping();
-            CreateBrandCommandMapping();
-            EditBrandCommandMapping();
+            GetBrandByIdToEditMapping();
         }
     }
 }

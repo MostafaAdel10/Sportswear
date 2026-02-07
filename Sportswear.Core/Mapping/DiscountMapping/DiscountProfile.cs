@@ -10,6 +10,7 @@ namespace Sportswear.Core.Mapping.DiscountMapping
             GetActiveDiscountByIdMapping();
             CreateDiscountCommandMapping();
             EditDiscountCommandMapping();
+            GetActiveDiscountByIdToEditMapping();
         }
     }
 }

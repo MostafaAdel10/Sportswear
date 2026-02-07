@@ -23,13 +23,14 @@ namespace Sportswear.Infrastructure.Repository
         public async Task<List<Product>> GetProductsListWithIncludesAsync()
         {
             return await _products.AsNoTracking()
-                //.IgnoreQueryFilters()   // ⬅️ هذا السطر هو اللي يسمح بإظهار المحذوف وغير المحذوف
                 .Include(b => b.Brand)
                 .Include(c => c.Category)
                 .Include(i => i.Images)
                 .Include(v => v.Variants)
                 .Include(r => r.Reviews)
                 .Include(d => d.Product_Discounts)
+                    .ThenInclude(pd => pd.Discount)
+                .OrderByDescending(p => p.Id)
                 .ToListAsync();
         }
         public async Task<Product> GetByIdWithIncludesAsync(int id)
@@ -41,6 +42,7 @@ namespace Sportswear.Infrastructure.Repository
                 .Include(v => v.Variants)
                 .Include(r => r.Reviews)
                 .Include(d => d.Product_Discounts)
+                    .ThenInclude(pd => pd.Discount)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 

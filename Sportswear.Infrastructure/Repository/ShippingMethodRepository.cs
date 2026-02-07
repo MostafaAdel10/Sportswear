@@ -22,7 +22,9 @@ namespace Sportswear.Infrastructure.Repository
         #region Handle Functions
         public async Task<List<ShippingMethod>> GetShippingMethodsListAsync()
         {
-            return await _shippingMethods.ToListAsync();
+            return await _shippingMethods
+                .OrderByDescending(s => s.Id)
+                .ToListAsync();
         }
         #endregion
     }

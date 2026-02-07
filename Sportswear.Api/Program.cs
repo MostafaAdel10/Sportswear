@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Sportswear.Core;
+using Sportswear.Core.Filters;
 using Sportswear.Core.Middleware;
 using Sportswear.DataAccess.Entities.Identity;
 using Sportswear.DataAccess.Helpers;
@@ -23,32 +24,101 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ====================== Logging ======================
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .CreateLogger();
+// Add services to the container.
 
-builder.Host.UseSerilog();
-
-// ====================== Services ======================
 builder.Services.AddControllers();
+
+
+// For Swagger/OpenAPI support
+
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+//builder.Services.AddOpenApi();
+
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+
+//AddDbContext
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("cs"));
+});
+
+
+//Service Add Identity
+builder.Services.AddIdentity<ApplicationUser, Role>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequiredLength = 6;
+    options.Password.RequiredUniqueChars = 1;
+
+    // Lockout settings.
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
+
+    // User settings.
+    options.User.AllowedUserNameCharacters =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedEmail = true;
+
+}).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+
+
+//JWT Authentication
+var jwtSettings = new JwtSettings();
+var emailSettings = new EmailSettings();
+builder.Configuration.GetSection(nameof(jwtSettings)).Bind(jwtSettings);
+builder.Configuration.GetSection(nameof(emailSettings)).Bind(emailSettings);
+
+builder.Services.AddSingleton(jwtSettings);
+builder.Services.AddSingleton(emailSettings);
+
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(x =>
+{
+    x.RequireHttpsMetadata = false;
+    x.SaveToken = true;
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = jwtSettings.ValidateIssuer,
+        ValidIssuers = new[] { jwtSettings.Issuer },
+        ValidateIssuerSigningKey = jwtSettings.ValidateIssuerSigningKey,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
+        ValidAudience = jwtSettings.Audience,
+        ValidateAudience = jwtSettings.ValidateAudience,
+        ValidateLifetime = jwtSettings.ValidateLifeTime,
+    };
+});
+
+
+//Swagger Gn
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Sportswear API", Version = "v1" });
-    c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme,
-        new OpenApiSecurityScheme
-        {
-            Name = "Authorization",
-            Type = SecuritySchemeType.ApiKey,
-            Scheme = "Bearer",
-            In = ParameterLocation.Header,
-            Description = "Bearer {token}"
-        });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Sportswear Project", Version = "v1" });
+    c.EnableAnnotations();
+
+    c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme (Example: 'Bearer 12345abcdef')",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = JwtBearerDefaults.AuthenticationScheme
+    });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
+            {
+            {
             new OpenApiSecurityScheme
             {
                 Reference = new OpenApiReference
@@ -58,152 +128,133 @@ builder.Services.AddSwaggerGen(c =>
                 }
             },
             Array.Empty<string>()
-        }
-    });
-});
-
-// ====================== DbContext ======================
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("cs"));
-});
-
-// ====================== Identity ======================
-builder.Services.AddIdentity<ApplicationUser, Role>(options =>
-{
-    options.Password.RequiredLength = 6;
-    options.Password.RequireDigit = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireLowercase = true;
-
-    options.SignIn.RequireConfirmedEmail = true;
-})
-.AddEntityFrameworkStores<ApplicationDbContext>()
-.AddDefaultTokenProviders();
-
-// ====================== JWT ======================
-var jwtSettings = new JwtSettings();
-builder.Configuration.GetSection("jwtSettings").Bind(jwtSettings);
-builder.Services.AddSingleton(jwtSettings);
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = jwtSettings.ValidateIssuer,
-        ValidIssuer = jwtSettings.Issuer,
-
-        ValidateAudience = jwtSettings.ValidateAudience,
-        ValidAudience = jwtSettings.Audience,
-        ValidateLifetime = jwtSettings.ValidateLifeTime,
-        ValidateIssuerSigningKey = jwtSettings.ValidateIssuerSigningKey,
-
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(jwtSettings.Secret))
-    };
-});
-
-
-//// ====================== Authorization Policies ======================
-//builder.Services.AddAuthorization(options =>
-//{
-//    options.AddPolicy("CreateProduct",
-//        p => p.RequireClaim("Create Product", "True"));
-//    options.AddPolicy("EditProduct",
-//        p => p.RequireClaim("Edit Product", "True"));
-//    options.AddPolicy("DeleteProduct",
-//        p => p.RequireClaim("Delete Product", "True"));
-//});
-
-// ====================== CORS ======================
-const string CORS = "_cors";
-var corsSettings = builder.Configuration.GetSection("Cors");
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(CORS, policy =>
-    {
-        if (corsSettings.GetValue<bool>("AllowAll"))
-        {
-            policy.AllowAnyOrigin()
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        }
+            }
     });
 });
 
 
-// ====================== EmailSettings ======================
-var emailSettings = new EmailSettings();
-builder.Configuration.GetSection("emailSettings").Bind(emailSettings);
-builder.Services.AddSingleton(emailSettings);
-
-// ====================== IUrlHelper ======================
-builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-builder.Services.AddTransient<IUrlHelper>(sp =>
+//Authorize Based On Claim (Policy)
+builder.Services.AddAuthorization(option =>
 {
-    var actionContext = sp.GetRequiredService<IActionContextAccessor>().ActionContext;
-    var factory = sp.GetRequiredService<IUrlHelperFactory>();
-    return factory.GetUrlHelper(actionContext);
+    option.AddPolicy("CreateProduct", policy =>
+    {
+        policy.RequireClaim("Create Product", "True");
+    });
+    option.AddPolicy("DeleteProduct", policy =>
+    {
+        policy.RequireClaim("Delete Product", "True");
+    });
+    option.AddPolicy("EditProduct", policy =>
+    {
+        policy.RequireClaim("Edit Product", "True");
+    });
 });
 
 
-// ====================== Localization ======================
-builder.Services.AddLocalization();
+//-------------------------------
+//Registration
+
+#region Dependency Injections
+builder.Services.AddInfrastructureDependencies()
+                .AddServiceDependencies()
+                .AddCoreDependencies();
+#endregion
+
+#region Localization
+builder.Services.AddControllersWithViews();
+builder.Services.AddLocalization(opt =>
+{
+    opt.ResourcesPath = "";
+});
+
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
-    var cultures = new[]
+    List<CultureInfo> supportedCultures = new List<CultureInfo>
     {
-        new CultureInfo("en-US"),
-        new CultureInfo("ar-EG")
+            new CultureInfo("en-US"),
+            new CultureInfo("de-DE"),
+            new CultureInfo("fr-FR"),
+            new CultureInfo("ar-EG")
     };
 
     options.DefaultRequestCulture = new RequestCulture("en-US");
-    options.SupportedCultures = cultures;
-    options.SupportedUICultures = cultures;
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
 });
 
-// ====================== DI Layers ======================
-builder.Services
-    .AddInfrastructureDependencies()
-    .AddServiceDependencies()
-    .AddCoreDependencies();
+#endregion
 
-// ====================== File Upload ======================
-builder.Services.Configure<FileUploadOptions>(
-    builder.Configuration.GetSection("FileUpload"));
+#region AllowCORS
+var CORS = "_cors";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: CORS,
+                      policy =>
+                      {
+                          policy.AllowAnyHeader();
+                          policy.AllowAnyMethod();
+                          policy.AllowAnyOrigin();
+                      });
+});
+#endregion
 
-// ====================== Build ======================
+
+//IUrlHelper and IActionContextAccessor
+builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+builder.Services.AddTransient<IUrlHelper>(x =>
+{
+    var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
+    var factory = x.GetRequiredService<IUrlHelperFactory>();
+    return factory.GetUrlHelper(actionContext);
+});
+
+// File Upload Options
+builder.Services.Configure<FileUploadOptions>(builder.Configuration.GetSection("FileUpload"));
+
+//Authentication Filter
+builder.Services.AddScoped<AuthFilter>();
+
+//for cash memory
+//builder.Services.AddMemoryCache();
+
+//Serilog
+Log.Logger = new LoggerConfiguration()
+              .ReadFrom.Configuration(builder.Configuration).CreateLogger();
+builder.Services.AddSerilog();
+//---------------------------------------------------------------------------------------------
+
 var app = builder.Build();
 
-// ====================== Seed ======================
+
+//Seeding Data
 using (var scope = app.Services.CreateScope())
 {
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
-
     await RoleSeeder.SeedAsync(roleManager);
     await UserSeeder.SeedAsync(userManager);
 }
 
-// ====================== Middleware ======================
 app.UseMiddleware<ErrorHandlerMiddleware>();
 
-app.UseSerilogRequestLogging();
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    //app.MapOpenApi();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
-app.UseRequestLocalization(
-    app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
+#region Localization Middleware
+var options = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
+app.UseRequestLocalization(options.Value);
+#endregion
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles();
-app.UseRouting();
-
 app.UseCors(CORS);
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();

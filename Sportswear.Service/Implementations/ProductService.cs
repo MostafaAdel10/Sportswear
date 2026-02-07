@@ -24,11 +24,10 @@ namespace Sportswear.Service.Implementations
         {
             return await _productRepository.GetProductsListWithIncludesAsync();
         }
-        public async Task<bool> AddAsync(Product product)
+        public async Task<int> AddAsync(Product product)
         {
-            //Added Subject
-            await _productRepository.AddAsync(product);
-            return true;
+            var savedProduct = await _productRepository.AddAsync(product);
+            return savedProduct.Id;
         }
         public async Task<Product> GetByIdWithIncludesAsync(int id)
         {
@@ -108,7 +107,7 @@ namespace Sportswear.Service.Implementations
             switch (orderingEnum)
             {
                 case ProductOrderingEnum.Id:
-                    queryable = queryable.OrderBy(b => b.Id);
+                    queryable = queryable.OrderByDescending(b => b.Id);
                     break;
                 case ProductOrderingEnum.Code:
                     queryable = queryable.OrderBy(b => b.Code);

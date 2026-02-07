@@ -11,7 +11,8 @@ namespace Sportswear.Core.Features.Discount.Queries.Handlers
 {
     public class DiscountQueryHandler : ResponseHandler,
         IRequestHandler<GetActiveDiscountsQuery, Response<List<GetActiveDiscountsResponse>>>,
-        IRequestHandler<GetActiveDiscountByIdQuery, Response<GetDiscountByIdResponse>>
+        IRequestHandler<GetActiveDiscountByIdQuery, Response<GetDiscountByIdResponse>>,
+        IRequestHandler<GetActiveDiscountByIdToEditQuery, Response<GetDiscountByIdToEditResponse>>
     {
         #region Fields
         private readonly IDiscountService _discountService;
@@ -48,6 +49,18 @@ namespace Sportswear.Core.Features.Discount.Queries.Handlers
                 return NotFound<GetDiscountByIdResponse>(_stringLocalizer[SharedResourcesKeys.NotFound]);
 
             var result = _mapper.Map<GetDiscountByIdResponse>(discount);
+
+            return Success(result);
+        }
+
+        public async Task<Response<GetDiscountByIdToEditResponse>> Handle(GetActiveDiscountByIdToEditQuery request, CancellationToken cancellationToken)
+        {
+            var discount = await _discountService.GetActiveDiscountByIdAsync(request.Id);
+
+            if (discount is null)
+                return NotFound<GetDiscountByIdToEditResponse>(_stringLocalizer[SharedResourcesKeys.NotFound]);
+
+            var result = _mapper.Map<GetDiscountByIdToEditResponse>(discount);
 
             return Success(result);
         }

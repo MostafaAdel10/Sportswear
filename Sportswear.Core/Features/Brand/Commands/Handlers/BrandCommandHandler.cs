@@ -17,6 +17,7 @@ namespace Sportswear.Core.Features.Brand.Commands.Handlers
         #region Fields
         private readonly IBrandService _brandService;
         private readonly IProductService _productService;
+        private readonly IFileService _fileService;
         private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
         private readonly IStringLocalizer<SharedResources> _stringLocalizer;
@@ -24,11 +25,13 @@ namespace Sportswear.Core.Features.Brand.Commands.Handlers
 
         #region Constructors
         public BrandCommandHandler(IBrandService brandService, ICurrentUserService currentUserService,
+            IFileService fileService,
             IMapper mapper, IProductService productService,
             IStringLocalizer<SharedResources> stringLocalizer) : base(stringLocalizer)
         {
             _brandService = brandService;
             _productService = productService;
+            _fileService = fileService;
             _currentUserService = currentUserService;
             _mapper = mapper;
             _stringLocalizer = stringLocalizer;
@@ -42,9 +45,21 @@ namespace Sportswear.Core.Features.Brand.Commands.Handlers
             if (currentUser == null || string.IsNullOrEmpty(currentUser.UserName))
                 return Unauthorized<string>();
 
-            var brand = _mapper.Map<DataAccess.Entities.Brand>(request);
+            if (request.Image == null)
+                return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.NoImagesProvided]);
 
-            brand.CreatedBy = currentUser.UserName;
+            var url = await _fileService.UploadImageAsync(request.Image, "brand-images");
+
+            if (url == null)
+                return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.FailedToUploadImage]);
+
+            var brand = new DataAccess.Entities.Brand
+            {
+                NameEn = request.NameEn,
+                NameAr = request.NameAr,
+                ImageUrl = url,
+                CreatedBy = currentUser.UserName
+            };
 
             var isSuccess = await _brandService.AddAsync(brand);
 
@@ -65,11 +80,22 @@ namespace Sportswear.Core.Features.Brand.Commands.Handlers
             if (existingBrand == null)
                 return NotFound<string>(_stringLocalizer[SharedResourcesKeys.NotFound]);
 
-            // Map new values to existing entity
-            existingBrand = _mapper.Map(request, existingBrand);
+            // لو في صورة جديدة
+            if (request.Image != null)
+            {
+                var newUrl = await _fileService.ReplaceImageAsync(
+                    existingBrand.ImageUrl,
+                    request.Image,
+                    "brand-images");
 
-            existingBrand.UpdatedBy = currentUser.UserName;
+                existingBrand.ImageUrl = newUrl;
+            }
+
+            // تحديث باقي البيانات
+            existingBrand.NameEn = request.NameEn;
+            existingBrand.NameAr = request.NameAr;
             existingBrand.UpdatedAt = DateTime.UtcNow;
+            existingBrand.UpdatedBy = currentUser.UserName;
 
             var isSuccess = await _brandService.EditAsync(existingBrand);
 
@@ -94,6 +120,9 @@ namespace Sportswear.Core.Features.Brand.Commands.Handlers
             var hasProducts = await _productService.IsAnyProductRelatedToBrandAsync(request.Id);
             if (hasProducts)
                 return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.RelatedProducts]);
+
+            // حذف الصورة من السيرفر
+            _fileService.DeleteImage(existingBrand.ImageUrl);
 
             // Soft delete
             existingBrand.IsDeleted = true;

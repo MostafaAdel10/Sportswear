@@ -26,8 +26,16 @@ namespace Sportswear.Api.Controllers
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpGet(Router.BrandRouting.GetByIdToEdit)]
+        public async Task<IActionResult> GetBrandByIdToEdit([FromRoute] int id)
+        {
+            var response = await Mediator.Send(new GetBrandByIdToEditQuery(id));
+            return NewResult(response);
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpPost(Router.BrandRouting.Create)]
-        public async Task<IActionResult> Create([FromBody] CreateBrandCommand command)
+        public async Task<IActionResult> Create([FromForm] CreateBrandCommand command)
         {
             var response = await Mediator.Send(command);
             return NewResult(response);
@@ -35,7 +43,7 @@ namespace Sportswear.Api.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPut(Router.BrandRouting.Edit)]
-        public async Task<IActionResult> Edit([FromBody] EditBrandCommand command)
+        public async Task<IActionResult> Edit([FromForm] EditBrandCommand command)
         {
             var response = await Mediator.Send(command);
             return NewResult(response);

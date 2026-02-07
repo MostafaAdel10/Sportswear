@@ -24,6 +24,13 @@ namespace Sportswear.Api.Controllers
             return NewResult(response);
         }
 
+        [HttpGet(Router.DiscountRouting.GetByIdToEdit)]
+        public async Task<IActionResult> GetActiveDiscountByIdToEdit([FromRoute] int id)
+        {
+            var response = await Mediator.Send(new GetActiveDiscountByIdToEditQuery(id));
+            return NewResult(response);
+        }
+
         [HttpPost(Router.DiscountRouting.Create)]
         public async Task<IActionResult> Create([FromBody] CreateDiscountCommand command)
         {

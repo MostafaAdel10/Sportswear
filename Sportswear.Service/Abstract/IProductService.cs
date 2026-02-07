@@ -9,7 +9,7 @@ namespace Sportswear.Service.Abstract
         public Task<Product> GetByIdWithIncludesAsync(int id);
         public Task<List<Product>> GetByIdsAsync(List<int> ids);
         public Task<Product> GetByIdAsync(int id);
-        public Task<bool> AddAsync(Product product);
+        public Task<int> AddAsync(Product product);
         public Task<bool> EditAsync(Product product);
         public Task<bool> DeleteAsync(Product product);
         public decimal? CalculateDiscountedPriceOnProduct(Product product);

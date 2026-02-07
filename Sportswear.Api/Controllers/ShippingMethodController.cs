@@ -26,6 +26,14 @@ namespace Sportswear.Api.Controllers
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpGet(Router.ShippingMethodRouting.GetByIdToEdit)]
+        public async Task<IActionResult> GetShippingMethodByIdToEdit([FromRoute] int id)
+        {
+            var response = await Mediator.Send(new GetShippingMethodByIdToEditQuery(id));
+            return NewResult(response);
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpPost(Router.ShippingMethodRouting.Create)]
         public async Task<IActionResult> Create([FromBody] CreateShippingMethodCommand command)
         {

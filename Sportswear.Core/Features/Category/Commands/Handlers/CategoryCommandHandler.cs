@@ -17,6 +17,7 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
         #region Fields
         private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
+        private readonly IFileService _fileService;
         private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
         private readonly IStringLocalizer<SharedResources> _stringLocalizer;
@@ -24,6 +25,7 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
 
         #region Constructors
         public CategoryCommandHandler(ICategoryService categoryService,
+            IFileService fileService,
             IProductService productService,
             ICurrentUserService currentUserService,
             IMapper mapper,
@@ -31,6 +33,7 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
         {
             _categoryService = categoryService;
             _productService = productService;
+            _fileService = fileService;
             _currentUserService = currentUserService;
             _mapper = mapper;
             _stringLocalizer = stringLocalizer;
@@ -44,9 +47,21 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
             if (currentUser == null || string.IsNullOrEmpty(currentUser.UserName))
                 return Unauthorized<string>();
 
-            var category = _mapper.Map<DataAccess.Entities.Category>(request);
+            if (request.Image == null)
+                return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.NoImagesProvided]);
 
-            category.CreatedBy = currentUser.UserName;
+            var url = await _fileService.UploadImageAsync(request.Image, "category-images");
+
+            if (url == null)
+                return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.FailedToUploadImage]);
+
+            var category = new DataAccess.Entities.Category
+            {
+                NameEn = request.NameEn,
+                NameAr = request.NameAr,
+                ImageUrl = url,
+                CreatedBy = currentUser.UserName
+            };
 
             var isSuccess = await _categoryService.AddAsync(category);
 
@@ -62,14 +77,24 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
             if (currentUser == null || string.IsNullOrEmpty(currentUser.UserName))
                 return Unauthorized<string>();
 
-            // Check if category exists
             var existingCategory = await _categoryService.GetByIdAsync(request.Id);
             if (existingCategory == null)
                 return NotFound<string>(_stringLocalizer[SharedResourcesKeys.NotFound]);
 
-            // Map new values to existing entity
-            existingCategory = _mapper.Map(request, existingCategory);
+            // لو في صورة جديدة
+            if (request.Image != null)
+            {
+                var newUrl = await _fileService.ReplaceImageAsync(
+                    existingCategory.ImageUrl,
+                    request.Image,
+                    "category-images");
 
+                existingCategory.ImageUrl = newUrl;
+            }
+
+            // تحديث باقي البيانات
+            existingCategory.NameEn = request.NameEn;
+            existingCategory.NameAr = request.NameAr;
             existingCategory.UpdatedAt = DateTime.UtcNow;
             existingCategory.UpdatedBy = currentUser.UserName;
 
@@ -77,9 +102,10 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
 
             if (isSuccess)
                 return Success<string>(_stringLocalizer[SharedResourcesKeys.Updated]);
-            else
-                return BadRequest<string>();
+
+            return BadRequest<string>();
         }
+
 
         public async Task<Response<string>> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
         {
@@ -87,15 +113,16 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
             if (currentUser == null || string.IsNullOrEmpty(currentUser.UserName))
                 return Unauthorized<string>();
 
-            // Check if Category exists
             var existingCategory = await _categoryService.GetByIdAsync(request.Id);
             if (existingCategory == null)
                 return NotFound<string>(_stringLocalizer[SharedResourcesKeys.NotFound]);
 
-            // Check if Category has related products
             var hasProducts = await _productService.IsAnyProductRelatedToCategoryAsync(request.Id);
             if (hasProducts)
                 return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.RelatedProducts]);
+
+            // حذف الصورة من السيرفر
+            _fileService.DeleteImage(existingCategory.ImageUrl);
 
             // Soft delete
             existingCategory.IsDeleted = true;
