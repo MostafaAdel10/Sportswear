@@ -6,8 +6,7 @@ namespace Sportswear.Core.Mapping.ProductVariantMapping
     {
         public ProductVariantProfile()
         {
-            CreateProductVariantCommandMapping();
-            EditProductVariantCommandMapping();
+            GetProductVariantByIdToEditMapping();
         }
     }
 }

@@ -105,7 +105,8 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
                     {
                         Id = v.Id,
                         Size = v.Size,
-                        Color = v.Color,
+                        ColorName = v.ColorName,
+                        ColorHex = v.ColorHex,
                         Price = v.Price,
                         PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, v.Price) ?? v.Price,  // الخصم على سعر المتغير
                         StockQuantity = v.StockQuantity

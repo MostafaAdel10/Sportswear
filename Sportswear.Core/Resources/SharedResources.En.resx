@@ -591,4 +591,10 @@
   <data name="YouCanNotAddThisDiscountBecauseItIsGlobal" xml:space="preserve">
     <value>You cannot add this discount because it is a discount on all products (Global).</value>
   </data>
+  <data name="ProductVariantAlreadyExists" xml:space="preserve">
+    <value>Product Variant Already Exists.</value>
+  </data>
+  <data name="ProductVariantDuplicateInRequest" xml:space="preserve">
+    <value>Product Variant Duplicate In Request.</value>
+  </data>
 </root>

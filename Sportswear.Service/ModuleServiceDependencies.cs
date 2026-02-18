@@ -31,6 +31,7 @@ namespace Sportswear.Service
             services.AddScoped<IOrderItemService, OrderItemService>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<ISkuGeneratorService, SkuGeneratorService>();
             return services;
         }
     }

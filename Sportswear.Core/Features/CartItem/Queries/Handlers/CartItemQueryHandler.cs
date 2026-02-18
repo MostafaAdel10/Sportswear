@@ -62,7 +62,8 @@ namespace Sportswear.Core.Features.CartItem.Queries.Handlers
                     Id = x.Id,
                     ProductVariantId = x.ProductVariantId,
                     Size = x.ProductVariant.Size,
-                    Color = x.ProductVariant.Color,
+                    ColorName = x.ProductVariant.ColorName,
+                    ColorHex = x.ProductVariant.ColorHex,
 
                     ProductName = isArabic ? x.ProductVariant.Product.NameAr : x.ProductVariant.Product.NameEn,
                     ProductImageUrl = x.ProductVariant.Product.Images.FirstOrDefault()?.Url, // الصورة الأولى فقط
@@ -96,7 +97,8 @@ namespace Sportswear.Core.Features.CartItem.Queries.Handlers
                 Id = item.Id,
                 ProductVariantId = item.ProductVariantId,
                 Size = item.ProductVariant.Size,
-                Color = item.ProductVariant.Color,
+                ColorName = item.ProductVariant.ColorName,
+                ColorHex = item.ProductVariant.ColorHex,
 
                 ProductName = isArabic ? item.ProductVariant.Product.NameAr : item.ProductVariant.Product.NameEn,
                 ProductImageUrl = item.ProductVariant.Product.Images.FirstOrDefault()?.Url, // الصورة الأولى فقط

@@ -6,10 +6,16 @@ namespace Sportswear.DataAccess.Entities
     public class ProductVariant : AuditableEntity
     {
         [Required, MaxLength(50)]
+        public string SKU { get; set; }
+
+        [Required, MaxLength(50)]
         public string Size { get; set; }
 
         [Required, MaxLength(50)]
-        public string Color { get; set; }
+        public string ColorName { get; set; }
+
+        [Required, MaxLength(10)]
+        public string ColorHex { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; } // لو السعر مختلف

@@ -25,10 +25,9 @@
 
   <ItemGroup>
     <Folder Include="Features\ProductImage\Queries\" />
-    <Folder Include="Features\ProductVariant\Queries\" />
     <Folder Include="Mapping\BrandMapping\CommandMapping\" />
     <Folder Include="Mapping\CategoryMapping\CommandMapping\" />
-    <Folder Include="Mapping\ProductVariantMapping\QueryMapping\" />
+    <Folder Include="Mapping\ProductVariantMapping\CommandMapping\" />
   </ItemGroup>
 
 </Project>

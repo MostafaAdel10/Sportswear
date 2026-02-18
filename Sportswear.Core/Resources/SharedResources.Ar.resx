@@ -591,4 +591,10 @@
   <data name="YouCanNotAddThisDiscountBecauseItIsGlobal" xml:space="preserve">
     <value>لا يمكنك إضافة هذا الخصم لأنه خصم علي كل المنتاجات.</value>
   </data>
+  <data name="ProductVariantAlreadyExists" xml:space="preserve">
+    <value>يوجد بالفعل نوع من المنتج.</value>
+  </data>
+  <data name="ProductVariantDuplicateInRequest" xml:space="preserve">
+    <value>تم تكرار نوع المنتج في الطلب.</value>
+  </data>
 </root>

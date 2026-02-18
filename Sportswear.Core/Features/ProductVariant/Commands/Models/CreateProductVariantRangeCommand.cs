@@ -3,9 +3,14 @@ using Sportswear.Core.Bases;
 
 namespace Sportswear.Core.Features.ProductVariant.Commands.Models
 {
-    public class EditProductVariantCommand : IRequest<Response<string>>
+    public class CreateProductVariantRangeCommand : IRequest<Response<string>>
     {
-        public int Id { get; set; }
+        public int ProductId { get; set; }
+        public List<CreateProductVariantItemDto> Variants { get; set; }
+    }
+
+    public class CreateProductVariantItemDto
+    {
         public string Size { get; set; }
         public string ColorName { get; set; }
         public string ColorHex { get; set; }

@@ -208,6 +208,9 @@ builder.Services.AddTransient<IUrlHelper>(x =>
     return factory.GetUrlHelper(actionContext);
 });
 
+// HttpContext للوصول إلى السيرفر الحالي (scheme + host)
+builder.Services.AddHttpContextAccessor();
+
 // File Upload Options
 builder.Services.Configure<FileUploadOptions>(builder.Configuration.GetSection("FileUpload"));
 
@@ -238,13 +241,14 @@ using (var scope = app.Services.CreateScope())
 app.UseMiddleware<ErrorHandlerMiddleware>();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    //app.MapOpenApi();
+//if (app.Environment.IsDevelopment())
+//{
+//app.MapOpenApi();
 
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+
+//}
 
 #region Localization Middleware
 var options = app.Services.GetService<IOptions<RequestLocalizationOptions>>();

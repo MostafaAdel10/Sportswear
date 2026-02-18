@@ -24,7 +24,8 @@
     {
         public int Id { get; set; }
         public string Size { get; set; }
-        public string Color { get; set; }
+        public string ColorName { get; set; }
+        public string ColorHex { get; set; }
         public decimal Price { get; set; }
         public decimal? PriceAfterDiscount { get; set; }
         public int StockQuantity { get; set; }

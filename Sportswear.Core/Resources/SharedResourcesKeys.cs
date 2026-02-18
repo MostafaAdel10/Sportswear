@@ -23,6 +23,8 @@
         public const string InvalidStatus = "InvalidStatus";
         public const string InvalidOrderStatusTransition = "InvalidOrderStatusTransition";
         public const string InvalidPaymentStatusTransition = "InvalidPaymentStatusTransition";
+        public const string ProductVariantAlreadyExists = "ProductVariantAlreadyExists";
+        public const string ProductVariantDuplicateInRequest = "ProductVariantDuplicateInRequest";
 
         public const string SomeProductsNotFound = "SomeProductsNotFound";
         public const string DiscountAlreadyApplied = "DiscountAlreadyApplied";

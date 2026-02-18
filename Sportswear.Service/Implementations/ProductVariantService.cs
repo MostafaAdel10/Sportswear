@@ -18,6 +18,12 @@ namespace Sportswear.Service.Implementations
         #endregion
 
         #region Handle Functions
+        public async Task<bool> AddRangeAsync(List<ProductVariant> variants)
+        {
+            await _productVariantRepository.AddRangeAsync(variants);
+            return true;
+        }
+
         public async Task<bool> AddAsync(ProductVariant productVariant)
         {
             await _productVariantRepository.AddAsync(productVariant);
@@ -47,6 +53,12 @@ namespace Sportswear.Service.Implementations
             return true;
         }
 
+        public async Task<List<ProductVariant>> GetByProductIdAsync(int productId)
+        {
+            var productVariants = await _productVariantRepository.GetByProductIdAsync(productId);
+            return productVariants;
+        }
+
         public async Task<ProductVariant> GetByIdAsync(int id)
         {
             var productVariant = await _productVariantRepository.GetByIdAsync(id);
@@ -68,6 +80,12 @@ namespace Sportswear.Service.Implementations
         {
             return await _productVariantRepository.IsProductVariantExistsExcludeSelfAsync(productVariantId, id);
         }
+
+        public async Task<bool> ExistsAsync(int productId, string colorName, string size, int excludeId)
+        {
+            return await _productVariantRepository.ExistsAsync(productId, colorName, size, excludeId);
+        }
+
         #endregion
     }
 }

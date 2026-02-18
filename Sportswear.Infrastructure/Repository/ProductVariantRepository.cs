@@ -19,10 +19,18 @@ namespace Sportswear.Infrastructure.Repository
         }
         #endregion
 
-        #region Handle Functions
+        #region Handle Functions 
+        public async Task<List<ProductVariant>> GetByProductIdAsync(int productId)
+        {
+            return await GetTableNoTracking()
+                .Where(x => x.ProductId == productId)
+                .ToListAsync();
+        }
+
         public async Task<ProductVariant?> GetByIdWithIncludesAsync(int id)
         {
             return await _productVariants
+                .Include(pv => pv.Product)
                 .Include(pv => pv.OrderItems)
                 .FirstOrDefaultAsync(pv => pv.Id == id);
         }
@@ -35,6 +43,15 @@ namespace Sportswear.Infrastructure.Repository
         public async Task<bool> IsProductVariantExistsExcludeSelfAsync(int productVariantId, int id)
         {
             return await GetTableNoTracking().AnyAsync(p => p.Id.Equals(productVariantId) & !p.Id.Equals(id));
+        }
+
+        public async Task<bool> ExistsAsync(int productId, string colorName, string size, int excludeId)
+        {
+            return await _productVariants.AnyAsync(x =>
+                x.ProductId == productId &&
+                x.ColorName == colorName &&
+                x.Size == size &&
+                x.Id != excludeId);
         }
         #endregion
     }

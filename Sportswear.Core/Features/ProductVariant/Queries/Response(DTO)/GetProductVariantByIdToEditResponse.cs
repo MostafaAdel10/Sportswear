@@ -1,9 +1,6 @@
-﻿using MediatR;
-using Sportswear.Core.Bases;
-
-namespace Sportswear.Core.Features.ProductVariant.Commands.Models
+﻿namespace Sportswear.Core.Features.ProductVariant.Queries.Response_DTO_
 {
-    public class EditProductVariantCommand : IRequest<Response<string>>
+    public class GetProductVariantByIdToEditResponse
     {
         public int Id { get; set; }
         public string Size { get; set; }

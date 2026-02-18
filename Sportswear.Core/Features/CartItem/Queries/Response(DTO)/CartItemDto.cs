@@ -5,7 +5,8 @@
         public int Id { get; set; }
         public int ProductVariantId { get; set; }
         public string Size { get; set; }
-        public string Color { get; set; }
+        public string ColorName { get; set; }
+        public string ColorHex { get; set; }
 
         public string ProductName { get; set; }
         public string ProductImageUrl { get; set; }

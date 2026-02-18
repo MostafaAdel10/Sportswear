@@ -8,15 +8,19 @@ namespace Sportswear.Service.Implementations
     public class FileService : IFileService
     {
         private readonly string _basePath;
-        private readonly string _baseUrl;
+        //private readonly string _baseUrl;
         private readonly long _maxFileSize;
         private readonly HashSet<string> _allowedExtensions;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public FileService(IOptions<FileUploadOptions> options)
+        public FileService(IOptions<FileUploadOptions> options, IHttpContextAccessor httpContextAccessor)
         {
             var opts = options.Value ?? throw new ArgumentNullException(nameof(options));
 
-            _baseUrl = opts.BaseUrl.TrimEnd('/');
+            _httpContextAccessor = httpContextAccessor;
+
+            //_baseUrl = opts.BaseUrl.TrimEnd('/');
+
             _basePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), opts.UploadRoot));
             Directory.CreateDirectory(_basePath);
 
@@ -24,6 +28,12 @@ namespace Sportswear.Service.Implementations
             _allowedExtensions = new HashSet<string>(
                 opts.AllowedExtensions.Select(e => e.ToLowerInvariant()),
                 StringComparer.OrdinalIgnoreCase);
+        }
+
+        private string GetBaseUrl()
+        {
+            var request = _httpContextAccessor.HttpContext?.Request;
+            return $"{request?.Scheme}://{request?.Host}";
         }
 
         private void ValidateImage(IFormFile file)
@@ -74,19 +84,11 @@ namespace Sportswear.Service.Implementations
             var fileName = GenerateFileName(image);
             var filePath = Path.Combine(folderPath, fileName);
 
-            try
-            {
-                using var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, FileOptions.Asynchronous);
-                await image.CopyToAsync(stream);
-                await stream.FlushAsync();
-            }
-            catch (Exception ex)
-            {
-                if (File.Exists(filePath)) File.Delete(filePath);
-                throw new ValidationException("The image failed to be saved on the server.");
-            }
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await image.CopyToAsync(stream);
 
-            return $"{_baseUrl}/{subFolder}/{fileName}".Replace("//", "/");
+            var baseUrl = GetBaseUrl();
+            return $"{baseUrl}/images/{subFolder}/{fileName}";
         }
 
         public async Task<List<string>> UploadImagesAsync(IEnumerable<IFormFile> images, string subFolder)
@@ -96,31 +98,19 @@ namespace Sportswear.Service.Implementations
 
             var folderPath = GetSafeFolderPath(subFolder);
             var uploadedUrls = new List<string>();
-            var uploadedPhysicalPaths = new List<string>();
 
-            try
+            foreach (var image in images)
             {
-                foreach (var image in images)
-                {
-                    ValidateImage(image);
+                ValidateImage(image);
 
-                    var fileName = GenerateFileName(image);
-                    var filePath = Path.Combine(folderPath, fileName);
+                var fileName = GenerateFileName(image);
+                var filePath = Path.Combine(folderPath, fileName);
 
-                    using var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, FileOptions.Asynchronous);
-                    await image.CopyToAsync(stream);
-                    await stream.FlushAsync();
+                using var stream = new FileStream(filePath, FileMode.Create);
+                await image.CopyToAsync(stream);
 
-                    uploadedPhysicalPaths.Add(filePath);
-                    uploadedUrls.Add($"{_baseUrl}/{subFolder}/{fileName}".Replace("//", "/"));
-                }
-            }
-            catch (Exception ex)
-            {
-                foreach (var path in uploadedPhysicalPaths)
-                    if (File.Exists(path)) File.Delete(path);
-
-                throw new ValidationException("Failed to upload one or more images.");
+                var baseUrl = GetBaseUrl();
+                uploadedUrls.Add($"{baseUrl}/images/{subFolder}/{fileName}");
             }
 
             return uploadedUrls;
@@ -132,15 +122,10 @@ namespace Sportswear.Service.Implementations
 
             try
             {
-                // إزالة الـ BaseUrl (/images) من البداية لو موجودة
-                var relativePart = imageUrl.StartsWith(_baseUrl, StringComparison.OrdinalIgnoreCase)
-                    ? imageUrl.Substring(_baseUrl.Length).TrimStart('/')
-                    : imageUrl.TrimStart('/');
+                var uri = new Uri(imageUrl);
+                var relativePart = uri.AbsolutePath.TrimStart('/');
 
-                var fullPath = Path.GetFullPath(Path.Combine(_basePath, relativePart));
-
-                if (!fullPath.StartsWith(_basePath, StringComparison.OrdinalIgnoreCase))
-                    return false; // منع traversal
+                var fullPath = Path.Combine(_basePath, relativePart);
 
                 if (File.Exists(fullPath))
                 {
@@ -148,9 +133,9 @@ namespace Sportswear.Service.Implementations
                     return true;
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                throw new ValidationException($"Failed to delete the image: {imageUrl}");
+                return false;
             }
 
             return false;
@@ -158,10 +143,8 @@ namespace Sportswear.Service.Implementations
 
         public async Task<string> ReplaceImageAsync(string? oldImageUrl, IFormFile newImage, string subFolder)
         {
-            // أول حاجة نرفع الجديد (مع cleanup لو فشل)
             var newUrl = await UploadImageAsync(newImage, subFolder);
 
-            // لو نجح نرفع الجديد → نمسح القديم
             if (!string.IsNullOrWhiteSpace(oldImageUrl))
             {
                 DeleteImage(oldImageUrl);
