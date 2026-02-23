@@ -46,7 +46,7 @@ namespace Sportswear.Service.Implementations
 
             var ext = Path.GetExtension(file.FileName)?.ToLowerInvariant();
             if (string.IsNullOrEmpty(ext) || !_allowedExtensions.Contains(ext))
-                throw new ValidationException("File Type Not Supported. Supported: JPG, PNG, GIF, WebP.");
+                throw new ValidationException("File Type Not Supported. Supported: JPG, PNG, JPEG, WebP.");
 
             if (!file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
                 throw new ValidationException("File Not Image!");
