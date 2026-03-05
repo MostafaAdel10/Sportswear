@@ -4,15 +4,14 @@
     {
         public int Id { get; set; }
         public int ProductVariantId { get; set; }
-        public string Size { get; set; }
-        public string ColorName { get; set; }
-        public string ColorHex { get; set; }
-
         public string ProductName { get; set; }
-        public string ProductImageUrl { get; set; }
-
+        public string? ProductImageUrl { get; set; }
+        public string SKU { get; set; }
         public decimal OriginalPrice { get; set; }
-        public decimal FinalPrice { get; set; } // السعر بعد الخصم
+        public decimal FinalPrice { get; set; }
         public int Quantity { get; set; }
+        public decimal TotalPrice { get; set; }
+
+        public List<CartItemAttributeDto> Attributes { get; set; } = new();
     }
 }

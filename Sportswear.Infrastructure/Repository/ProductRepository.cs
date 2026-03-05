@@ -20,39 +20,57 @@ namespace Sportswear.Infrastructure.Repository
         #endregion
 
         #region Handle Functions
+        public async Task<Product?> GetProductWithIncludesFullDetailsAsync(int id)
+        {
+            return await _products
+                .Include(p => p.Brand)
+                .Include(p => p.Category)
+                .Include(p => p.Images)
+                .Include(p => p.Reviews)
+                .Include(p => p.Product_Discounts)
+                    .ThenInclude(pd => pd.Discount)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Attributes)
+                        .ThenInclude(a => a.ProductAttributeTemplate)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
+        }
+
         public async Task<List<Product>> GetProductsListWithIncludesAsync()
         {
             return await _products.AsNoTracking()
                 .Include(b => b.Brand)
                 .Include(c => c.Category)
                 .Include(i => i.Images)
-                .Include(v => v.Variants)
-                .Include(r => r.Reviews)
                 .Include(d => d.Product_Discounts)
                     .ThenInclude(pd => pd.Discount)
                 .OrderByDescending(p => p.Id)
                 .ToListAsync();
         }
-        public async Task<Product> GetByIdWithIncludesAsync(int id)
+
+        public async Task<Product?> GetByIdWithIncludesAsync(int id)
         {
-            return await _products
+            return await _products.AsNoTracking()
                 .Include(b => b.Brand)
                 .Include(c => c.Category)
                 .Include(i => i.Images)
                 .Include(v => v.Variants)
+                    .ThenInclude(v => v.Attributes)
+                        .ThenInclude(a => a.ProductAttributeTemplate)
                 .Include(r => r.Reviews)
                 .Include(d => d.Product_Discounts)
                     .ThenInclude(pd => pd.Discount)
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
         }
 
         public async Task<List<Product>> GetByIdsAsync(List<int> ids)
         {
             if (!ids.Any()) return new List<Product>();
 
-            return await _products
-                .AsNoTracking() // للقراءة فقط
-                .Where(p => ids.Contains(p.Id))
+            return await _products.AsNoTracking()
+                .Include(d => d.Product_Discounts)
+                    .ThenInclude(pd => pd.Discount)
+                .Where(p => ids.Contains(p.Id) && !p.IsDeleted)
                 .ToListAsync();
         }
 
@@ -62,8 +80,6 @@ namespace Sportswear.Infrastructure.Repository
                 .Include(b => b.Brand)
                 .Include(c => c.Category)
                 .Include(i => i.Images)
-                .Include(v => v.Variants)
-                .Include(r => r.Reviews)
                 .Include(d => d.Product_Discounts)
                     .ThenInclude(pd => pd.Discount)
                 .AsQueryable();

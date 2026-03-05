@@ -7,7 +7,7 @@ namespace Sportswear.Service.Abstract
         public Task<bool> IsCategoryIdExist(int categoryId);
         public Task<List<Category>> GetCategoriesListAsync();
         public Task<Category> GetByIdAsync(int id);
-        public Task<bool> AddAsync(Category category);
+        public Task<int> AddAsync(Category category);
         public Task<bool> EditAsync(Category category);
         public Task<bool> DeleteAsync(Category category);
     }

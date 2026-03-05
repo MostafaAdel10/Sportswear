@@ -5,9 +5,10 @@ namespace Sportswear.Infrastructure.Abstracts
 {
     public interface IProductRepository : IGenericRepositoryAsync<Product>
     {
+        public Task<Product?> GetProductWithIncludesFullDetailsAsync(int id);
         public Task<List<Product>> GetProductsListWithIncludesAsync();
         public IQueryable<Product> GetProductQueryableWithIncludes();
-        public Task<Product> GetByIdWithIncludesAsync(int id);
+        public Task<Product?> GetByIdWithIncludesAsync(int id);
         public Task<List<Product>> GetByIdsAsync(List<int> ids);
         public Task<bool> IsCodeExistsAsync(string code);
         public Task<bool> IsCodeExistsExcludeSelfAsync(string code, int id);

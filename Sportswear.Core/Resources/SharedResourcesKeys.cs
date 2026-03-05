@@ -2,6 +2,20 @@
 {
     public static class SharedResourcesKeys
     {
+        public const string AttributeTemplateDuplicateInRequest = "AttributeTemplateDuplicateInRequest";
+        public const string AttributeTemplateAlreadyExists = "AttributeTemplateAlreadyExists";
+        public const string CannotDeleteTemplateWithVariants = "CannotDeleteTemplateWithVariants";
+        public const string AttributeTemplateNotFound = "AttributeTemplateNotFound";
+        public const string EnglishOnly = "EnglishOnly";
+        public const string InvalidAttributeType = "InvalidAttributeType";
+        public const string InvalidAttributeTemplate = "InvalidAttributeTemplate";
+        public const string InvalidColorHex = "InvalidColorHex";
+        public const string OrderNotFound = "OrderNotFound";
+
+        public const string CategoryNotFound = "CategoryNotFound";
+        public const string CannotDeleteCategoryWithVariants = "CannotDeleteCategoryWithVariants";
+
+
         public const string MustBeLessThanOrEqual100 = "MustBeLessThanOrEqual100";
         public const string StartDateMustBeBeforeEndDate = "StartDateMustBeBeforeEndDate";
         public const string EndDateMustBeAfterStartDate = "EndDateMustBeAfterStartDate";

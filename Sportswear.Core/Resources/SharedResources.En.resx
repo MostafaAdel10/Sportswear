@@ -597,4 +597,37 @@
   <data name="ProductVariantDuplicateInRequest" xml:space="preserve">
     <value>Product Variant Duplicate In Request.</value>
   </data>
+  <data name="CategoryNotFound" xml:space="preserve">
+    <value>Category Not Found.</value>
+  </data>
+  <data name="CannotDeleteCategoryWithVariants" xml:space="preserve">
+    <value>Cannot Delete Category With Variants.</value>
+  </data>
+  <data name="AttributeTemplateDuplicateInRequest" xml:space="preserve">
+    <value>Attribute Template Duplicate In Request.</value>
+  </data>
+  <data name="AttributeTemplateAlreadyExists" xml:space="preserve">
+    <value>Attribute Template Already Exists.</value>
+  </data>
+  <data name="CannotDeleteTemplateWithVariants" xml:space="preserve">
+    <value>Cannot Delete Template With Variants.</value>
+  </data>
+  <data name="AttributeTemplateNotFound" xml:space="preserve">
+    <value>Attribute Template Not Found.</value>
+  </data>
+  <data name="EnglishOnly" xml:space="preserve">
+    <value>English Only.</value>
+  </data>
+  <data name="InvalidAttributeType" xml:space="preserve">
+    <value>Invalid Attribute Type.</value>
+  </data>
+  <data name="InvalidColorHex" xml:space="preserve">
+    <value>Invalid Color Hex.</value>
+  </data>
+  <data name="InvalidAttributeTemplate" xml:space="preserve">
+    <value>Invalid Attribute Template.</value>
+  </data>
+  <data name="OrderNotFound" xml:space="preserve">
+    <value>Order Not Found.</value>
+  </data>
 </root>

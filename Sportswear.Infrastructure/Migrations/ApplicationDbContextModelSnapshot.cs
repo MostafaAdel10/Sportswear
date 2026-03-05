@@ -602,8 +602,17 @@ namespace Sportswear.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("HasVariants")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<decimal>("MaxPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("MinPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("NameAr")
                         .IsRequired()
@@ -632,6 +641,55 @@ namespace Sportswear.Infrastructure.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("Sportswear.DataAccess.Entities.ProductAttributeTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("KeyAr")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("KeyEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId", "KeyEn")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("ProductAttributeTemplates");
                 });
 
             modelBuilder.Entity("Sportswear.DataAccess.Entities.ProductImage", b =>
@@ -680,16 +738,6 @@ namespace Sportswear.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ColorHex")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("ColorName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -711,11 +759,6 @@ namespace Sportswear.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Size")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<int>("StockQuantity")
                         .HasColumnType("int");
 
@@ -727,13 +770,68 @@ namespace Sportswear.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SKU")
-                        .IsUnique();
+                    b.HasIndex("ProductId");
 
-                    b.HasIndex("ProductId", "ColorName", "Size")
-                        .IsUnique();
+                    b.HasIndex("SKU")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("ProductVariants");
+                });
+
+            modelBuilder.Entity("Sportswear.DataAccess.Entities.ProductVariantAttribute", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ColorHex")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ProductAttributeTemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductVariantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ValueAr")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ValueEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductAttributeTemplateId");
+
+                    b.HasIndex("ProductVariantId", "ProductAttributeTemplateId")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("ProductVariantAttributes");
                 });
 
             modelBuilder.Entity("Sportswear.DataAccess.Entities.Product_Discount", b =>
@@ -999,7 +1097,8 @@ namespace Sportswear.Infrastructure.Migrations
                     b.HasOne("Sportswear.DataAccess.Entities.ProductVariant", "ProductVariant")
                         .WithMany("CartItems")
                         .HasForeignKey("ProductVariantId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Cart");
 
@@ -1033,12 +1132,14 @@ namespace Sportswear.Infrastructure.Migrations
                     b.HasOne("Sportswear.DataAccess.Entities.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Sportswear.DataAccess.Entities.ProductVariant", "ProductVariant")
                         .WithMany("OrderItems")
                         .HasForeignKey("ProductVariantId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Order");
 
@@ -1050,7 +1151,8 @@ namespace Sportswear.Infrastructure.Migrations
                     b.HasOne("Sportswear.DataAccess.Entities.Order", "Order")
                         .WithOne("Payment")
                         .HasForeignKey("Sportswear.DataAccess.Entities.Payment", "OrderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Order");
                 });
@@ -1060,14 +1162,27 @@ namespace Sportswear.Infrastructure.Migrations
                     b.HasOne("Sportswear.DataAccess.Entities.Brand", "Brand")
                         .WithMany("Products")
                         .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Sportswear.DataAccess.Entities.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Brand");
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Sportswear.DataAccess.Entities.ProductAttributeTemplate", b =>
+                {
+                    b.HasOne("Sportswear.DataAccess.Entities.Category", "Category")
+                        .WithMany("AttributeTemplates")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Category");
                 });
@@ -1077,7 +1192,8 @@ namespace Sportswear.Infrastructure.Migrations
                     b.HasOne("Sportswear.DataAccess.Entities.Product", "Product")
                         .WithMany("Images")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Product");
                 });
@@ -1093,12 +1209,32 @@ namespace Sportswear.Infrastructure.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("Sportswear.DataAccess.Entities.ProductVariantAttribute", b =>
+                {
+                    b.HasOne("Sportswear.DataAccess.Entities.ProductAttributeTemplate", "ProductAttributeTemplate")
+                        .WithMany("VariantAttributes")
+                        .HasForeignKey("ProductAttributeTemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Sportswear.DataAccess.Entities.ProductVariant", "ProductVariant")
+                        .WithMany("Attributes")
+                        .HasForeignKey("ProductVariantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProductAttributeTemplate");
+
+                    b.Navigation("ProductVariant");
+                });
+
             modelBuilder.Entity("Sportswear.DataAccess.Entities.Product_Discount", b =>
                 {
                     b.HasOne("Sportswear.DataAccess.Entities.Discount", "Discount")
                         .WithMany("Product_Discounts")
                         .HasForeignKey("DiscountId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Sportswear.DataAccess.Entities.Product", "Product")
                         .WithMany("Product_Discounts")
@@ -1135,12 +1271,14 @@ namespace Sportswear.Infrastructure.Migrations
                     b.HasOne("Sportswear.DataAccess.Entities.Order", "Order")
                         .WithOne("Shipment")
                         .HasForeignKey("Sportswear.DataAccess.Entities.Shipment", "OrderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Sportswear.DataAccess.Entities.ShippingMethod", "ShippingMethod")
                         .WithMany("Shipments")
                         .HasForeignKey("ShippingMethodId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Order");
 
@@ -1159,6 +1297,8 @@ namespace Sportswear.Infrastructure.Migrations
 
             modelBuilder.Entity("Sportswear.DataAccess.Entities.Category", b =>
                 {
+                    b.Navigation("AttributeTemplates");
+
                     b.Navigation("Products");
                 });
 
@@ -1198,8 +1338,15 @@ namespace Sportswear.Infrastructure.Migrations
                     b.Navigation("Variants");
                 });
 
+            modelBuilder.Entity("Sportswear.DataAccess.Entities.ProductAttributeTemplate", b =>
+                {
+                    b.Navigation("VariantAttributes");
+                });
+
             modelBuilder.Entity("Sportswear.DataAccess.Entities.ProductVariant", b =>
                 {
+                    b.Navigation("Attributes");
+
                     b.Navigation("CartItems");
 
                     b.Navigation("OrderItems");

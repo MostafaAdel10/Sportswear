@@ -10,16 +10,15 @@ namespace Sportswear.Core.Features.ProductVariant.Commands.Validations
     {
         #region Fields
         private readonly IProductVariantService _productVariantService;
-        private readonly IProductService _productService;
         private readonly IStringLocalizer<SharedResources> _localizer;
         #endregion
 
         #region Constructors
-        public UpdateProductVariantCommandValidator(IProductVariantService productVariantService, IProductService productService,
-                                           IStringLocalizer<SharedResources> localizer)
+        public UpdateProductVariantCommandValidator(
+            IProductVariantService productVariantService,
+            IStringLocalizer<SharedResources> localizer)
         {
             _productVariantService = productVariantService;
-            _productService = productService;
             _localizer = localizer;
             ApplyValidationsRules();
             ApplyCustomValidationsRules();
@@ -33,28 +32,44 @@ namespace Sportswear.Core.Features.ProductVariant.Commands.Validations
                 .GreaterThan(0).WithMessage(_localizer[SharedResourcesKeys.Required]);
 
             RuleFor(x => x.Price)
-                .NotNull().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
-                .GreaterThanOrEqualTo(0).WithMessage(_localizer[SharedResourcesKeys.BadRequest]);
+                .GreaterThanOrEqualTo(0).WithMessage(_localizer[SharedResourcesKeys.MustBeGreaterThanZero]);
 
             RuleFor(x => x.StockQuantity)
-                .NotNull().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
-                .GreaterThanOrEqualTo(0).WithMessage(_localizer[SharedResourcesKeys.BadRequest]);
+                .GreaterThanOrEqualTo(0).WithMessage(_localizer[SharedResourcesKeys.MustBeGreaterThanZero]);
 
-            RuleFor(x => x.ColorName)
-                .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
-                .MaximumLength(50).WithMessage(_localizer[SharedResourcesKeys.MaxLengthIs50]);
+            RuleFor(x => x.Attributes)
+                .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required])
+                .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty]);
 
-            RuleFor(x => x.ColorHex)
-                .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
-                .MaximumLength(10).WithMessage(_localizer[SharedResourcesKeys.MaxLengthIs10]);
+            RuleForEach(x => x.Attributes).ChildRules(attr =>
+            {
+                attr.RuleFor(a => a.TemplateId)
+                    .GreaterThan(0).WithMessage(_localizer[SharedResourcesKeys.Required]);
 
-            RuleFor(x => x.Size)
-                .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
-                .MaximumLength(50).WithMessage(_localizer[SharedResourcesKeys.MaxLengthIs50]);
+                attr.RuleFor(a => a.ValueEn)
+                    .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required])
+                    .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
+                    .MaximumLength(100).WithMessage(_localizer[SharedResourcesKeys.MaxLengthIs100]);
+
+                attr.RuleFor(a => a.ValueAr)
+                    .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required])
+                    .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
+                    .MaximumLength(100).WithMessage(_localizer[SharedResourcesKeys.MaxLengthIs100]);
+
+                attr.RuleFor(a => a.ColorHex)
+                    .Matches(@"^#([A-Fa-f0-9]{6})$")
+                    .WithMessage(_localizer[SharedResourcesKeys.InvalidColorHex])
+                    .When(a => !string.IsNullOrEmpty(a.ColorHex));
+            });
         }
 
         public void ApplyCustomValidationsRules()
         {
+            // تأكد إن الـ Variant موجود
+            RuleFor(x => x.Id)
+                .MustAsync(async (id, cancellationToken) =>
+                    await _productVariantService.IsProductVariantExistsAsync(id))
+                .WithMessage(_localizer[SharedResourcesKeys.VariantNotFound]);
         }
         #endregion
     }

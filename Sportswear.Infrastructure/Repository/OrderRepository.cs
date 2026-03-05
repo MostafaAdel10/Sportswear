@@ -32,12 +32,18 @@ namespace Sportswear.Infrastructure.Repository
         public async Task<Order?> GetOrderWithDetailsAsync(int orderId)
         {
             return await _orders
-                .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.ProductVariant)
-                        .ThenInclude(op => op.Product)
-                .Include(o => o.Payment)
-                .Include(o => o.User)
-                .FirstOrDefaultAsync(o => o.Id == orderId);
+               .Include(o => o.OrderItems)
+                   .ThenInclude(oi => oi.ProductVariant)
+                       .ThenInclude(pv => pv.Product)
+               .Include(o => o.OrderItems)
+                   .ThenInclude(oi => oi.ProductVariant)
+                       .ThenInclude(pv => pv.Attributes)
+                           .ThenInclude(a => a.ProductAttributeTemplate)
+               .Include(o => o.Payment)
+               .Include(o => o.User)
+               .Include(o => o.Shipment)
+                   .ThenInclude(s => s.ShippingMethod)
+               .FirstOrDefaultAsync(o => o.Id == orderId);
         }
 
         public async Task<List<Order>> GetOrdersByUserIdAsync(int userId)
@@ -45,8 +51,16 @@ namespace Sportswear.Infrastructure.Repository
             return await _orders
                 .Where(o => o.UserId == userId)
                 .Include(o => o.OrderItems)
-                .Include(o => o.User)
+                    .ThenInclude(oi => oi.ProductVariant)
+                        .ThenInclude(pv => pv.Product)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.ProductVariant)
+                        .ThenInclude(pv => pv.Attributes)
+                            .ThenInclude(a => a.ProductAttributeTemplate)
                 .Include(o => o.Payment)
+                .Include(o => o.User)
+                .Include(o => o.Shipment)
+                    .ThenInclude(s => s.ShippingMethod)
                 .OrderByDescending(o => o.Id)
                 .ToListAsync();
         }

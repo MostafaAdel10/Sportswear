@@ -18,8 +18,7 @@ namespace Sportswear.Infrastructure.Configurations
 
             builder.HasOne(p => p.Order)
                    .WithOne(o => o.Payment)
-                   .HasForeignKey<Payment>(p => p.OrderId)
-                   .IsRequired(false);   // ✅ مهم جدًا بسبب QueryFilter على Order
+                   .HasForeignKey<Payment>(p => p.OrderId);
         }
     }
 }

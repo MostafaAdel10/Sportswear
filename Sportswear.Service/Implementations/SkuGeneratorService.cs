@@ -4,9 +4,18 @@ namespace Sportswear.Service.Implementations
 {
     public class SkuGeneratorService : ISkuGeneratorService
     {
-        public string Generate(string productCode, string colorName, string size)
+        public string Generate(string productCode, List<string> attributeValues)
         {
-            return $"{productCode}-{colorName}-{size}".ToUpper();
+            var cleanCode = productCode
+                .ToUpper()
+                .Replace(" ", "-");
+
+            var parts = attributeValues.Select(v =>
+                v.ToUpper()
+                 .Replace(" ", "")
+                 .Substring(0, Math.Min(v.Length, 5)));
+
+            return $"{cleanCode}-{string.Join("-", parts)}";
         }
     }
 }

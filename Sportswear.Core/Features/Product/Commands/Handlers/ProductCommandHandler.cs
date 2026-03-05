@@ -17,6 +17,7 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
         #region Fields
         private readonly IProductService _productService;
         private readonly IProduct_DiscountService _product_DiscountService;
+        private readonly IFileService _fileService;
         private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
         private readonly IStringLocalizer<SharedResources> _localizer;
@@ -25,12 +26,14 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
         #region Constructors
         public ProductCommandHandler(IProductService productService,
                                      IProduct_DiscountService product_DiscountService,
+                                     IFileService fileService,
                                      ICurrentUserService currentUserService,
                                      IMapper mapper,
                                      IStringLocalizer<SharedResources> stringLocalizer) : base(stringLocalizer)
         {
             _productService = productService;
             _product_DiscountService = product_DiscountService;
+            _fileService = fileService;
             _currentUserService = currentUserService;
             _mapper = mapper;
             _localizer = stringLocalizer;
@@ -48,12 +51,15 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
 
             product.CreatedBy = currentUser.UserName;
 
+            product.HasVariants = false;
+            product.MinPrice = product.BasePrice;
+            product.MaxPrice = product.BasePrice;
+
             var productId = await _productService.AddAsync(product);
 
-            if (productId <= 0)
-                return BadRequest<int>();
-            else
-                return Success(productId, _localizer[SharedResourcesKeys.Created]);
+            return productId > 0
+                ? Success(productId, _localizer[SharedResourcesKeys.Created])
+                : BadRequest<int>();
         }
 
         public async Task<Response<string>> Handle(EditProductCommand request, CancellationToken cancellationToken)
@@ -70,15 +76,20 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
             // Map new values to existing entity
             existingProduct = _mapper.Map(request, existingProduct);
 
+            if (!existingProduct.HasVariants)
+            {
+                existingProduct.MinPrice = existingProduct.BasePrice;
+                existingProduct.MaxPrice = existingProduct.BasePrice;
+            }
+
             existingProduct.UpdatedBy = currentUser.UserName;
             existingProduct.UpdatedAt = DateTime.UtcNow;
 
             var isSuccess = await _productService.EditAsync(existingProduct);
 
-            if (isSuccess)
-                return Success<string>(_localizer[SharedResourcesKeys.Updated]);
-            else
-                return BadRequest<string>();
+            return isSuccess
+                ? Success<string>(_localizer[SharedResourcesKeys.Updated])
+                : BadRequest<string>();
         }
 
         public async Task<Response<string>> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
@@ -92,7 +103,7 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
             if (existingProduct == null)
                 return NotFound<string>(_localizer[SharedResourcesKeys.ProductNotFound]);
 
-            if (existingProduct.Variants.Any())
+            if (existingProduct.Variants.Any(v => !v.IsDeleted))
                 return BadRequest<string>(_localizer[SharedResourcesKeys.CannotDeleteProductRelatedToVariants]);
 
             // Soft delete
@@ -104,7 +115,10 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
                 variant.IsDeleted = true;
 
             foreach (var img in existingProduct.Images)
+            {
+                _fileService.DeleteImage(img.Url);
                 img.IsDeleted = true;
+            }
 
             foreach (var review in existingProduct.Reviews)
                 review.IsDeleted = true;

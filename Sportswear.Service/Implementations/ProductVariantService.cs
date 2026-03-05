@@ -8,12 +8,14 @@ namespace Sportswear.Service.Implementations
     {
         #region Fields 
         private readonly IProductVariantRepository _productVariantRepository;
+        private readonly IProductRepository _productRepository;
         #endregion
 
         #region Contractors
-        public ProductVariantService(IProductVariantRepository productVariantRepository)
+        public ProductVariantService(IProductVariantRepository productVariantRepository, IProductRepository productRepository)
         {
             _productVariantRepository = productVariantRepository;
+            _productRepository = productRepository;
         }
         #endregion
 
@@ -21,12 +23,11 @@ namespace Sportswear.Service.Implementations
         public async Task<bool> AddRangeAsync(List<ProductVariant> variants)
         {
             await _productVariantRepository.AddRangeAsync(variants);
-            return true;
-        }
 
-        public async Task<bool> AddAsync(ProductVariant productVariant)
-        {
-            await _productVariantRepository.AddAsync(productVariant);
+            // ✅ بعد الإضافة بيحدث MinPrice و MaxPrice و HasVariants
+            if (variants.Any())
+                await SyncProductPricingAsync(variants.First().ProductId);
+
             return true;
         }
 
@@ -37,6 +38,10 @@ namespace Sportswear.Service.Implementations
             try
             {
                 await _productVariantRepository.DeleteAsync(productVariant);
+
+                // ✅ بعد الحذف بيحدث MinPrice و MaxPrice و HasVariants
+                await SyncProductPricingAsync(productVariant.ProductId);
+
                 await transaction.CommitAsync();
                 return true;
             }
@@ -50,6 +55,17 @@ namespace Sportswear.Service.Implementations
         public async Task<bool> EditAsync(ProductVariant productVariant)
         {
             await _productVariantRepository.UpdateAsync(productVariant);
+
+            // ✅ بعد التعديل بيحدث لو السعر اتغير
+            await SyncProductPricingAsync(productVariant.ProductId);
+
+            return true;
+        }
+
+        public async Task<bool> EditStockOnlyAsync(ProductVariant productVariant)
+        {
+            await _productVariantRepository.UpdateAsync(productVariant);
+
             return true;
         }
 
@@ -59,13 +75,13 @@ namespace Sportswear.Service.Implementations
             return productVariants;
         }
 
-        public async Task<ProductVariant> GetByIdAsync(int id)
+        public async Task<ProductVariant?> GetByIdAsync(int id)
         {
             var productVariant = await _productVariantRepository.GetByIdAsync(id);
             return productVariant;
         }
 
-        public async Task<ProductVariant> GetByIdWithIncludesAsync(int id)
+        public async Task<ProductVariant?> GetByIdWithIncludesAsync(int id)
         {
             var productVariant = await _productVariantRepository.GetByIdWithIncludesAsync(id);
             return productVariant;
@@ -80,12 +96,35 @@ namespace Sportswear.Service.Implementations
         {
             return await _productVariantRepository.IsProductVariantExistsExcludeSelfAsync(productVariantId, id);
         }
-
-        public async Task<bool> ExistsAsync(int productId, string colorName, string size, int excludeId)
+        public async Task<HashSet<string>> GetVariantKeysAsync(int productId, int excludeId = 0)
         {
-            return await _productVariantRepository.ExistsAsync(productId, colorName, size, excludeId);
+            return await _productVariantRepository.GetVariantKeysAsync(productId, excludeId);
         }
+        public async Task SyncProductPricingAsync(int productId)
+        {
+            // جيب المنتج
+            var product = await _productRepository.GetByIdAsync(productId);
+            if (product == null) return;
 
+            // جيب كل الـ variants بتاعته
+            var variants = await _productVariantRepository.GetByProductIdAsync(productId);
+
+            if (variants.Any())
+            {
+                product.HasVariants = true;
+                product.MinPrice = variants.Min(v => v.Price);
+                product.MaxPrice = variants.Max(v => v.Price);
+            }
+            else
+            {
+                // لو مفيش variants خالص يرجع للسعر الأساسي
+                product.HasVariants = false;
+                product.MinPrice = product.BasePrice;
+                product.MaxPrice = product.BasePrice;
+            }
+
+            await _productRepository.UpdateAsync(product);
+        }
         #endregion
     }
 }

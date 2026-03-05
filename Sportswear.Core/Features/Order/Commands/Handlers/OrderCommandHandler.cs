@@ -78,11 +78,11 @@ namespace Sportswear.Core.Features.Order.Commands.Handlers
 
             foreach (var item in cartItems)
             {
-                var product = item.ProductVariant.Product; // لازم Include للـ Product
+                var product = item.ProductVariant.Product;
                 var originalPrice = item.ProductVariant.Price;
 
                 var discountedPrice = _productService.CalculateDiscountedPriceOnProductVariants(product, originalPrice)
-                                     ?? originalPrice; // السعر النهائي
+                                     ?? originalPrice;
 
                 totalAmount += discountedPrice * item.Quantity;
             }
@@ -213,8 +213,8 @@ namespace Sportswear.Core.Features.Order.Commands.Handlers
             foreach (var item in order.OrderItems)
             {
                 var productVariant = item.ProductVariant;
-                productVariant.StockQuantity += item.Quantity; // رجّع الكمية
-                await _productVariantService.EditAsync(productVariant);
+                productVariant.StockQuantity += item.Quantity;
+                await _productVariantService.EditStockOnlyAsync(productVariant);
             }
 
             return Success<string>(_stringLocalizer[SharedResourcesKeys.CanceledOrder]);

@@ -22,36 +22,47 @@ namespace Sportswear.Infrastructure.Repository
         #region Handle Functions 
         public async Task<List<ProductVariant>> GetByProductIdAsync(int productId)
         {
-            return await GetTableNoTracking()
-                .Where(x => x.ProductId == productId)
+            return await _productVariants
+                .Where(v => v.ProductId == productId && !v.IsDeleted)
+                .Include(v => v.Attributes)
+                    .ThenInclude(a => a.ProductAttributeTemplate)
                 .ToListAsync();
         }
 
         public async Task<ProductVariant?> GetByIdWithIncludesAsync(int id)
         {
             return await _productVariants
-                .Include(pv => pv.Product)
-                .Include(pv => pv.OrderItems)
-                .FirstOrDefaultAsync(pv => pv.Id == id);
+                .Include(v => v.Product)
+                .Include(v => v.Attributes)
+                    .ThenInclude(a => a.ProductAttributeTemplate)
+                .Include(v => v.OrderItems)
+                .FirstOrDefaultAsync(v => v.Id == id && !v.IsDeleted);
         }
 
         public async Task<bool> IsProductVariantExistsAsync(int productVariantId)
         {
-            return await GetTableNoTracking().AnyAsync(p => p.Id == productVariantId);
+            return await GetTableNoTracking()
+                .AnyAsync(v => v.Id == productVariantId && !v.IsDeleted);
         }
 
         public async Task<bool> IsProductVariantExistsExcludeSelfAsync(int productVariantId, int id)
         {
-            return await GetTableNoTracking().AnyAsync(p => p.Id.Equals(productVariantId) & !p.Id.Equals(id));
+            return await GetTableNoTracking()
+                .AnyAsync(v => v.Id == productVariantId && v.Id != id && !v.IsDeleted);
         }
 
-        public async Task<bool> ExistsAsync(int productId, string colorName, string size, int excludeId)
+        public async Task<HashSet<string>> GetVariantKeysAsync(int productId, int excludeId = 0)
         {
-            return await _productVariants.AnyAsync(x =>
-                x.ProductId == productId &&
-                x.ColorName == colorName &&
-                x.Size == size &&
-                x.Id != excludeId);
+            var variants = await _productVariants
+                .Where(v => v.ProductId == productId && !v.IsDeleted && v.Id != excludeId)
+                .Include(v => v.Attributes)
+                .ToListAsync();
+
+            return variants
+                .Select(v => string.Join("-", v.Attributes
+                    .OrderBy(a => a.ProductAttributeTemplateId)
+                    .Select(a => a.ValueEn.ToUpper())))
+                .ToHashSet();
         }
         #endregion
     }

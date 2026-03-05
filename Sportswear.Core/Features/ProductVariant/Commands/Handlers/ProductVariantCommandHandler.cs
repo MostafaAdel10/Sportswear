@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Localization;
 using Sportswear.Core.Bases;
 using Sportswear.Core.Features.ProductVariant.Commands.Models;
@@ -10,35 +9,34 @@ using Sportswear.Service.AuthServices.Interfaces;
 namespace Sportswear.Core.Features.ProductVariant.Commands.Handlers
 {
     public class ProductVariantCommandHandler : ResponseHandler,
-                        IRequestHandler<CreateProductVariantRangeCommand, Response<string>>,
-                        IRequestHandler<EditProductVariantCommand, Response<string>>,
-                        IRequestHandler<DeleteProductVariantCommand, Response<string>>
+        IRequestHandler<CreateProductVariantRangeCommand, Response<string>>,
+        IRequestHandler<EditProductVariantCommand, Response<string>>,
+        IRequestHandler<DeleteProductVariantCommand, Response<string>>
     {
         #region Fields
         private readonly IProductVariantService _productVariantService;
         private readonly IProductService _productService;
+        private readonly IProductAttributeTemplateService _templateService;
         private readonly ISkuGeneratorService _skuGeneratorService;
-        private readonly IProduct_DiscountService _product_DiscountService;
         private readonly ICurrentUserService _currentUserService;
-        private readonly IMapper _mapper;
         private readonly IStringLocalizer<SharedResources> _localizer;
         #endregion
 
         #region Constructors
-        public ProductVariantCommandHandler(IProductVariantService productVariantService, IProductService productService,
-                                     ISkuGeneratorService skuGeneratorService,
-                                     IProduct_DiscountService product_DiscountService,
-                                     ICurrentUserService currentUserService,
-                                     IMapper mapper,
-                                     IStringLocalizer<SharedResources> stringLocalizer) : base(stringLocalizer)
+        public ProductVariantCommandHandler(
+            IProductVariantService productVariantService,
+            IProductService productService,
+            IProductAttributeTemplateService templateService,
+            ISkuGeneratorService skuGeneratorService,
+            ICurrentUserService currentUserService,
+            IStringLocalizer<SharedResources> localizer) : base(localizer)
         {
             _productVariantService = productVariantService;
             _productService = productService;
+            _templateService = templateService;
             _skuGeneratorService = skuGeneratorService;
-            _product_DiscountService = product_DiscountService;
             _currentUserService = currentUserService;
-            _mapper = mapper;
-            _localizer = stringLocalizer;
+            _localizer = localizer;
         }
         #endregion
 
@@ -49,47 +47,70 @@ namespace Sportswear.Core.Features.ProductVariant.Commands.Handlers
             if (currentUser == null || string.IsNullOrEmpty(currentUser.UserName))
                 return Unauthorized<string>();
 
-            var product = await _productService.GetByIdAsync(request.ProductId);
+            // جيب المنتج مع الـ Category
+            var product = await _productService.GetByIdWithIncludesAsync(request.ProductId);
             if (product == null)
                 return NotFound<string>(_localizer[SharedResourcesKeys.ProductNotFound]);
 
-            var existingVariants = await _productVariantService.GetByProductIdAsync(request.ProductId);
+            // جيب الـ templates بتاعة الـ Category
+            var templates = await _templateService.GetByCategoryIdAsync(product.CategoryId);
 
-            var existingSet = existingVariants
-                .Select(x => $"{x.ColorName}-{x.Size}".ToUpper())
-                .ToHashSet();
+            // جيب الـ keys الموجودة للـ duplicate check
+            var existingKeys = await _productVariantService.GetVariantKeysAsync(request.ProductId);
 
-            var requestSet = new HashSet<string>();
-
+            var requestKeys = new HashSet<string>();
             var variants = new List<DataAccess.Entities.ProductVariant>();
 
             foreach (var dto in request.Variants)
             {
-                var key = $"{dto.ColorName}-{dto.Size}".ToUpper();
+                // validate إن كل attribute موجود في الـ templates
+                foreach (var attr in dto.Attributes)
+                {
+                    var template = templates.FirstOrDefault(t => t.Id == attr.TemplateId);
+                    if (template == null)
+                        return BadRequest<string>(_localizer[SharedResourcesKeys.InvalidAttributeTemplate]);
+                }
 
-                if (!requestSet.Add(key))
+                // عمل key من الـ attributes بترتيب ثابت
+                var key = string.Join("-", dto.Attributes
+                    .OrderBy(a => a.TemplateId)
+                    .Select(a => a.ValueEn.ToUpper()));
+
+                // check duplicate في نفس الـ request
+                if (!requestKeys.Add(key))
                     return BadRequest<string>(_localizer[SharedResourcesKeys.ProductVariantDuplicateInRequest]);
 
-                if (existingSet.Contains(key))
+                // check duplicate مع الموجود في الـ DB
+                if (existingKeys.Contains(key))
                     return BadRequest<string>(_localizer[SharedResourcesKeys.ProductVariantAlreadyExists]);
 
-                var sku = _skuGeneratorService.Generate(product.Code, dto.ColorName, dto.Size);
+                // generate SKU
+                var attributeValues = dto.Attributes
+                    .OrderBy(a => a.TemplateId)
+                    .Select(a => a.ValueEn)
+                    .ToList();
+
+                var sku = _skuGeneratorService.Generate(product.Code, attributeValues);
 
                 variants.Add(new DataAccess.Entities.ProductVariant
                 {
                     ProductId = request.ProductId,
                     SKU = sku,
-                    Size = dto.Size,
-                    ColorName = dto.ColorName,
-                    ColorHex = dto.ColorHex,
                     Price = dto.Price > 0 ? dto.Price : product.BasePrice,
                     StockQuantity = dto.StockQuantity,
-                    CreatedBy = currentUser.UserName
+                    CreatedBy = currentUser.UserName,
+                    Attributes = dto.Attributes.Select(a => new DataAccess.Entities.ProductVariantAttribute
+                    {
+                        ProductAttributeTemplateId = a.TemplateId,
+                        ValueEn = a.ValueEn,
+                        ValueAr = a.ValueAr,
+                        ColorHex = a.ColorHex,
+                        CreatedBy = currentUser.UserName,
+                    }).ToList()
                 });
             }
 
             var isAdded = await _productVariantService.AddRangeAsync(variants);
-
             return isAdded ? Created("") : BadRequest<string>();
         }
 
@@ -101,32 +122,51 @@ namespace Sportswear.Core.Features.ProductVariant.Commands.Handlers
 
             var variant = await _productVariantService.GetByIdWithIncludesAsync(request.Id);
             if (variant == null)
-                return NotFound<string>(_localizer[SharedResourcesKeys.NotFound]);
+                return NotFound<string>(_localizer[SharedResourcesKeys.VariantNotFound]);
 
-            // check duplicate (except current variant)
-            var exists = await _productVariantService.ExistsAsync(
-                variant.ProductId,
-                request.ColorName,
-                request.Size,
-                request.Id);
+            // validate إن كل attribute موجود في الـ templates بتاعة الـ Category
+            var templates = await _templateService.GetByCategoryIdAsync(variant.Product.CategoryId);
+            foreach (var attr in request.Attributes)
+            {
+                var template = templates.FirstOrDefault(t => t.Id == attr.TemplateId);
+                if (template == null)
+                    return BadRequest<string>(_localizer[SharedResourcesKeys.InvalidAttributeTemplate]);
+            }
 
-            if (exists)
+            // عمل key جديد من الـ attributes الجديدة
+            var newKey = string.Join("-", request.Attributes
+                .OrderBy(a => a.TemplateId)
+                .Select(a => a.ValueEn.ToUpper()));
+
+            // check duplicate مع باقي الـ variants غير الحالي
+            var existingKeys = await _productVariantService.GetVariantKeysAsync(
+                variant.ProductId, excludeId: request.Id);
+
+            if (existingKeys.Contains(newKey))
                 return BadRequest<string>(_localizer[SharedResourcesKeys.ProductVariantAlreadyExists]);
 
             // regenerate SKU
-            variant.SKU = _skuGeneratorService.Generate(
-                                variant.Product.Code,
-                                request.ColorName,
-                                request.Size);
+            var attributeValues = request.Attributes
+                .OrderBy(a => a.TemplateId)
+                .Select(a => a.ValueEn)
+                .ToList();
 
-            variant.Size = request.Size;
-            variant.ColorName = request.ColorName;
-            variant.ColorHex = request.ColorHex;
+            variant.SKU = _skuGeneratorService.Generate(variant.Product.Code, attributeValues);
             variant.Price = request.Price;
             variant.StockQuantity = request.StockQuantity;
-
             variant.UpdatedBy = currentUser.UserName;
             variant.UpdatedAt = DateTime.UtcNow;
+
+            // امسح الـ attributes القديمة واحط الجديدة
+            variant.Attributes = request.Attributes.Select(a => new DataAccess.Entities.ProductVariantAttribute
+            {
+                ProductVariantId = variant.Id,
+                ProductAttributeTemplateId = a.TemplateId,
+                ValueEn = a.ValueEn,
+                ValueAr = a.ValueAr,
+                ColorHex = a.ColorHex,
+                CreatedBy = currentUser.UserName,
+            }).ToList();
 
             var isUpdated = await _productVariantService.EditAsync(variant);
 
@@ -134,7 +174,6 @@ namespace Sportswear.Core.Features.ProductVariant.Commands.Handlers
                 ? Success<string>(_localizer[SharedResourcesKeys.Updated])
                 : BadRequest<string>(_localizer[SharedResourcesKeys.BadRequest]);
         }
-
 
         public async Task<Response<string>> Handle(DeleteProductVariantCommand request, CancellationToken cancellationToken)
         {
@@ -146,6 +185,7 @@ namespace Sportswear.Core.Features.ProductVariant.Commands.Handlers
             if (variant == null)
                 return NotFound<string>(_localizer[SharedResourcesKeys.VariantNotFound]);
 
+            // مش هينفع تحذف variant عنده orders
             if (variant.OrderItems != null && variant.OrderItems.Any())
                 return BadRequest<string>(_localizer[SharedResourcesKeys.CannotDeleteVariantWithOrders]);
 
@@ -153,8 +193,18 @@ namespace Sportswear.Core.Features.ProductVariant.Commands.Handlers
             variant.UpdatedBy = currentUser.UserName;
             variant.UpdatedAt = DateTime.UtcNow;
 
+            foreach (var attr in variant.Attributes)
+            {
+                attr.IsDeleted = true;
+                attr.UpdatedBy = currentUser.UserName;
+                attr.UpdatedAt = DateTime.UtcNow;
+            }
+
             var isDeleted = await _productVariantService.EditAsync(variant);
-            return isDeleted ? Success<string>(_localizer[SharedResourcesKeys.Deleted]) : BadRequest<string>();
+
+            return isDeleted
+                ? Success<string>(_localizer[SharedResourcesKeys.Deleted])
+                : BadRequest<string>();
         }
         #endregion
     }

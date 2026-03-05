@@ -11,13 +11,11 @@ namespace Sportswear.Infrastructure.Configurations
             builder.HasOne(oi => oi.Order)
                    .WithMany(o => o.OrderItems)
                    .HasForeignKey(oi => oi.OrderId)
-                   .IsRequired(false)              // ✅ بسبب QueryFilter على Order
                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(oi => oi.ProductVariant)
                    .WithMany(pv => pv.OrderItems)
                    .HasForeignKey(oi => oi.ProductVariantId)
-                   .IsRequired(false)              // ✅ بسبب QueryFilter على ProductVariant
                    .OnDelete(DeleteBehavior.Restrict);
         }
     }

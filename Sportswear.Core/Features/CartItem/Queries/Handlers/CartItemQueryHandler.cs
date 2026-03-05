@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Localization;
 using Sportswear.Core.Bases;
 using Sportswear.Core.Features.CartItem.Queries.Models;
@@ -21,7 +20,6 @@ namespace Sportswear.Core.Features.CartItem.Queries.Handlers
         private readonly IProductService _productService;
         private readonly ICurrentUserService _currentUserService;
         private readonly IStringLocalizer<SharedResources> _localizer;
-        private readonly IMapper _mapper;
         #endregion
 
         #region Constructor
@@ -30,7 +28,6 @@ namespace Sportswear.Core.Features.CartItem.Queries.Handlers
             ICartItemService cartItemService,
             IProductService productService,
             ICurrentUserService currentUserService,
-            IMapper mapper,
             IStringLocalizer<SharedResources> localizer
         ) : base(localizer)
         {
@@ -39,11 +36,10 @@ namespace Sportswear.Core.Features.CartItem.Queries.Handlers
             _productService = productService;
             _currentUserService = currentUserService;
             _localizer = localizer;
-            _mapper = mapper;
         }
         #endregion
 
-        #region Get Cart Items
+        #region Handle Functions
         public async Task<Response<List<CartItemDto>>> Handle(GetCartItemsListQuery request, CancellationToken cancellationToken)
         {
             bool isArabic = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.ToLower().Equals("ar");
@@ -54,32 +50,40 @@ namespace Sportswear.Core.Features.CartItem.Queries.Handlers
             if (cart == null)
                 return NotFound<List<CartItemDto>>(_localizer[SharedResourcesKeys.CartItemNotFound]);
 
-            var items = cart.Items
-                .Select(x =>
+            var items = cart.Items.Select(x =>
+            {
+                var finalPrice = _productService.CalculateDiscountedPriceOnProductVariants(
+                    x.ProductVariant.Product, x.ProductVariant.Price) ?? x.ProductVariant.Price;
 
-                new CartItemDto
+                return new CartItemDto
                 {
                     Id = x.Id,
                     ProductVariantId = x.ProductVariantId,
-                    Size = x.ProductVariant.Size,
-                    ColorName = x.ProductVariant.ColorName,
-                    ColorHex = x.ProductVariant.ColorHex,
+                    SKU = x.ProductVariant.SKU,
+                    ProductName = isArabic
+                        ? x.ProductVariant.Product.NameAr
+                        : x.ProductVariant.Product.NameEn,
+                    ProductImageUrl = x.ProductVariant.Product.Images.FirstOrDefault()?.Url,
+                    OriginalPrice = x.ProductVariant.Price,
+                    FinalPrice = finalPrice,
+                    Quantity = x.Quantity,
+                    TotalPrice = finalPrice * x.Quantity,
 
-                    ProductName = isArabic ? x.ProductVariant.Product.NameAr : x.ProductVariant.Product.NameEn,
-                    ProductImageUrl = x.ProductVariant.Product.Images.FirstOrDefault()?.Url, // الصورة الأولى فقط
-
-                    OriginalPrice = x.ProductVariant.Price > 0 ? x.ProductVariant.Price : x.ProductVariant.Product.BasePrice,
-                    FinalPrice = _productService.CalculateDiscountedPriceOnProductVariants(x.ProductVariant.Product, x.ProductVariant.Price)
-                            ?? x.ProductVariant.Price,  // الخصم على سعر المتغير
-                    Quantity = x.Quantity
-                })
-                .ToList();
+                    Attributes = x.ProductVariant.Attributes.Select(a => new CartItemAttributeDto
+                    {
+                        KeyEn = a.ProductAttributeTemplate.KeyEn,
+                        KeyAr = a.ProductAttributeTemplate.KeyAr,
+                        Type = a.ProductAttributeTemplate.Type.ToString(),
+                        ValueEn = a.ValueEn,
+                        ValueAr = a.ValueAr,
+                        ColorHex = a.ColorHex
+                    }).ToList()
+                };
+            }).ToList();
 
             return Success(items);
         }
-        #endregion
 
-        #region Get Cart Item By Id
         public async Task<Response<CartItemDto>> Handle(GetCartItemByIdQuery request, CancellationToken cancellationToken)
         {
             bool isArabic = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.ToLower().Equals("ar");
@@ -92,28 +96,37 @@ namespace Sportswear.Core.Features.CartItem.Queries.Handlers
             if (!await _cartService.IsCartOwnedByUser(item.CartId, userId))
                 return Unauthorized<CartItemDto>(_localizer[SharedResourcesKeys.UnAuthorized]);
 
+            var finalPrice = _productService.CalculateDiscountedPriceOnProductVariants(
+                item.ProductVariant.Product, item.ProductVariant.Price) ?? item.ProductVariant.Price;
+
             var dto = new CartItemDto
             {
                 Id = item.Id,
                 ProductVariantId = item.ProductVariantId,
-                Size = item.ProductVariant.Size,
-                ColorName = item.ProductVariant.ColorName,
-                ColorHex = item.ProductVariant.ColorHex,
+                SKU = item.ProductVariant.SKU,
+                ProductName = isArabic
+                    ? item.ProductVariant.Product.NameAr
+                    : item.ProductVariant.Product.NameEn,
+                ProductImageUrl = item.ProductVariant.Product.Images.FirstOrDefault()?.Url,
+                OriginalPrice = item.ProductVariant.Price,
+                FinalPrice = finalPrice,
+                Quantity = item.Quantity,
+                TotalPrice = finalPrice * item.Quantity,
 
-                ProductName = isArabic ? item.ProductVariant.Product.NameAr : item.ProductVariant.Product.NameEn,
-                ProductImageUrl = item.ProductVariant.Product.Images.FirstOrDefault()?.Url, // الصورة الأولى فقط
-
-                OriginalPrice = item.ProductVariant.Price > 0 ? item.ProductVariant.Price : item.ProductVariant.Product.BasePrice,
-                FinalPrice = _productService.CalculateDiscountedPriceOnProductVariants(item.ProductVariant.Product, item.ProductVariant.Price)
-                            ?? item.ProductVariant.Price,  // الخصم على سعر المتغير
-                Quantity = item.Quantity
+                Attributes = item.ProductVariant.Attributes.Select(a => new CartItemAttributeDto
+                {
+                    KeyEn = a.ProductAttributeTemplate.KeyEn,
+                    KeyAr = a.ProductAttributeTemplate.KeyAr,
+                    Type = a.ProductAttributeTemplate.Type.ToString(),
+                    ValueEn = a.ValueEn,
+                    ValueAr = a.ValueAr,
+                    ColorHex = a.ColorHex
+                }).ToList()
             };
 
             return Success(dto);
         }
-        #endregion
 
-        #region Cart Summary
         public async Task<Response<CartSummaryDto>> Handle(GetCartSummaryQuery request, CancellationToken cancellationToken)
         {
             var userId = _currentUserService.GetUserId();
@@ -124,16 +137,23 @@ namespace Sportswear.Core.Features.CartItem.Queries.Handlers
 
             var totalItems = cart.Items.Sum(x => x.Quantity);
 
-            var totalPrice = cart.Items.Sum(x =>
+            // ✅ حساب السعر الأصلي
+            var totalOriginalPrice = cart.Items.Sum(x => x.ProductVariant.Price * x.Quantity);
+
+            // ✅ حساب السعر بعد الخصم
+            var totalFinalPrice = cart.Items.Sum(x =>
             {
-                var price = x.ProductVariant.Price > 0 ? x.ProductVariant.Price : x.ProductVariant.Product.BasePrice;
-                return price * x.Quantity;
+                var finalPrice = _productService.CalculateDiscountedPriceOnProductVariants(
+                    x.ProductVariant.Product, x.ProductVariant.Price) ?? x.ProductVariant.Price;
+                return finalPrice * x.Quantity;
             });
 
             var summary = new CartSummaryDto
             {
                 TotalItems = totalItems,
-                TotalPrice = totalPrice
+                TotalPrice = totalOriginalPrice,
+                TotalPriceAfterDiscount = totalFinalPrice,
+                TotalDiscount = totalOriginalPrice - totalFinalPrice
             };
 
             return Success(summary);

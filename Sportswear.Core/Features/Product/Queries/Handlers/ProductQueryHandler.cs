@@ -11,6 +11,7 @@ using Sportswear.Service.Abstract;
 namespace Sportswear.Core.Features.Product.Queries.Handlers
 {
     public class ProductQueryHandler : ResponseHandler,
+        IRequestHandler<GetProductFullDetailsQuery, Response<GetProductFullDetailsResponse>>,
         IRequestHandler<GetProductsListQuery, Response<List<GetProductsListResponse>>>,
         IRequestHandler<GetProductByIdQuery, Response<GetProductByIdResponse>>,
         IRequestHandler<GetProductByIdToEditQuery, Response<GetProductByIdToEditResponse>>,
@@ -34,6 +35,114 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
         #endregion
 
         #region Handel Functions
+        public async Task<Response<GetProductFullDetailsResponse>> Handle(GetProductFullDetailsQuery request, CancellationToken cancellationToken)
+        {
+            var product = await _productService.GetProductWithIncludesFullDetailsAsync(request.Id);
+            if (product == null)
+                return NotFound<GetProductFullDetailsResponse>(_stringLocalizer[SharedResourcesKeys.ProductNotFound]);
+
+            bool isArabic = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.ToLower().Equals("ar");
+
+            var now = DateTime.UtcNow;
+
+            var minPriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, product.MinPrice) ?? product.MinPrice;
+            var maxPriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, product.MaxPrice) ?? product.MaxPrice;
+
+            var response = new GetProductFullDetailsResponse
+            {
+                Id = product.Id,
+                Code = product.Code,
+                NameEn = product.NameEn,
+                NameAr = product.NameAr,
+                DescriptionEn = product.DescriptionEn,
+                DescriptionAr = product.DescriptionAr,
+                Season = product.Season,
+                ClubEn = product.ClubEn,
+                ClubAr = product.ClubAr,
+
+                // Brand
+                BrandId = product.BrandId,
+                BrandNameEn = product.Brand?.NameEn ?? string.Empty,
+                BrandNameAr = product.Brand?.NameAr ?? string.Empty,
+
+                // Category
+                CategoryId = product.CategoryId,
+                CategoryNameEn = product.Category?.NameEn ?? string.Empty,
+                CategoryNameAr = product.Category?.NameAr ?? string.Empty,
+
+                // Pricing
+                BasePrice = product.BasePrice,
+                MinPrice = product.MinPrice,
+                MaxPrice = product.MaxPrice,
+                HasVariants = product.HasVariants,
+                PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProduct(product) ?? product.BasePrice,
+                MinPriceAfterDiscount = minPriceAfterDiscount,
+                MaxPriceAfterDiscount = maxPriceAfterDiscount,
+
+                // Images
+                Images = product.Images
+                    .Where(i => !i.IsDeleted)
+                    .Select(i => i.Url)
+                    .ToList(),
+
+                // Variants مع Attributes
+                Variants = product.Variants
+                    .Where(v => !v.IsDeleted)
+                    .Select(v => new FullProductVariantDto
+                    {
+                        Id = v.Id,
+                        SKU = v.SKU,
+                        Price = v.Price,
+                        PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, v.Price) ?? v.Price,
+                        StockQuantity = v.StockQuantity,
+                        Attributes = v.Attributes
+                            .Where(a => !a.IsDeleted)
+                            .Select(a => new FullVariantAttributeDto
+                            {
+                                KeyEn = a.ProductAttributeTemplate.KeyEn,
+                                KeyAr = a.ProductAttributeTemplate.KeyAr,
+                                Type = a.ProductAttributeTemplate.Type.ToString(),
+                                ValueEn = a.ValueEn,
+                                ValueAr = a.ValueAr,
+                                ColorHex = a.ColorHex
+                            }).ToList()
+                    }).ToList(),
+
+                // Discounts النشطة والمنتهية
+                Discounts = product.Product_Discounts
+                    .Where(pd => !pd.Discount.IsDeleted)
+                    .Select(pd => new ProductDiscountDto
+                    {
+                        NameEn = pd.Discount.NameEn,
+                        NameAr = pd.Discount.NameAr,
+                        Percentage = pd.Discount.Percentage,
+                        StartDate = pd.Discount.StartDate,
+                        EndDate = pd.Discount.EndDate,
+                        IsActive = pd.Discount.StartDate <= now && pd.Discount.EndDate >= now
+                    }).ToList(),
+
+                // Reviews
+                Reviews = product.Reviews
+                    .Where(r => !r.IsDeleted)
+                    .Select(r => new ProductReviewDto
+                    {
+                        Id = r.Id,
+                        UserName = r.CreatedBy ?? string.Empty,
+                        Rating = r.Rating,
+                        Comment = r.Comment,
+                        CreatedAt = r.CreatedAt
+                    }).ToList(),
+
+                AverageRating = product.Reviews.Any(r => !r.IsDeleted)
+                    ? Math.Round(product.Reviews.Where(r => !r.IsDeleted).Average(r => r.Rating), 1)
+                    : 0,
+
+                ReviewsCount = product.Reviews.Count(r => !r.IsDeleted)
+            };
+
+            return Success(response);
+        }
+
         public async Task<Response<List<GetProductsListResponse>>> Handle(GetProductsListQuery request, CancellationToken cancellationToken)
         {
             var prodctsList = await _productService.GetProductsListWithIncludesAsync();
@@ -43,7 +152,13 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
             {
                 var product = prodctsList.First(p => p.Id == productDto.Id);
 
+                productDto.MinPrice = product.MinPrice;
+                productDto.MaxPrice = product.MaxPrice;
+                productDto.HasVariants = product.HasVariants;
+
                 productDto.PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProduct(product) ?? product.BasePrice;
+                productDto.MinPriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, product.MinPrice) ?? product.MinPrice;
+                productDto.MaxPriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, product.MaxPrice) ?? product.MaxPrice;
             }
 
             var result = Success(prodctsListMapper);
@@ -60,7 +175,13 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
 
             var result = _mapper.Map<GetProductByIdResponse>(product);
 
+            result.MinPrice = product.MinPrice;
+            result.MaxPrice = product.MaxPrice;
+            result.HasVariants = product.HasVariants;
+
             result.PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProduct(product) ?? product.BasePrice;
+            result.MinPriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, product.MinPrice) ?? product.MinPrice;
+            result.MaxPriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, product.MaxPrice) ?? product.MaxPrice;
 
             return Success(result);
         }
@@ -86,6 +207,9 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
 
             bool isArabic = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.ToLower().Equals("ar");
 
+            var minPriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, product.MinPrice) ?? product.MinPrice;
+            var maxPriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, product.MaxPrice) ?? product.MaxPrice;
+
             var response = new GetProductByIdWithVariantsResponse
             {
                 Id = product.Id,
@@ -97,29 +221,43 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
                 BrandName = product.Brand?.NameEn ?? string.Empty,
                 CategoryName = product.Category?.NameEn ?? string.Empty,
                 BasePrice = product.BasePrice,
+
+                MinPrice = product.MinPrice,
+                MaxPrice = product.MaxPrice,
+                HasVariants = product.HasVariants,
+
                 PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProduct(product) ?? product.BasePrice,
+                MinPriceAfterDiscount = minPriceAfterDiscount,
+                MaxPriceAfterDiscount = maxPriceAfterDiscount,
+
                 Images = product.Images.Select(i => i.Url).ToList(),
+
                 Variants = product.Variants
                     .Where(v => !v.IsDeleted)
                     .Select(v => new ProductVariantResponse
                     {
                         Id = v.Id,
-                        Size = v.Size,
-                        ColorName = v.ColorName,
-                        ColorHex = v.ColorHex,
+                        SKU = v.SKU,
                         Price = v.Price,
-                        PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, v.Price) ?? v.Price,  // الخصم على سعر المتغير
-                        StockQuantity = v.StockQuantity
+                        PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, v.Price) ?? v.Price,
+                        StockQuantity = v.StockQuantity,
+                        Attributes = v.Attributes.Select(a => new ProductVariantAttributeResponse
+                        {
+                            KeyEn = a.ProductAttributeTemplate.KeyEn,
+                            KeyAr = a.ProductAttributeTemplate.KeyAr,
+                            Type = a.ProductAttributeTemplate.Type.ToString(),
+                            ValueEn = a.ValueEn,
+                            ValueAr = a.ValueAr,
+                            ColorHex = a.ColorHex
+                        }).ToList()
                     }).ToList()
             };
 
             return Success(response);
-
         }
 
         public async Task<PaginatedResult<GetProductPaginatedListResponse>> Handle(GetProductPaginatedListQuery request, CancellationToken cancellationToken)
         {
-            //pagination
             var query = _productService.FilterProductPaginatedQueryable(request.Ordering, request.Search);
 
             bool isArabic = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.ToLower().Equals("ar");
@@ -134,10 +272,25 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
                 BrandName = isArabic ? p.Brand.NameAr : p.Brand.NameEn,
                 CategoryName = isArabic ? p.Category.NameAr : p.Category.NameEn,
                 BasePrice = p.BasePrice,
-                PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProduct(p) ?? p.BasePrice,
+                MinPrice = p.MinPrice,
+                MaxPrice = p.MaxPrice,
+                HasVariants = p.HasVariants,
                 Season = p.Season,
                 Images = p.Images.Select(i => i.Url).ToList()
             }).ToPaginatedListAsync(request.PageNumber, request.PageSize);
+
+            // ✅ بعد ما الداتا رجعت من الـ DB نحسب الـ discounts و PriceDisplay
+            var products = await _productService.GetByIdsAsync(result.Data.Select(x => x.Id).ToList());
+
+            foreach (var item in result.Data)
+            {
+                var product = products.First(p => p.Id == item.Id);
+
+
+                item.PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProduct(product) ?? product.BasePrice;
+                item.MinPriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, item.MinPrice) ?? item.MinPrice;
+                item.MaxPriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, item.MaxPrice) ?? item.MaxPrice;
+            }
 
             result.Meta = new { Count = result.Data.Count() };
             return result;

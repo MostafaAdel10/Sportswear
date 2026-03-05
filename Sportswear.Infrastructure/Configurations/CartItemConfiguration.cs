@@ -16,7 +16,6 @@ namespace Sportswear.Infrastructure.Configurations
             builder.HasOne(ci => ci.ProductVariant)
                    .WithMany(pv => pv.CartItems)
                    .HasForeignKey(ci => ci.ProductVariantId)
-                   .IsRequired(false)            // ✅ مهم جدًا
                    .OnDelete(DeleteBehavior.Restrict);
         }
     }

@@ -11,6 +11,13 @@ namespace Sportswear.Api.Controllers
     [ApiController]
     public class ProductController : AppControllerBase
     {
+        [Authorize(Roles = "Admin")]
+        [HttpGet(Router.ProductRouting.GetFullDetails)]
+        public async Task<IActionResult> GetFullDetails([FromRoute] int id)
+        {
+            return NewResult(await Mediator.Send(new GetProductFullDetailsQuery(id)));
+        }
+
         [AllowAnonymous]
         [HttpGet(Router.ProductRouting.Paginated)]
         public async Task<IActionResult> GetProductsPaginated([FromQuery] GetProductPaginatedListQuery query)

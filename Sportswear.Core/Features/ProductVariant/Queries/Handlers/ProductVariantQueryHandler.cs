@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Localization;
 using Sportswear.Core.Bases;
 using Sportswear.Core.Features.ProductVariant.Queries.Models;
@@ -10,33 +9,50 @@ using Sportswear.Service.Abstract;
 namespace Sportswear.Core.Features.ProductVariant.Queries.Handlers
 {
     public class ProductVariantQueryHandler : ResponseHandler,
-            IRequestHandler<GetProductVariantByIdToEditQuery, Response<GetProductVariantByIdToEditResponse>>
+        IRequestHandler<GetProductVariantByIdToEditQuery, Response<GetProductVariantByIdToEditResponse>>
     {
         #region Fields
         private readonly IProductVariantService _productVariantService;
-        private readonly IMapper _mapper;
         private readonly IStringLocalizer<SharedResources> _stringLocalizer;
         #endregion
 
         #region Constructors
-        public ProductVariantQueryHandler(IProductVariantService productVariantService, IMapper mapper,
+        public ProductVariantQueryHandler(
+            IProductVariantService productVariantService,
             IStringLocalizer<SharedResources> stringLocalizer) : base(stringLocalizer)
         {
             _productVariantService = productVariantService;
-            _mapper = mapper;
             _stringLocalizer = stringLocalizer;
         }
         #endregion
 
-        #region Handel Functions
-        public async Task<Response<GetProductVariantByIdToEditResponse>> Handle(GetProductVariantByIdToEditQuery request, CancellationToken cancellationToken)
+        #region Handle Functions
+        public async Task<Response<GetProductVariantByIdToEditResponse>> Handle(
+            GetProductVariantByIdToEditQuery request,
+            CancellationToken cancellationToken)
         {
-            var productVariant = await _productVariantService.GetByIdAsync(request.Id);
+            var variant = await _productVariantService.GetByIdWithIncludesAsync(request.Id);
+            if (variant is null)
+                return NotFound<GetProductVariantByIdToEditResponse>(
+                    _stringLocalizer[SharedResourcesKeys.VariantNotFound]);
 
-            if (productVariant is null)
-                return NotFound<GetProductVariantByIdToEditResponse>(_stringLocalizer[SharedResourcesKeys.VariantNotFound]);
-
-            var result = _mapper.Map<GetProductVariantByIdToEditResponse>(productVariant);
+            var result = new GetProductVariantByIdToEditResponse
+            {
+                Id = variant.Id,
+                SKU = variant.SKU,
+                Price = variant.Price,
+                StockQuantity = variant.StockQuantity,
+                Attributes = variant.Attributes.Select(a => new VariantAttributeToEditDto
+                {
+                    TemplateId = a.ProductAttributeTemplateId,
+                    KeyEn = a.ProductAttributeTemplate.KeyEn,
+                    KeyAr = a.ProductAttributeTemplate.KeyAr,
+                    Type = a.ProductAttributeTemplate.Type.ToString(),
+                    ValueEn = a.ValueEn,
+                    ValueAr = a.ValueAr,
+                    ColorHex = a.ColorHex
+                }).ToList()
+            };
 
             return Success(result);
         }

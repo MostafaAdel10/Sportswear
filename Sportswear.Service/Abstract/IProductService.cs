@@ -5,6 +5,7 @@ namespace Sportswear.Service.Abstract
 {
     public interface IProductService
     {
+        public Task<Product?> GetProductWithIncludesFullDetailsAsync(int id);
         public Task<List<Product>> GetProductsListWithIncludesAsync();
         public Task<Product> GetByIdWithIncludesAsync(int id);
         public Task<List<Product>> GetByIdsAsync(List<int> ids);

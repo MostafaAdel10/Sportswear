@@ -16,13 +16,11 @@ namespace Sportswear.Infrastructure.Configurations
             builder.HasOne(o => o.Payment)
                    .WithOne(p => p.Order)
                    .HasForeignKey<Payment>(p => p.OrderId)
-                   .IsRequired(false) // ✅ مهم جدًا مع QueryFilter
                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(o => o.Shipment)
                    .WithOne(s => s.Order)
                    .HasForeignKey<Shipment>(s => s.OrderId)
-                   .IsRequired(false) // ✅ مهم جدًا مع QueryFilter
                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasQueryFilter(o => !o.IsDeleted);

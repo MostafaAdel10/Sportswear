@@ -4,5 +4,7 @@
     {
         public int TotalItems { get; set; }
         public decimal TotalPrice { get; set; }
+        public decimal TotalPriceAfterDiscount { get; set; }
+        public decimal TotalDiscount { get; set; }
     }
 }

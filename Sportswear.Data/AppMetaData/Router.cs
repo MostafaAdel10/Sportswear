@@ -8,6 +8,14 @@
         public const string version = "V1";
         public const string Rule = root + "/" + version + "/";
 
+        public static class AttributeTemplateRouting
+        {
+            public const string Prefix = Rule + "AttributeTemplate";
+            public const string GetByCategoryId = Prefix + "/category/{categoryId}";
+            public const string Create = Prefix + "/Create";
+            public const string Delete = Prefix + SingleRoute;
+        }
+
         public static class OrderRouting
         {
             public const string Prefix = Rule + "Order";
@@ -130,6 +138,7 @@
         {
             public const string Prefix = Rule + "Product";
             public const string List = Prefix + "/List";
+            public const string GetFullDetails = Prefix + "/full-details/{id}";
             public const string Paginated = Prefix + "/Paginated";
             public const string GetById = Prefix + SingleRoute;
             public const string GetByIdToEdit = Prefix + SingleRoute + "/To-Edit";

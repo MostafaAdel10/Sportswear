@@ -11,7 +11,6 @@ namespace Sportswear.Infrastructure.Configurations
             builder.HasMany(sm => sm.Shipments)
                    .WithOne(s => s.ShippingMethod)
                    .HasForeignKey(s => s.ShippingMethodId)
-                   .IsRequired(false)          // ✅ مهم جدًا
                    .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasQueryFilter(sm => !sm.IsDeleted);

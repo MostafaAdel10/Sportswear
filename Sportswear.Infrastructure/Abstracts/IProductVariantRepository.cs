@@ -9,6 +9,6 @@ namespace Sportswear.Infrastructure.Abstracts
         public Task<ProductVariant?> GetByIdWithIncludesAsync(int id);
         public Task<bool> IsProductVariantExistsAsync(int productVariantId);
         public Task<bool> IsProductVariantExistsExcludeSelfAsync(int productVariantId, int id);
-        public Task<bool> ExistsAsync(int productId, string colorName, string size, int excludeId);
+        public Task<HashSet<string>> GetVariantKeysAsync(int productId, int excludeId = 0);
     }
 }

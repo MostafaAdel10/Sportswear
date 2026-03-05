@@ -11,7 +11,6 @@ namespace Sportswear.Infrastructure.Configurations
             builder.HasMany(d => d.Product_Discounts)
                    .WithOne(pd => pd.Discount)
                    .HasForeignKey(pd => pd.DiscountId)
-                   .IsRequired(false)              // ✅ مهم جدًا
                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.Property(d => d.Percentage)   // ✅ حل تحذير decimal

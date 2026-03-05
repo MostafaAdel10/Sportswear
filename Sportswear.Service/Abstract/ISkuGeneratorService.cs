@@ -2,6 +2,6 @@
 {
     public interface ISkuGeneratorService
     {
-        public string Generate(string productCode, string colorName, string size);
+        public string Generate(string productCode, List<string> attributeValues);
     }
 }

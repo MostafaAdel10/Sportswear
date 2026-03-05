@@ -14,7 +14,6 @@ namespace Sportswear.Infrastructure.Configurations
             builder.HasOne(pi => pi.Product)
                    .WithMany(p => p.Images)
                    .HasForeignKey(pi => pi.ProductId)
-                   .IsRequired(false)          // ✅ مهم بسبب QueryFilter
                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasQueryFilter(pi => !pi.IsDeleted);

@@ -33,10 +33,10 @@ namespace Sportswear.Service.Implementations
             return category;
         }
 
-        public async Task<bool> AddAsync(Category category)
+        public async Task<int> AddAsync(Category category)
         {
-            await _categoryRepository.AddAsync(category);
-            return true;
+            var savedCategory = await _categoryRepository.AddAsync(category);
+            return savedCategory.Id;
         }
 
         public async Task<bool> EditAsync(Category category)

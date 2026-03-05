@@ -10,7 +10,6 @@ namespace Sportswear.Api.Controllers
     [Authorize(Roles = "Admin")]
     public class ProductVariantController : AppControllerBase
     {
-        [Authorize(Roles = "Admin")]
         [HttpGet(Router.ProductVariantRouting.GetByIdToEdit)]
         public async Task<IActionResult> GetProductVariantByIdToEdit([FromRoute] int id)
         {
@@ -37,6 +36,5 @@ namespace Sportswear.Api.Controllers
         {
             return NewResult(await Mediator.Send(new DeleteProductVariantCommand(id)));
         }
-
     }
 }

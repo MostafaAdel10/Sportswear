@@ -46,7 +46,7 @@ namespace Sportswear.Core.Features.Category.Queries.Handlers
             var category = await _categoryService.GetByIdAsync(request.Id);
 
             if (category is null)
-                return NotFound<GetCategoryByIdResponse>(_stringLocalizer[SharedResourcesKeys.NotFound]);
+                return NotFound<GetCategoryByIdResponse>(_stringLocalizer[SharedResourcesKeys.CategoryNotFound]);
 
             var result = _mapper.Map<GetCategoryByIdResponse>(category);
 
@@ -58,7 +58,7 @@ namespace Sportswear.Core.Features.Category.Queries.Handlers
             var category = await _categoryService.GetByIdAsync(request.Id);
 
             if (category is null)
-                return NotFound<GetCategoryByIdToEditResponse>(_stringLocalizer[SharedResourcesKeys.NotFound]);
+                return NotFound<GetCategoryByIdToEditResponse>(_stringLocalizer[SharedResourcesKeys.CategoryNotFound]);
 
             var result = _mapper.Map<GetCategoryByIdToEditResponse>(category);
 

@@ -26,6 +26,8 @@ namespace Sportswear.Infrastructure.Repository
             .Where(c => c.Cart.UserId == userId)
             .Include(pv => pv.ProductVariant)
                 .ThenInclude(p => p.Product)
+                    .ThenInclude(p => p.Product_Discounts)
+                                .ThenInclude(pd => pd.Discount)
             .OrderByDescending(c => c.Id)
             .ToListAsync();
         }
@@ -34,6 +36,8 @@ namespace Sportswear.Infrastructure.Repository
             return await _cartItem
                 .Include(pv => pv.ProductVariant)
                     .ThenInclude(p => p.Product)
+                        .ThenInclude(p => p.Product_Discounts)
+                                .ThenInclude(pd => pd.Discount)
                 .OrderByDescending(c => c.Id)
                 .ToListAsync();
         }

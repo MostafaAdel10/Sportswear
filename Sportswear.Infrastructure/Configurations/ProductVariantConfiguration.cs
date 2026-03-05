@@ -8,12 +8,9 @@ namespace Sportswear.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<ProductVariant> builder)
         {
-            // Unique variant per product (Product + Color + Size)
-            builder.HasIndex(x => new { x.ProductId, x.ColorName, x.Size })
-                   .IsUnique();
-
             // Unique SKU
             builder.HasIndex(x => x.SKU)
+                   .HasFilter("[IsDeleted] = 0")
                    .IsUnique();
 
             builder.HasOne(pv => pv.Product)
@@ -24,7 +21,11 @@ namespace Sportswear.Infrastructure.Configurations
             builder.HasMany(pv => pv.CartItems)
                    .WithOne(ci => ci.ProductVariant)
                    .HasForeignKey(ci => ci.ProductVariantId)
-                   .IsRequired(false)          // ✅ مهم جدًا
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(pv => pv.Attributes)
+                   .WithOne(a => a.ProductVariant)
+                   .HasForeignKey(a => a.ProductVariantId)
                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasQueryFilter(v => !v.IsDeleted);

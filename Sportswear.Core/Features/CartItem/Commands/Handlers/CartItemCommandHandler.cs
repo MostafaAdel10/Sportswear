@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Localization;
 using Sportswear.Core.Bases;
 using Sportswear.Core.Features.CartItem.Commands.Models;
@@ -20,7 +19,6 @@ namespace Sportswear.Core.Features.CartItem.Commands.Handlers
         private readonly ICartService _cartService;
         private readonly IProductVariantService _variantService;
         private readonly ICurrentUserService _currentUserService;
-        private readonly IMapper _mapper;
         private readonly IStringLocalizer<SharedResources> _stringLocalizer;
         #endregion
 
@@ -29,19 +27,17 @@ namespace Sportswear.Core.Features.CartItem.Commands.Handlers
             ICartService cartService,
             IProductVariantService variantService,
             ICurrentUserService currentUserService,
-            IMapper mapper,
             IStringLocalizer<SharedResources> stringLocalizer) : base(stringLocalizer)
         {
             _cartItemService = cartItemService;
             _cartService = cartService;
             _variantService = variantService;
             _currentUserService = currentUserService;
-            _mapper = mapper;
             _stringLocalizer = stringLocalizer;
         }
         #endregion
 
-        #region Handel Functions
+        #region Handle Functions
         public async Task<Response<string>> Handle(AddCartItemCommand request, CancellationToken cancellationToken)
         {
             // 1) Check Variant Exists
@@ -53,28 +49,24 @@ namespace Sportswear.Core.Features.CartItem.Commands.Handlers
             if (request.Quantity <= 0 || request.Quantity > variant.StockQuantity)
                 return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.InvalidQuantity]);
 
-            // 3) Get User Cart
+            // 3) Get or Create User Cart
             var userId = _currentUserService.GetUserId();
-
             var cart = await _cartService.GetByUserIdAsync(userId);
             if (cart == null)
             {
-                await _cartService.AddAsync(new Cart
-                {
-                    UserId = userId
-                });
+                await _cartService.AddAsync(new Cart { UserId = userId });
                 cart = await _cartService.GetByUserIdAsync(userId);
             }
 
-            // 4) Check if item already exists (increase quantity)
+            // 4) Check if item already exists → increase quantity
             var existItem = await _cartItemService.GetCartItemByCartAndVariant(cart.Id, request.ProductVariantId);
             if (existItem != null)
             {
-                existItem.Quantity += request.Quantity;
-
-                if (existItem.Quantity > variant.StockQuantity)
+                var newQuantity = existItem.Quantity + request.Quantity;
+                if (newQuantity > variant.StockQuantity)
                     return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.StockExceeded]);
 
+                existItem.Quantity = newQuantity;
                 await _cartItemService.EditAsync(existItem);
                 return Success<string>(_stringLocalizer[SharedResourcesKeys.CartItemUpdated]);
             }
@@ -114,7 +106,9 @@ namespace Sportswear.Core.Features.CartItem.Commands.Handlers
             cartItem.Quantity = request.Quantity;
             var isUpdated = await _cartItemService.EditAsync(cartItem);
 
-            return isUpdated ? Success<string>(_stringLocalizer[SharedResourcesKeys.CartItemUpdated]) : BadRequest<string>();
+            return isUpdated
+                ? Success<string>(_stringLocalizer[SharedResourcesKeys.CartItemUpdated])
+                : BadRequest<string>();
         }
 
         public async Task<Response<string>> Handle(DeleteCartItemCommand request, CancellationToken cancellationToken)
@@ -129,9 +123,10 @@ namespace Sportswear.Core.Features.CartItem.Commands.Handlers
 
             var isDeleted = await _cartItemService.DeleteAsync(cartItem);
 
-            return isDeleted ? Deleted<string>(_stringLocalizer[SharedResourcesKeys.Deleted]) : BadRequest<string>();
+            return isDeleted
+                ? Deleted<string>(_stringLocalizer[SharedResourcesKeys.Deleted])
+                : BadRequest<string>();
         }
-
         #endregion
     }
 }

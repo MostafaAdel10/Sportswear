@@ -20,6 +20,10 @@ namespace Sportswear.Service.Implementations
         #endregion
 
         #region Handle Functions
+        public async Task<Product?> GetProductWithIncludesFullDetailsAsync(int id)
+        {
+            return await _productRepository.GetProductWithIncludesFullDetailsAsync(id);
+        }
         public async Task<List<Product>> GetProductsListWithIncludesAsync()
         {
             return await _productRepository.GetProductsListWithIncludesAsync();

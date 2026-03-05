@@ -8,15 +8,6 @@ namespace Sportswear.DataAccess.Entities
         [Required, MaxLength(50)]
         public string SKU { get; set; }
 
-        [Required, MaxLength(50)]
-        public string Size { get; set; }
-
-        [Required, MaxLength(50)]
-        public string ColorName { get; set; }
-
-        [Required, MaxLength(10)]
-        public string ColorHex { get; set; }
-
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; } // لو السعر مختلف
 
@@ -26,6 +17,9 @@ namespace Sportswear.DataAccess.Entities
         [ForeignKey("Product")]
         public int ProductId { get; set; }
         public Product Product { get; set; }
+
+        public ICollection<ProductVariantAttribute> Attributes { get; set; }
+            = new List<ProductVariantAttribute>();
 
         public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();

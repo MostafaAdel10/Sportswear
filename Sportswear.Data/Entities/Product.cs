@@ -32,6 +32,14 @@ namespace Sportswear.DataAccess.Entities
         [Column(TypeName = "decimal(18,2)")]
         public decimal BasePrice { get; set; }
 
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal MinPrice { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal MaxPrice { get; set; }
+
+        public bool HasVariants { get; set; } = false;
+
         [Required]
         [ForeignKey("Brand")]
         public int BrandId { get; set; }
