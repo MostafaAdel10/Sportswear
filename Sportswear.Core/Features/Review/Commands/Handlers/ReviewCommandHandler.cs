@@ -41,7 +41,7 @@ namespace Sportswear.Core.Features.Review.Commands.Handlers
         #region Handle Functions
         public async Task<Response<ReviewDto>> Handle(AddReviewCommand request, CancellationToken cancellationToken)
         {
-            var currentUserId = _currentUserService.GetUserId();
+            var currentUser = await _currentUserService.GetUserAsync();
 
             var product = await _productService.GetByIdAsync(request.ProductId);
             if (product == null)
@@ -50,7 +50,9 @@ namespace Sportswear.Core.Features.Review.Commands.Handlers
             }
 
             var review = _mapper.Map<DataAccess.Entities.Review>(request);
-            review.UserId = currentUserId;
+            review.UserId = currentUser.Id;
+            review.CreatedBy = currentUser.UserName;
+
 
             var addedReview = await _reviewService.AddAsync(review);
 
@@ -61,7 +63,7 @@ namespace Sportswear.Core.Features.Review.Commands.Handlers
 
         public async Task<Response<ReviewDto>> Handle(EditReviewCommand request, CancellationToken cancellationToken)
         {
-            var currentUserId = _currentUserService.GetUserId();
+            var currentUser = await _currentUserService.GetUserAsync();
 
             var review = await _reviewService.GetByIdAsync(request.Id);
             if (review == null)
@@ -69,16 +71,20 @@ namespace Sportswear.Core.Features.Review.Commands.Handlers
                 return NotFound<ReviewDto>(_localizer[SharedResourcesKeys.NotFound]);
             }
 
-            if (review.UserId != currentUserId)
+            if (review.UserId != currentUser.Id)
             {
                 return Unauthorized<ReviewDto>(_localizer[SharedResourcesKeys.YouAreNotAuthorizedToUpdateThisReview]);
             }
 
             _mapper.Map(request, review);
 
+            review.UpdatedAt = DateTime.UtcNow;
+            review.UpdatedBy = currentUser.UserName;
+
             var updatedReview = await _reviewService.EditAsync(review);
 
             var reviewDto = _mapper.Map<ReviewDto>(review);
+
 
             return updatedReview
             ? Success(reviewDto, _localizer[SharedResourcesKeys.Updated])

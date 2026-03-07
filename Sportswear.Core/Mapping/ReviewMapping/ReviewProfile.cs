@@ -8,8 +8,6 @@ namespace Sportswear.Core.Mapping.ReviewMapping
         {
             AddReviewCommandMapping();
             EditReviewCommandMapping();
-            GetReviewByIdMapping();
-            GetReviewsByProductIdMapping();
             ReviewDtoCommandMapping();
         }
     }

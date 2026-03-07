@@ -10,6 +10,7 @@ using Sportswear.Service.AuthServices.Interfaces;
 namespace Sportswear.Core.Features.Order.Queries.Handlers
 {
     public class OrderQueryHandler : ResponseHandler,
+       IRequestHandler<GetOrderFullDetailsQuery, Response<OrderFullDetailsDto>>,
        IRequestHandler<GetOrderByIdQuery, Response<OrderDto>>,
        IRequestHandler<GetOrderListForCurrentUserQuery, Response<List<OrderDto>>>,
        IRequestHandler<GetAllOrdersQuery, Response<List<AdminOrderListDto>>>,
@@ -27,6 +28,83 @@ namespace Sportswear.Core.Features.Order.Queries.Handlers
             _orderService = orderService;
             _currentUserService = currentUserService;
             _stringLocalizer = stringLocalizer;
+        }
+
+        //Get Order Full Details by id Query
+        public async Task<Response<OrderFullDetailsDto>> Handle(GetOrderFullDetailsQuery request, CancellationToken cancellationToken)
+        {
+            var order = await _orderService.GetOrderWithDetailsAsync(request.OrderId);
+            if (order == null)
+                return NotFound<OrderFullDetailsDto>(
+                    _stringLocalizer[SharedResourcesKeys.NotFound]);
+
+            bool isArabic = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.ToLower().Equals("ar");
+
+            var dto = new OrderFullDetailsDto
+            {
+                Id = order.Id,
+                TotalAmount = order.TotalAmount,
+                Status = order.Status.ToString(),
+                CreatedAt = order.CreatedAt,
+
+                // User
+                UserId = order.UserId,
+                UserEmail = order.User?.Email ?? string.Empty,
+                UserName = order.User?.UserName ?? string.Empty,
+
+                // Payment
+                PaymentStatus = order.Payment?.Status.ToString(),
+                PaymentMethod = order.Payment?.Method.ToString(),
+                PaidAt = order.Payment?.PaidAt,
+
+                // Shipment
+                ShipmentInfo = order.Shipment == null ? null : new ShipmentDto
+                {
+                    FullName = order.Shipment.FullName,
+                    City = order.Shipment.City,
+                    Country = order.Shipment.Country,
+                    Region = order.Shipment.Region,
+                    StreetAddress = order.Shipment.StreetAddress,
+                    BuildingNumber = order.Shipment.BuildingNumber,
+                    FloorNumber = order.Shipment.FloorNumber,
+                    ApartmentNumber = order.Shipment.ApartmentNumber,
+                    PhoneNumber = order.Shipment.PhoneNumber,
+                    Notes = order.Shipment.Notes,
+                    TrackingNumber = order.Shipment.TrackingNumber,
+                    ShippingMethod = isArabic
+                        ? order.Shipment.ShippingMethod?.NameAr ?? string.Empty
+                        : order.Shipment.ShippingMethod?.NameEn ?? string.Empty,
+                    ShipmentStatus = order.Shipment.Status.ToString()
+                },
+
+                // Items
+                Items = order.OrderItems.Select(i => new OrderItemDto
+                {
+                    ProductVariantId = i.ProductVariantId,
+                    SKU = i.ProductVariant?.SKU ?? string.Empty,
+                    ProductName = isArabic
+                        ? i.ProductVariant?.Product?.NameAr ?? string.Empty
+                        : i.ProductVariant?.Product?.NameEn ?? string.Empty,
+                    UnitPrice = i.UnitPrice,
+                    Quantity = i.Quantity,
+                    TotalPrice = i.UnitPrice * i.Quantity,
+                    Attributes = i.ProductVariant?.Attributes
+                        .Where(a => !a.IsDeleted)
+                        .Select(a => new OrderItemAttributeDto
+                        {
+                            KeyEn = a.ProductAttributeTemplate.KeyEn,
+                            KeyAr = a.ProductAttributeTemplate.KeyAr,
+                            Type = a.ProductAttributeTemplate.Type.ToString(),
+                            ValueEn = a.ValueEn,
+                            ValueAr = a.ValueAr,
+                            ColorHex = a.ColorHex
+                        }).ToList() ?? new List<OrderItemAttributeDto>()
+                }).ToList(),
+
+                TotalQuantity = order.OrderItems.Sum(i => i.Quantity)
+            };
+
+            return Success(dto);
         }
 
         // 1️⃣ Get order by id

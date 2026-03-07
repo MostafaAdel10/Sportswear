@@ -25,8 +25,17 @@ namespace Sportswear.Infrastructure.Repository
             return await _reviews
                 .Where(r => r.ProductId == productId)
                 .Include(r => r.User)
+                .Include(r => r.Product)
                 .OrderByDescending(r => r.Id)
                 .ToListAsync();
+        }
+        public async Task<Review?> GetByIdWithIncludesAsync(int id)
+        {
+            return await _reviews
+                .Include(r => r.User)
+                .Include(r => r.Product)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
         }
         #endregion
     }

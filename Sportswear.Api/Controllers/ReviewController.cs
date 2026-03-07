@@ -9,7 +9,7 @@ namespace Sportswear.Api.Controllers
 {
     public class ReviewController : AppControllerBase
     {
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Roles = "Admin")]
         [HttpGet(Router.ReviewRouting.GetReviewsByProductId)]
         public async Task<IActionResult> GetReviewsByProductId([FromRoute] int productId)
         {
@@ -17,7 +17,7 @@ namespace Sportswear.Api.Controllers
             return NewResult(response);
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         [HttpGet(Router.ReviewRouting.GetById)]
         public async Task<IActionResult> GetReviewById([FromRoute] int id)
         {

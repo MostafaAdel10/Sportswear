@@ -23,6 +23,7 @@
             public const string MyOrders = Prefix + "/My-Orders";
             public const string GetById = Prefix + "/{id:int}";
             public const string GetByUserId = Prefix + "/user/{userId:int}";
+            public const string GetFullDetailsByOrderId = Prefix + "/full-details/{id}";
             public const string Create = Prefix + "/Create";
             public const string EditOrderStatus = Prefix + "/order-status";
             public const string EditPaymentStatus = Prefix + "/payment-status";
@@ -57,7 +58,7 @@
             public const string Edit = Prefix + "/Edit";
             public const string Delete = Prefix + SingleRoute;
             public const string GetById = Prefix + SingleRoute;
-            public const string GetReviewsByProductId = Prefix + "/{productId}";
+            public const string GetReviewsByProductId = Prefix + "/product/{productId}";
             public const string Paginated = Prefix + "/Paginated";
         }
 

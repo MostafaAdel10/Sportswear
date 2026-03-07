@@ -9,5 +9,7 @@ namespace Sportswear.Service.Abstract
         public Task<bool> EditAsync(Review review);
         public Task<bool> DeleteAsync(Review review);
         public Task<List<Review>> GetReviewsByProductIdAsync(int productId);
+        public Task<Review?> GetByIdWithIncludesAsync(int id);
+
     }
 }

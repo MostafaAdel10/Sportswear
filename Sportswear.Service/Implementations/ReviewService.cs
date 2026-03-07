@@ -57,6 +57,11 @@ namespace Sportswear.Service.Implementations
         {
             return await _reviewRepository.GetReviewsByProductIdAsync(productId);
         }
+
+        public async Task<Review?> GetByIdWithIncludesAsync(int reviewId)
+        {
+            return await _reviewRepository.GetByIdWithIncludesAsync(reviewId);
+        }
         #endregion
     }
 }

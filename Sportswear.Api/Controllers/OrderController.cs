@@ -9,6 +9,13 @@ namespace Sportswear.Api.Controllers
 {
     public class OrderController : AppControllerBase
     {
+        [Authorize(Roles = "Admin")]
+        [HttpGet(Router.OrderRouting.GetFullDetailsByOrderId)]
+        public async Task<IActionResult> GetFullDetailsByOrderId([FromRoute] int id)
+        {
+            return NewResult(await Mediator.Send(new GetOrderFullDetailsQuery(id)));
+        }
+
         [Authorize(Roles = "Admin,User")]
         [HttpPost(Router.OrderRouting.Create)]
         public async Task<IActionResult> Create([FromBody] CreateOrderCommand command)
