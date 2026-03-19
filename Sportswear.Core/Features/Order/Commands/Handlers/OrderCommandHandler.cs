@@ -87,6 +87,8 @@ namespace Sportswear.Core.Features.Order.Commands.Handlers
                 totalAmount += discountedPrice * item.Quantity;
             }
 
+            totalAmount += shippingMethod.Price; // Add shipping cost to total
+
             // 3️⃣ Create order
             var order = new DataAccess.Entities.Order
             {

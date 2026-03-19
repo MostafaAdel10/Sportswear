@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using Sportswear.Api.Filters;
 using Sportswear.Core;
 using Sportswear.Core.Filters;
 using Sportswear.Core.Middleware;
@@ -18,6 +20,7 @@ using Sportswear.Infrastructure;
 using Sportswear.Infrastructure.Context;
 using Sportswear.Infrastructure.Seeder;
 using Sportswear.Service;
+using Sportswear.Service.Abstract;
 using Sportswear.Service.Implementations;
 using System.Globalization;
 using System.Text;
@@ -131,6 +134,20 @@ builder.Services.AddSwaggerGen(c =>
             }
     });
 });
+
+
+// ✅ Add Hangfire
+builder.Services.AddHangfire(config =>
+    config
+        .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+        .UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UseSqlServerStorage(builder.Configuration.GetConnectionString("cs")));
+
+builder.Services.AddHangfireServer();
+
+// ✅ Register Job
+builder.Services.AddScoped<IDiscountCleanupJob, DiscountCleanupJob>();
 
 
 //Authorize Based On Claim (Policy)
@@ -262,6 +279,26 @@ app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Hangfire Dashboard ✅ بعد الـ Auth عشان يشتغل الـ Admin Filter
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[] { new HangfireAuthorizationFilter() }
+});
+
+// ✅ Schedule الـ Job
+using (var scope = app.Services.CreateScope())
+{
+    var recurringJobManager = scope.ServiceProvider
+        .GetRequiredService<IRecurringJobManager>();
+
+    recurringJobManager.AddOrUpdate<IDiscountCleanupJob>(
+        "cleanup-expired-discounts",   // اسم الـ Job
+        job => job.ExecuteAsync(),
+        Cron.Daily);                   // Daily كل يوم
+                                       // Cron.Hourly()              // كل ساعة
+                                       // "0 2 * * *"               // كل يوم الساعة 2 الصبح
+}
 
 app.MapControllers();
 

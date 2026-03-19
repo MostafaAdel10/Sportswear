@@ -61,12 +61,12 @@ namespace Sportswear.Service.Implementations
             if ((int)newStatus < (int)order.Status)
                 return false;
 
-            // 3️⃣ لا يمكن شحن الطلب قبل الدفع
-            if (newStatus == OrderStatus.Shipped && order.Status != OrderStatus.Paid)
+            // 3️⃣ لا يمكن الدفع  قبل شحن الطلب
+            if (newStatus == OrderStatus.Paid && order.Status != OrderStatus.Shipped)
                 return false;
 
-            // 4️⃣ لا يمكن إكمال الطلب قبل الشحن
-            if (newStatus == OrderStatus.Completed && order.Status != OrderStatus.Shipped)
+            // 4️⃣ لا يمكن إكمال الطلب قبل الدفع
+            if (newStatus == OrderStatus.Completed && order.Status != OrderStatus.Paid)
                 return false;
 
             // 5️⃣ لا يمكن إلغاء الطلب بعد الدفع أو الشحن

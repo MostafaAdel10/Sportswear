@@ -17,8 +17,8 @@
     public enum OrderStatus
     {
         Pending,
-        Paid,
         Shipped,
+        Paid,
         Completed,
         Cancelled
     }
@@ -34,5 +34,12 @@
     {
         Global,      // Coupon / Voucher
         ProductSpecific
+    }
+    public enum DiscountStatusFilter
+    {
+        All,      // كل الـ Discounts
+        Active,   // شغالة دلوقتي
+        Expired,  // منتهية
+        Upcoming  // لسه هتبدأ
     }
 }

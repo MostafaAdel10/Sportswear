@@ -20,6 +20,20 @@ namespace Sportswear.Infrastructure.Repository
         #endregion
 
         #region Handle Functions
+        public async Task<List<Discount>> GetExpiredDiscountsAsync(DateTime now)
+        {
+            return await GetTableNoTracking()
+                .Where(d => d.EndDate < now)
+                .ToListAsync();
+        }
+
+        public async Task<List<Discount>> GetAllWithProductsCountAsync()
+        {
+            return await _discounts
+                .Include(d => d.Product_Discounts)
+                .AsNoTracking()
+                .ToListAsync();
+        }
 
         public async Task<bool> IsDiscountIdExist(int discountId)
         {

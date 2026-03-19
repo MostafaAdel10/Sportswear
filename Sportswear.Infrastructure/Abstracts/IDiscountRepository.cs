@@ -5,6 +5,9 @@ namespace Sportswear.Infrastructure.Abstracts
 {
     public interface IDiscountRepository : IGenericRepositoryAsync<Discount>
     {
+        public Task<List<Discount>> GetExpiredDiscountsAsync(DateTime now);
+
+        public Task<List<Discount>> GetAllWithProductsCountAsync();
         public Task<bool> IsDiscountIdExist(int discountId);
         public Task<List<Discount>> GetActiveDiscountsAsync();
         public Task<Discount?> GetActiveDiscountByIdAsync(int discountId);

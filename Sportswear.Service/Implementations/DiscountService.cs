@@ -18,6 +18,11 @@ namespace Sportswear.Service.Implementations
         #endregion
 
         #region Handle Functions
+        public async Task<List<Discount>> GetAllWithProductsCountAsync()
+        {
+            return await _discountRepository.GetAllWithProductsCountAsync();
+        }
+
         public async Task<bool> AddAsync(Discount discount)
         {
             await _discountRepository.AddAsync(discount);

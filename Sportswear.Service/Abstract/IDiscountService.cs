@@ -4,6 +4,7 @@ namespace Sportswear.Service.Abstract
 {
     public interface IDiscountService
     {
+        public Task<List<Discount>> GetAllWithProductsCountAsync();
         public Task<List<Discount>> GetActiveDiscountsAsync();
         public Task<Discount?> GetActiveDiscountByIdAsync(int discountId);
         public Task<bool> IsDiscountIdExist(int discountId);

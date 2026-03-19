@@ -102,6 +102,7 @@
         public static class DiscountRouting
         {
             public const string Prefix = Rule + "Discount";
+            public const string GetAll = Prefix + "/GetAll";
             public const string List = Prefix + "/List";
             public const string Paginated = Prefix + "/Paginated";
             public const string GetById = Prefix + SingleRoute;

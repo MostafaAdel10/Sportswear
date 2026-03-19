@@ -4,12 +4,20 @@ using Sportswear.Api.Base;
 using Sportswear.Core.Features.Discount.Commands.Models;
 using Sportswear.Core.Features.Discount.Queries.Models;
 using Sportswear.DataAccess.AppMetaData;
+using Sportswear.DataAccess.Enums;
 
 namespace Sportswear.Api.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class DiscountController : AppControllerBase
     {
+        [Authorize(Roles = "Admin")]
+        [HttpGet(Router.DiscountRouting.GetAll)]
+        public async Task<IActionResult> GetAllDiscounts([FromQuery] DiscountStatusFilter status = DiscountStatusFilter.All)
+        {
+            return NewResult(await Mediator.Send(new GetAllDiscountsQuery { Status = status }));
+        }
+
         [HttpGet(Router.DiscountRouting.List)]
         public async Task<IActionResult> GetActiveDiscountsList()
         {

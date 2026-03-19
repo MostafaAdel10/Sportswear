@@ -26,6 +26,13 @@ namespace Sportswear.Infrastructure.Repository
                 .AnyAsync(pd => pd.DiscountId == discountId && pd.ProductId == productId);
         }
 
+        public async Task<List<Product_Discount>> GetByDiscountIdsAsync(List<int> discountIds)
+        {
+            return await GetTableNoTracking()
+                .Where(pd => discountIds.Contains(pd.DiscountId))
+                .ToListAsync();
+        }
+
         public async Task<List<Product_Discount>> GetByDiscountIdAsync(int discountId)
         {
             return await _product_Discounts
