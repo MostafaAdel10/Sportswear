@@ -17,6 +17,7 @@
         public decimal PriceAfterDiscount { get; set; }
         public decimal MinPriceAfterDiscount { get; set; }
         public decimal MaxPriceAfterDiscount { get; set; }
+        public string? AttributeKey { get; set; }
         public List<string> Images { get; set; } = new();
         public List<ProductVariantResponse> Variants { get; set; } = new();
     }

@@ -42,16 +42,11 @@ namespace Sportswear.Core.Features.ProductVariant.Queries.Handlers
                 SKU = variant.SKU,
                 Price = variant.Price,
                 StockQuantity = variant.StockQuantity,
-                Attributes = variant.Attributes.Select(a => new VariantAttributeToEditDto
-                {
-                    TemplateId = a.ProductAttributeTemplateId,
-                    KeyEn = a.ProductAttributeTemplate.KeyEn,
-                    KeyAr = a.ProductAttributeTemplate.KeyAr,
-                    Type = a.ProductAttributeTemplate.Type.ToString(),
-                    ValueEn = a.ValueEn,
-                    ValueAr = a.ValueAr,
-                    ColorHex = a.ColorHex
-                }).ToList()
+                AttributeValueAr = variant.AttributeValueAr,
+                AttributeValueEn = variant.AttributeValueEn,
+                Unit = variant.Unit,
+                ColorLabel = variant.ColorLabel,
+                ColorHex = variant.ColorHex
             };
 
             return Success(result);

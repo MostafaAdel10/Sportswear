@@ -7,7 +7,10 @@
         public decimal Price { get; set; }
         public decimal PriceAfterDiscount { get; set; }
         public int StockQuantity { get; set; }
-
-        public List<ProductVariantAttributeResponse> Attributes { get; set; } = new();
+        public string? AttributeValueEn { get; set; }
+        public string? AttributeValueAr { get; set; }
+        public string? Unit { get; set; }
+        public string? ColorLabel { get; set; }
+        public string? ColorHex { get; set; }
     }
 }

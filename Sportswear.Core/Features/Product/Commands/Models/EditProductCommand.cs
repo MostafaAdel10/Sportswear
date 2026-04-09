@@ -5,7 +5,7 @@ namespace Sportswear.Core.Features.Product.Commands.Models
 {
     public class EditProductCommand : IRequest<Response<string>>
     {
-        public int Id { get; set; }           // المنتج الذي سيتم تحديثه
+        public int Id { get; set; }
         public string Code { get; set; }
         public string NameEn { get; set; }
         public string NameAr { get; set; }
@@ -17,5 +17,9 @@ namespace Sportswear.Core.Features.Product.Commands.Models
         public string? ClubAr { get; set; }
         public int BrandId { get; set; }
         public int CategoryId { get; set; }
+
+        // Attributes
+        public string? AttributeKeyEn { get; set; }
+        public string? AttributeKeyAr { get; set; }
     }
 }

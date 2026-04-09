@@ -24,8 +24,6 @@ namespace Sportswear.Infrastructure.Repository
         {
             return await _productVariants
                 .Where(v => v.ProductId == productId && !v.IsDeleted)
-                .Include(v => v.Attributes)
-                    .ThenInclude(a => a.ProductAttributeTemplate)
                 .ToListAsync();
         }
 
@@ -33,8 +31,6 @@ namespace Sportswear.Infrastructure.Repository
         {
             return await _productVariants
                 .Include(v => v.Product)
-                .Include(v => v.Attributes)
-                    .ThenInclude(a => a.ProductAttributeTemplate)
                 .Include(v => v.OrderItems)
                 .FirstOrDefaultAsync(v => v.Id == id && !v.IsDeleted);
         }
@@ -53,15 +49,10 @@ namespace Sportswear.Infrastructure.Repository
 
         public async Task<HashSet<string>> GetVariantKeysAsync(int productId, int excludeId = 0)
         {
-            var variants = await _productVariants
+            return (await _productVariants
                 .Where(v => v.ProductId == productId && !v.IsDeleted && v.Id != excludeId)
-                .Include(v => v.Attributes)
-                .ToListAsync();
-
-            return variants
-                .Select(v => string.Join("-", v.Attributes
-                    .OrderBy(a => a.ProductAttributeTemplateId)
-                    .Select(a => a.ValueEn.ToUpper())))
+                .ToListAsync())
+                .Select(v => $"{v.AttributeValueEn?.ToUpper()}-{v.ColorHex?.ToUpper()}")
                 .ToHashSet();
         }
         #endregion

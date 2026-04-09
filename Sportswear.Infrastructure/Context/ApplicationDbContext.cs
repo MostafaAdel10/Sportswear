@@ -46,10 +46,6 @@ namespace Sportswear.Infrastructure.Context
         // User Management
         public DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
 
-        // Attribute Templates
-        public DbSet<ProductAttributeTemplate> ProductAttributeTemplates { get; set; }
-        public DbSet<ProductVariantAttribute> ProductVariantAttributes { get; set; }
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -20,5 +20,8 @@
 
         public int BrandId { get; set; }
         public int CategoryId { get; set; }
+
+        public string? AttributeKeyEn { get; set; }
+        public string? AttributeKeyAr { get; set; }
     }
 }

@@ -85,20 +85,18 @@ namespace Sportswear.Core.Features.Order.Queries.Handlers
                     ProductName = isArabic
                         ? i.ProductVariant?.Product?.NameAr ?? string.Empty
                         : i.ProductVariant?.Product?.NameEn ?? string.Empty,
+                    AttributeKey = isArabic
+                        ? i.ProductVariant?.Product.AttributeKeyAr
+                        : i.ProductVariant?.Product.AttributeKeyEn,
                     UnitPrice = i.UnitPrice,
                     Quantity = i.Quantity,
                     TotalPrice = i.UnitPrice * i.Quantity,
-                    Attributes = i.ProductVariant?.Attributes
-                        .Where(a => !a.IsDeleted)
-                        .Select(a => new OrderItemAttributeDto
-                        {
-                            KeyEn = a.ProductAttributeTemplate.KeyEn,
-                            KeyAr = a.ProductAttributeTemplate.KeyAr,
-                            Type = a.ProductAttributeTemplate.Type.ToString(),
-                            ValueEn = a.ValueEn,
-                            ValueAr = a.ValueAr,
-                            ColorHex = a.ColorHex
-                        }).ToList() ?? new List<OrderItemAttributeDto>()
+                    AttributeValue = isArabic
+                        ? i.ProductVariant?.AttributeValueAr
+                        : i.ProductVariant?.AttributeValueEn,
+                    Unit = i.ProductVariant?.Unit,
+                    ColorLabel = i.ProductVariant?.ColorLabel,
+                    ColorHex = i.ProductVariant?.ColorHex
                 }).ToList(),
 
                 TotalQuantity = order.OrderItems.Sum(i => i.Quantity)
@@ -218,20 +216,18 @@ namespace Sportswear.Core.Features.Order.Queries.Handlers
                     ProductName = isArabic
                         ? i.ProductVariant?.Product?.NameAr ?? string.Empty
                         : i.ProductVariant?.Product?.NameEn ?? string.Empty,
+                    AttributeKey = isArabic
+                        ? i.ProductVariant?.Product.AttributeKeyAr
+                        : i.ProductVariant?.Product.AttributeKeyEn,
                     UnitPrice = i.UnitPrice,
                     Quantity = i.Quantity,
                     TotalPrice = i.UnitPrice * i.Quantity,
-
-                    // ✅ بدل Size و ColorName و ColorHex
-                    Attributes = i.ProductVariant?.Attributes.Select(a => new OrderItemAttributeDto
-                    {
-                        KeyEn = a.ProductAttributeTemplate.KeyEn,
-                        KeyAr = a.ProductAttributeTemplate.KeyAr,
-                        Type = a.ProductAttributeTemplate.Type.ToString(),
-                        ValueEn = a.ValueEn,
-                        ValueAr = a.ValueAr,
-                        ColorHex = a.ColorHex
-                    }).ToList() ?? new List<OrderItemAttributeDto>()
+                    AttributeValue = isArabic
+                        ? i.ProductVariant?.AttributeValueAr
+                        : i.ProductVariant?.AttributeValueEn,
+                    Unit = i.ProductVariant?.Unit,
+                    ColorLabel = i.ProductVariant?.ColorLabel,
+                    ColorHex = i.ProductVariant?.ColorHex
                 }).ToList()
             };
         }

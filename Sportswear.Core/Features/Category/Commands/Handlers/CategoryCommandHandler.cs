@@ -16,7 +16,6 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
         #region Fields
         private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
-        private readonly IProductAttributeTemplateService _templateService;
         private readonly IFileService _fileService;
         private readonly ICurrentUserService _currentUserService;
         private readonly IStringLocalizer<SharedResources> _stringLocalizer;
@@ -25,14 +24,12 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
         #region Constructors
         public CategoryCommandHandler(ICategoryService categoryService,
             IFileService fileService,
-            IProductAttributeTemplateService templateService,
             IProductService productService,
             ICurrentUserService currentUserService,
             IStringLocalizer<SharedResources> stringLocalizer) : base(stringLocalizer)
         {
             _categoryService = categoryService;
             _productService = productService;
-            _templateService = templateService;
             _fileService = fileService;
             _currentUserService = currentUserService;
             _stringLocalizer = stringLocalizer;
@@ -119,16 +116,6 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
             var hasProducts = await _productService.IsAnyProductRelatedToCategoryAsync(request.Id);
             if (hasProducts)
                 return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.RelatedProducts]);
-
-            // ✅ تأكد مفيش templates عندها variants
-            var hasVariantsInTemplates = await _templateService.CategoryHasVariantsAsync(request.Id);
-            if (hasVariantsInTemplates)
-                return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.CannotDeleteCategoryWithVariants]);
-
-            // ✅ امسح الـ templates الخاصة بالـ Category الأول
-            var templates = await _templateService.GetByCategoryIdAsync(request.Id);
-            if (templates.Any())
-                await _templateService.DeleteRangeAsync(templates);
 
             // حذف الصورة من السيرفر
             _fileService.DeleteImage(existingCategory.ImageUrl);

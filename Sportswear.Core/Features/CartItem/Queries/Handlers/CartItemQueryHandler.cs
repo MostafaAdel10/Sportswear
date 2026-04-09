@@ -63,21 +63,20 @@ namespace Sportswear.Core.Features.CartItem.Queries.Handlers
                     ProductName = isArabic
                         ? x.ProductVariant.Product.NameAr
                         : x.ProductVariant.Product.NameEn,
+                    AttributeKey = isArabic
+                        ? x.ProductVariant.Product.AttributeKeyAr
+                        : x.ProductVariant.Product.AttributeKeyEn,
                     ProductImageUrl = x.ProductVariant.Product.Images.FirstOrDefault()?.Url,
                     OriginalPrice = x.ProductVariant.Price,
                     FinalPrice = finalPrice,
                     Quantity = x.Quantity,
                     TotalPrice = finalPrice * x.Quantity,
-
-                    Attributes = x.ProductVariant.Attributes.Select(a => new CartItemAttributeDto
-                    {
-                        KeyEn = a.ProductAttributeTemplate.KeyEn,
-                        KeyAr = a.ProductAttributeTemplate.KeyAr,
-                        Type = a.ProductAttributeTemplate.Type.ToString(),
-                        ValueEn = a.ValueEn,
-                        ValueAr = a.ValueAr,
-                        ColorHex = a.ColorHex
-                    }).ToList()
+                    AttributeValue = isArabic
+                        ? x.ProductVariant.AttributeValueAr
+                        : x.ProductVariant.AttributeValueEn,
+                    Unit = x.ProductVariant.Unit,
+                    ColorLabel = x.ProductVariant.ColorLabel,
+                    ColorHex = x.ProductVariant.ColorHex
                 };
             }).ToList();
 
@@ -107,21 +106,20 @@ namespace Sportswear.Core.Features.CartItem.Queries.Handlers
                 ProductName = isArabic
                     ? item.ProductVariant.Product.NameAr
                     : item.ProductVariant.Product.NameEn,
+                AttributeKey = isArabic
+                        ? item.ProductVariant.Product.AttributeKeyAr
+                        : item.ProductVariant.Product.AttributeKeyEn,
                 ProductImageUrl = item.ProductVariant.Product.Images.FirstOrDefault()?.Url,
                 OriginalPrice = item.ProductVariant.Price,
                 FinalPrice = finalPrice,
                 Quantity = item.Quantity,
                 TotalPrice = finalPrice * item.Quantity,
-
-                Attributes = item.ProductVariant.Attributes.Select(a => new CartItemAttributeDto
-                {
-                    KeyEn = a.ProductAttributeTemplate.KeyEn,
-                    KeyAr = a.ProductAttributeTemplate.KeyAr,
-                    Type = a.ProductAttributeTemplate.Type.ToString(),
-                    ValueEn = a.ValueEn,
-                    ValueAr = a.ValueAr,
-                    ColorHex = a.ColorHex
-                }).ToList()
+                AttributeValue = isArabic
+                        ? item.ProductVariant.AttributeValueAr
+                        : item.ProductVariant.AttributeValueEn,
+                Unit = item.ProductVariant.Unit,
+                ColorLabel = item.ProductVariant.ColorLabel,
+                ColorHex = item.ProductVariant.ColorHex
             };
 
             return Success(dto);

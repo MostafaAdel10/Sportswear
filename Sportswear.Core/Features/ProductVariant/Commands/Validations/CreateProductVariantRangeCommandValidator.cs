@@ -10,18 +10,15 @@ namespace Sportswear.Core.Features.ProductVariant.Commands.Validations
     {
         #region Fields
         private readonly IProductService _productService;
-        private readonly IProductAttributeTemplateService _templateService;
         private readonly IStringLocalizer<SharedResources> _localizer;
         #endregion
 
         #region Constructors
         public CreateProductVariantRangeCommandValidator(
             IProductService productService,
-            IProductAttributeTemplateService templateService,
             IStringLocalizer<SharedResources> localizer)
         {
             _productService = productService;
-            _templateService = templateService;
             _localizer = localizer;
             ApplyValidationsRules();
             ApplyCustomValidationsRules();
@@ -46,36 +43,40 @@ namespace Sportswear.Core.Features.ProductVariant.Commands.Validations
                 variant.RuleFor(v => v.StockQuantity)
                     .GreaterThanOrEqualTo(0).WithMessage(_localizer[SharedResourcesKeys.MustBeGreaterThanZero]);
 
-                variant.RuleFor(v => v.Attributes)
-                    .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required])
-                    .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty]);
+                // ✅ AttributeValueEn اختياري بس لو موجود MaxLength
+                variant.RuleFor(v => v.AttributeValueEn)
+                    .MaximumLength(200).WithMessage(_localizer[SharedResourcesKeys.MaxLengthIs200])
+                    .When(v => !string.IsNullOrEmpty(v.AttributeValueEn));
 
-                variant.RuleForEach(v => v.Attributes).ChildRules(attr =>
-                {
-                    attr.RuleFor(a => a.TemplateId)
-                        .GreaterThan(0).WithMessage(_localizer[SharedResourcesKeys.Required]);
+                variant.RuleFor(v => v.AttributeValueAr)
+                    .MaximumLength(200).WithMessage(_localizer[SharedResourcesKeys.MaxLengthIs200])
+                    .When(v => !string.IsNullOrEmpty(v.AttributeValueAr));
 
-                    attr.RuleFor(a => a.ValueEn)
-                        .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required])
-                        .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
-                        .MaximumLength(100).WithMessage(_localizer[SharedResourcesKeys.MaxLengthIs100]);
+                // ✅ Unit اختياري
+                variant.RuleFor(v => v.Unit)
+                    .MaximumLength(50).WithMessage(_localizer[SharedResourcesKeys.MaxLengthIs50])
+                    .When(v => !string.IsNullOrEmpty(v.Unit));
 
-                    attr.RuleFor(a => a.ValueAr)
-                        .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required])
-                        .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
-                        .MaximumLength(100).WithMessage(_localizer[SharedResourcesKeys.MaxLengthIs100]);
+                // ✅ ColorLabel اختياري
+                variant.RuleFor(v => v.ColorLabel)
+                    .MaximumLength(100).WithMessage(_localizer[SharedResourcesKeys.MaxLengthIs100])
+                    .When(v => !string.IsNullOrEmpty(v.ColorLabel));
 
-                    attr.RuleFor(a => a.ColorHex)
-                        .Matches(@"^#([A-Fa-f0-9]{6})$")
-                        .WithMessage(_localizer[SharedResourcesKeys.InvalidColorHex])
-                        .When(a => !string.IsNullOrEmpty(a.ColorHex));
-                });
+                // ✅ ColorHex اختياري بس لو موجود لازم يكون صح
+                variant.RuleFor(v => v.ColorHex)
+                    .Matches(@"^#([A-Fa-f0-9]{6})$")
+                    .WithMessage(_localizer[SharedResourcesKeys.InvalidColorHex])
+                    .When(v => !string.IsNullOrEmpty(v.ColorHex));
+
+                // ✅ لو ColorHex موجود لازم ColorLabel يكون موجود
+                variant.RuleFor(v => v.ColorLabel)
+                    .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.Required])
+                    .When(v => !string.IsNullOrEmpty(v.ColorHex));
             });
         }
 
         public void ApplyCustomValidationsRules()
         {
-            // تأكد إن المنتج موجود
             RuleFor(x => x.ProductId)
                 .MustAsync(async (productId, cancellationToken) =>
                 {

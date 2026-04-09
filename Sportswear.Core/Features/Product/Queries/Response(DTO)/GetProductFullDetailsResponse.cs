@@ -44,6 +44,10 @@
         public List<ProductReviewDto> Reviews { get; set; } = new();
         public double AverageRating { get; set; }
         public int ReviewsCount { get; set; }
+
+        // Attributes
+        public string? AttributeKeyEn { get; set; }
+        public string? AttributeKeyAr { get; set; }
     }
 
     public class FullProductVariantDto
@@ -54,16 +58,10 @@
         public decimal PriceAfterDiscount { get; set; }
         public int StockQuantity { get; set; }
         public bool InStock => StockQuantity > 0;
-        public List<FullVariantAttributeDto> Attributes { get; set; } = new();
-    }
-
-    public class FullVariantAttributeDto
-    {
-        public string KeyEn { get; set; }
-        public string KeyAr { get; set; }
-        public string Type { get; set; }
-        public string ValueEn { get; set; }
-        public string ValueAr { get; set; }
+        public string? AttributeValueEn { get; set; }
+        public string? AttributeValueAr { get; set; }
+        public string? Unit { get; set; }
+        public string? ColorLabel { get; set; }
         public string? ColorHex { get; set; }
     }
 

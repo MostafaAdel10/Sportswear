@@ -40,6 +40,14 @@ namespace Sportswear.DataAccess.Entities
 
         public bool HasVariants { get; set; } = false;
 
+
+        [MaxLength(100)]
+        public string? AttributeKeyEn { get; set; }  // "Size", "Weight"
+
+        [MaxLength(100)]
+        public string? AttributeKeyAr { get; set; }  // "المقاس", "الوزن"
+
+
         [Required]
         [ForeignKey("Brand")]
         public int BrandId { get; set; }

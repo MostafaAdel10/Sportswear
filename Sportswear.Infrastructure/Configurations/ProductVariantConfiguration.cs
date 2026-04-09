@@ -23,11 +23,6 @@ namespace Sportswear.Infrastructure.Configurations
                    .HasForeignKey(ci => ci.ProductVariantId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasMany(pv => pv.Attributes)
-                   .WithOne(a => a.ProductVariant)
-                   .HasForeignKey(a => a.ProductVariantId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
             builder.HasQueryFilter(v => !v.IsDeleted);
         }
     }

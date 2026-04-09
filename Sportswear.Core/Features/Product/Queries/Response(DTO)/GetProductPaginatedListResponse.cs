@@ -17,6 +17,7 @@
         public decimal MaxPriceAfterDiscount { get; set; }
         public bool HasVariants { get; set; }
         public string? Season { get; set; }
+        public string? AttributeKey { get; set; }
         public List<string> Images { get; set; }
     }
 }

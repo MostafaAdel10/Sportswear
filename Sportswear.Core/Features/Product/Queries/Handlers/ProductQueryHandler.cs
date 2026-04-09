@@ -60,6 +60,10 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
                 ClubEn = product.ClubEn,
                 ClubAr = product.ClubAr,
 
+                // Attribute Key
+                AttributeKeyEn = product.AttributeKeyEn,
+                AttributeKeyAr = product.AttributeKeyAr,
+
                 // Brand
                 BrandId = product.BrandId,
                 BrandNameEn = product.Brand?.NameEn ?? string.Empty,
@@ -95,17 +99,11 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
                         Price = v.Price,
                         PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, v.Price) ?? v.Price,
                         StockQuantity = v.StockQuantity,
-                        Attributes = v.Attributes
-                            .Where(a => !a.IsDeleted)
-                            .Select(a => new FullVariantAttributeDto
-                            {
-                                KeyEn = a.ProductAttributeTemplate.KeyEn,
-                                KeyAr = a.ProductAttributeTemplate.KeyAr,
-                                Type = a.ProductAttributeTemplate.Type.ToString(),
-                                ValueEn = a.ValueEn,
-                                ValueAr = a.ValueAr,
-                                ColorHex = a.ColorHex
-                            }).ToList()
+                        AttributeValueAr = v.AttributeValueAr,
+                        AttributeValueEn = v.AttributeValueEn,
+                        Unit = v.Unit,
+                        ColorLabel = v.ColorLabel,
+                        ColorHex = v.ColorHex
                     }).ToList(),
 
                 // Discounts النشطة والمنتهية
@@ -226,6 +224,8 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
                 MaxPrice = product.MaxPrice,
                 HasVariants = product.HasVariants,
 
+                AttributeKey = isArabic ? product.AttributeKeyAr : product.AttributeKeyEn,
+
                 PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProduct(product) ?? product.BasePrice,
                 MinPriceAfterDiscount = minPriceAfterDiscount,
                 MaxPriceAfterDiscount = maxPriceAfterDiscount,
@@ -241,15 +241,11 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
                         Price = v.Price,
                         PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, v.Price) ?? v.Price,
                         StockQuantity = v.StockQuantity,
-                        Attributes = v.Attributes.Select(a => new ProductVariantAttributeResponse
-                        {
-                            KeyEn = a.ProductAttributeTemplate.KeyEn,
-                            KeyAr = a.ProductAttributeTemplate.KeyAr,
-                            Type = a.ProductAttributeTemplate.Type.ToString(),
-                            ValueEn = a.ValueEn,
-                            ValueAr = a.ValueAr,
-                            ColorHex = a.ColorHex
-                        }).ToList()
+                        AttributeValueEn = v.AttributeValueEn,
+                        AttributeValueAr = v.AttributeValueAr,
+                        Unit = v.Unit,
+                        ColorLabel = v.ColorLabel,
+                        ColorHex = v.ColorHex
                     }).ToList()
             };
 
@@ -271,6 +267,7 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
                 Club = isArabic ? p.ClubAr : p.ClubEn,
                 BrandName = isArabic ? p.Brand.NameAr : p.Brand.NameEn,
                 CategoryName = isArabic ? p.Category.NameAr : p.Category.NameEn,
+                AttributeKey = isArabic ? p.AttributeKeyAr : p.AttributeKeyEn,
                 BasePrice = p.BasePrice,
                 MinPrice = p.MinPrice,
                 MaxPrice = p.MaxPrice,
@@ -279,7 +276,7 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
                 Images = p.Images.Select(i => i.Url).ToList()
             }).ToPaginatedListAsync(request.PageNumber, request.PageSize);
 
-            // ✅ بعد ما الداتا رجعت من الـ DB نحسب الـ discounts و PriceDisplay
+            // ✅ بعد ما الداتا رجعت من الـ DB نحسب الـ discounts 
             var products = await _productService.GetByIdsAsync(result.Data.Select(x => x.Id).ToList());
 
             foreach (var item in result.Data)

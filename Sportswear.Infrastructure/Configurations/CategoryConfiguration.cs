@@ -13,11 +13,6 @@ namespace Sportswear.Infrastructure.Configurations
                    .HasForeignKey(p => p.CategoryId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasMany(c => c.AttributeTemplates)
-                   .WithOne(t => t.Category)
-                   .HasForeignKey(t => t.CategoryId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
             builder.HasQueryFilter(c => !c.IsDeleted);
         }
     }

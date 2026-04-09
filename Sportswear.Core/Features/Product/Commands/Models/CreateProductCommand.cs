@@ -16,5 +16,8 @@ namespace Sportswear.Core.Features.Product.Commands.Models
         public string? ClubAr { get; set; }
         public int BrandId { get; set; }
         public int CategoryId { get; set; }
+
+        public string? AttributeKeyEn { get; set; }
+        public string? AttributeKeyAr { get; set; }
     }
 }

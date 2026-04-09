@@ -37,35 +37,39 @@ namespace Sportswear.Core.Features.ProductVariant.Commands.Validations
             RuleFor(x => x.StockQuantity)
                 .GreaterThanOrEqualTo(0).WithMessage(_localizer[SharedResourcesKeys.MustBeGreaterThanZero]);
 
-            RuleFor(x => x.Attributes)
-                .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required])
-                .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty]);
+            // ✅ AttributeValueEn اختياري
+            RuleFor(x => x.AttributeValueEn)
+                .MaximumLength(200).WithMessage(_localizer[SharedResourcesKeys.MaxLengthIs200])
+                .When(x => !string.IsNullOrEmpty(x.AttributeValueEn));
 
-            RuleForEach(x => x.Attributes).ChildRules(attr =>
-            {
-                attr.RuleFor(a => a.TemplateId)
-                    .GreaterThan(0).WithMessage(_localizer[SharedResourcesKeys.Required]);
+            RuleFor(x => x.AttributeValueAr)
+                .MaximumLength(200).WithMessage(_localizer[SharedResourcesKeys.MaxLengthIs200])
+                .When(x => !string.IsNullOrEmpty(x.AttributeValueAr));
 
-                attr.RuleFor(a => a.ValueEn)
-                    .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required])
-                    .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
-                    .MaximumLength(100).WithMessage(_localizer[SharedResourcesKeys.MaxLengthIs100]);
+            // ✅ Unit اختياري
+            RuleFor(x => x.Unit)
+                .MaximumLength(50).WithMessage(_localizer[SharedResourcesKeys.MaxLengthIs50])
+                .When(x => !string.IsNullOrEmpty(x.Unit));
 
-                attr.RuleFor(a => a.ValueAr)
-                    .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required])
-                    .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
-                    .MaximumLength(100).WithMessage(_localizer[SharedResourcesKeys.MaxLengthIs100]);
+            // ✅ ColorLabel اختياري
+            RuleFor(x => x.ColorLabel)
+                .MaximumLength(100).WithMessage(_localizer[SharedResourcesKeys.MaxLengthIs100])
+                .When(x => !string.IsNullOrEmpty(x.ColorLabel));
 
-                attr.RuleFor(a => a.ColorHex)
-                    .Matches(@"^#([A-Fa-f0-9]{6})$")
-                    .WithMessage(_localizer[SharedResourcesKeys.InvalidColorHex])
-                    .When(a => !string.IsNullOrEmpty(a.ColorHex));
-            });
+            // ✅ ColorHex اختياري بس لو موجود لازم يكون صح
+            RuleFor(x => x.ColorHex)
+                .Matches(@"^#([A-Fa-f0-9]{6})$")
+                .WithMessage(_localizer[SharedResourcesKeys.InvalidColorHex])
+                .When(x => !string.IsNullOrEmpty(x.ColorHex));
+
+            // ✅ لو ColorHex موجود لازم ColorLabel يكون موجود
+            RuleFor(x => x.ColorLabel)
+                .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.Required])
+                .When(x => !string.IsNullOrEmpty(x.ColorHex));
         }
 
         public void ApplyCustomValidationsRules()
         {
-            // تأكد إن الـ Variant موجود
             RuleFor(x => x.Id)
                 .MustAsync(async (id, cancellationToken) =>
                     await _productVariantService.IsProductVariantExistsAsync(id))

@@ -14,8 +14,5 @@ namespace Sportswear.DataAccess.Entities
         public string ImageUrl { get; set; }
 
         public ICollection<Product> Products { get; set; } = new List<Product>();
-
-        public ICollection<ProductAttributeTemplate> AttributeTemplates { get; set; }
-            = new List<ProductAttributeTemplate>();
     }
 }

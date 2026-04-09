@@ -6,16 +6,15 @@ namespace Sportswear.Service.Implementations
     {
         public string Generate(string productCode, List<string> attributeValues)
         {
-            var cleanCode = productCode
-                .ToUpper()
-                .Replace(" ", "-");
+            if (!attributeValues.Any())
+                return productCode.ToUpper().Replace(" ", "-");
 
-            var parts = attributeValues.Select(v =>
-                v.ToUpper()
-                 .Replace(" ", "")
-                 .Substring(0, Math.Min(v.Length, 5)));
+            var parts = attributeValues
+                .Where(v => !string.IsNullOrEmpty(v))
+                .Select(v => v.ToUpper().Replace(" ", "").Substring(0, Math.Min(v.Length, 5)));
 
-            return $"{cleanCode}-{string.Join("-", parts)}";
+            return $"{productCode.ToUpper().Replace(" ", "-")}-{string.Join("-", parts)}";
         }
+        // مثال: "NIKE-TSHIRT" + ["XL", "Red"] → "NIKE-TSHIRT-XL-RED"
     }
 }

@@ -30,8 +30,6 @@ namespace Sportswear.Infrastructure.Repository
                 .Include(p => p.Product_Discounts)
                     .ThenInclude(pd => pd.Discount)
                 .Include(p => p.Variants)
-                    .ThenInclude(v => v.Attributes)
-                        .ThenInclude(a => a.ProductAttributeTemplate)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
         }
@@ -55,8 +53,6 @@ namespace Sportswear.Infrastructure.Repository
                 .Include(c => c.Category)
                 .Include(i => i.Images)
                 .Include(v => v.Variants)
-                    .ThenInclude(v => v.Attributes)
-                        .ThenInclude(a => a.ProductAttributeTemplate)
                 .Include(r => r.Reviews)
                 .Include(d => d.Product_Discounts)
                     .ThenInclude(pd => pd.Discount)

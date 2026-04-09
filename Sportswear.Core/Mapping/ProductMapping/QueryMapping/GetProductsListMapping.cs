@@ -39,7 +39,9 @@ namespace Sportswear.Core.Mapping.ProductMapping
                 .ForMember(dest => dest.Name, obtion => obtion.MapFrom(src => src.Localize(src.NameAr, src.NameEn)))
                 .ForMember(dest => dest.Description, obtion => obtion.MapFrom(src => src.Localize(src.NameAr, src.NameEn)))
                 .ForMember(dest => dest.Club, obtion => obtion.MapFrom(src => src.Localize(src.NameAr, src.NameEn)))
-                .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images.Select(i => i.Url).ToList()));
+                .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images.Select(i => i.Url).ToList()))
+                .ForMember(dest => dest.AttributeKey, opt => opt.MapFrom(src => src.Localize(src.AttributeKeyAr, src.AttributeKeyEn) ?? "N/A"));
+
         }
     }
 }
