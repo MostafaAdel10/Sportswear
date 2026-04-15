@@ -79,6 +79,7 @@ namespace Sportswear.Core.Features.Discount.Queries.Handlers
                 return new DiscountDto
                 {
                     Id = d.Id,
+                    Code = d.Code,
                     NameEn = d.NameEn,
                     NameAr = d.NameAr,
                     Percentage = d.Percentage,
@@ -86,7 +87,8 @@ namespace Sportswear.Core.Features.Discount.Queries.Handlers
                     EndDate = d.EndDate,
                     Status = status,
                     DaysRemaining = daysRemaining,
-                    ProductsCount = d.Product_Discounts?.Count ?? 0
+                    ProductsCount = d.Product_Discounts?.Count ?? 0,
+                    Type = d.Type.ToString()
                 };
             }).ToList();
 
