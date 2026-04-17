@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Sportswear.Service.Abstract;
 using Sportswear.Service.AuthServices.Implementations;
 using Sportswear.Service.AuthServices.Interfaces;
@@ -8,7 +9,9 @@ namespace Sportswear.Service
 {
     public static class ModuleServiceDependencies
     {
-        public static IServiceCollection AddServiceDependencies(this IServiceCollection services)
+        public static IServiceCollection AddServiceDependencies(
+            this IServiceCollection services,
+            IHostEnvironment environment) // ← أضفنا environment
         {
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IProductService, ProductService>();
@@ -18,7 +21,6 @@ namespace Sportswear.Service
             services.AddScoped<IDiscountService, DiscountService>();
             services.AddScoped<IProductVariantService, ProductVariantService>();
             services.AddScoped<IProductImageService, ProductImageService>();
-            services.AddScoped<IFileService, FileService>();
             services.AddScoped<IReviewService, ReviewService>();
             services.AddScoped<IEmailsService, EmailsService>();
             services.AddScoped<IApplicationUserService, ApplicationUserService>();
@@ -32,6 +34,13 @@ namespace Sportswear.Service
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<ISkuGeneratorService, SkuGeneratorService>();
+
+            // FileService — Local في Development، Azure Blob في Production
+            if (environment.IsProduction())
+                services.AddScoped<IFileService, AzureBlobFileService>();
+            else
+                services.AddScoped<IFileService, FileService>();
+
             return services;
         }
     }
