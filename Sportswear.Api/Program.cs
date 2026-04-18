@@ -230,9 +230,14 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(CORS, policy =>
     {
-        policy.AllowAnyHeader()
+        var allowedOrigins = builder.Configuration
+            .GetSection("Cors:AllowedOrigins")
+            .Get<string[]>();
+
+        policy.WithOrigins(allowedOrigins!)
+              .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowAnyOrigin();
+              .AllowCredentials();
     });
 });
 
