@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using Serilog.Sinks.MSSqlServer;
 using Sportswear.Api.Filters;
 using Sportswear.Core;
 using Sportswear.Core.Filters;
@@ -272,8 +273,17 @@ builder.Services.AddScoped<AuthFilter>();
 
 #region Logging (Serilog)
 
+var connectionString = builder.Configuration.GetConnectionString("cs");
+
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
+    .WriteTo.MSSqlServer(
+        connectionString: connectionString,
+        sinkOptions: new MSSqlServerSinkOptions
+        {
+            TableName = "SystemLogs",
+            AutoCreateSqlTable = true
+        })
     .CreateLogger();
 
 builder.Services.AddSerilog();

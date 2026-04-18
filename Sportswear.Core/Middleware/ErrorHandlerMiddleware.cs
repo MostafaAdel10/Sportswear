@@ -76,7 +76,7 @@ namespace Sportswear.Core.Middleware
 
                     default:
                         // unhandled error
-                        responseModel.Message = error.Message;
+                        responseModel.Message = error?.Message ?? "Unexpected error";
                         responseModel.StatusCode = HttpStatusCode.InternalServerError;
                         response.StatusCode = (int)HttpStatusCode.InternalServerError;
                         break;
