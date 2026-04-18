@@ -35,7 +35,7 @@ namespace Sportswear.Api.Controllers
         [HttpGet(Router.DiscountRouting.GetByIdToEdit)]
         public async Task<IActionResult> GetActiveDiscountByIdToEdit([FromRoute] int id)
         {
-            var response = await Mediator.Send(new GetActiveDiscountByIdToEditQuery(id));
+            var response = await Mediator.Send(new GetDiscountByIdToEditQuery(id));
             return NewResult(response);
         }
 

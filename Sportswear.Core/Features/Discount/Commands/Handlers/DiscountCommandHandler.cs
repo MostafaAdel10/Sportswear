@@ -60,7 +60,7 @@ namespace Sportswear.Core.Features.Discount.Commands.Handlers
                 return Unauthorized<string>();
 
             // Check if Discount exists
-            var existingDiscount = await _discountService.GetActiveDiscountByIdAsync(request.Id);
+            var existingDiscount = await _discountService.GetByIdAsync(request.Id);
             if (existingDiscount == null)
                 return NotFound<string>(_stringLocalizer[SharedResourcesKeys.NotFound]);
 
@@ -85,7 +85,7 @@ namespace Sportswear.Core.Features.Discount.Commands.Handlers
                 return Unauthorized<string>();
 
             // Check if Discount exists
-            var existingDiscount = await _discountService.GetActiveDiscountByIdAsync(request.Id);
+            var existingDiscount = await _discountService.GetByIdAsync(request.Id);
             if (existingDiscount == null)
                 return NotFound<string>(_stringLocalizer[SharedResourcesKeys.NotFound]);
 

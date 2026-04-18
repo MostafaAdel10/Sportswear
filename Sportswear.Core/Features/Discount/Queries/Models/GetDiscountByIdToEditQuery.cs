@@ -4,9 +4,9 @@ using Sportswear.Core.Features.Discount.Queries.Response_DTO_;
 
 namespace Sportswear.Core.Features.Discount.Queries.Models
 {
-    public class GetActiveDiscountByIdToEditQuery : IRequest<Response<GetDiscountByIdToEditResponse>>
+    public class GetDiscountByIdToEditQuery : IRequest<Response<GetDiscountByIdToEditResponse>>
     {
-        public GetActiveDiscountByIdToEditQuery(int id)
+        public GetDiscountByIdToEditQuery(int id)
         {
             Id = id;
         }

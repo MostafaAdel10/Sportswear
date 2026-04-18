@@ -191,7 +191,8 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services
     .AddInfrastructureDependencies()
-    .AddServiceDependencies(builder.Environment)
+    .AddServiceDependencies()
+    //.AddServiceDependencies(builder.Environment)
     .AddCoreDependencies();
 
 #endregion
