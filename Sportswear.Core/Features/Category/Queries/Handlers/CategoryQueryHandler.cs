@@ -6,6 +6,7 @@ using Sportswear.Core.Features.Category.Queries.Models;
 using Sportswear.Core.Features.Category.Queries.Response_DTO_;
 using Sportswear.Core.Resources;
 using Sportswear.Service.Abstract;
+using Sportswear.Service.Implementations;
 
 namespace Sportswear.Core.Features.Category.Queries.Handlers
 {
@@ -18,39 +19,61 @@ namespace Sportswear.Core.Features.Category.Queries.Handlers
         private readonly ICategoryService _categoryService;
         private readonly IMapper _mapper;
         private readonly IStringLocalizer<SharedResources> _stringLocalizer;
+        private readonly ICacheService _cacheService;
         #endregion
 
         #region Constructors
         public CategoryQueryHandler(ICategoryService categoryService, IMapper mapper,
-            IStringLocalizer<SharedResources> stringLocalizer) : base(stringLocalizer)
+            IStringLocalizer<SharedResources> stringLocalizer, ICacheService cacheService) : base(stringLocalizer)
         {
             _categoryService = categoryService;
             _mapper = mapper;
             _stringLocalizer = stringLocalizer;
+            _cacheService = cacheService;
         }
         #endregion
 
         #region Handel Functions
         public async Task<Response<List<GetCategoriesListResponse>>> Handle(GetCategoriesListQuery request, CancellationToken cancellationToken)
         {
-            var categoriesList = await _categoryService.GetCategoriesListAsync();
-            var categoriesListMapper = _mapper.Map<List<GetCategoriesListResponse>>(categoriesList);
+            // 1. Check Cache
+            var cached = _cacheService.Get<List<GetCategoriesListResponse>>(CacheKeys.Categories);
+            if (cached != null)
+                return Success(cached);
 
-            var result = Success(categoriesListMapper);
-            result.Meta = new { Count = categoriesListMapper.Count() };
+            // 2. Not found → Pocket from DB
+            var categoriesList = await _categoryService.GetCategoriesListAsync();
+            var mapped = _mapper.Map<List<GetCategoriesListResponse>>(categoriesList);
+
+            // 3. Store in a cache for 60 minutes.
+            _cacheService.Set(CacheKeys.Categories, mapped, TimeSpan.FromMinutes(60));
+
+            var result = Success(mapped);
+            result.Meta = new { Count = mapped.Count() };
             return result;
         }
 
         public async Task<Response<GetCategoryByIdResponse>> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
         {
+            var cacheKey = string.Format(CacheKeys.CategoryById, request.Id);
+
+            // 1. Check Cache
+            var cached = _cacheService.Get<GetCategoryByIdResponse>(cacheKey);
+            if (cached != null)
+                return Success(cached);
+
+            // 2. Not found → Pocket from DB
             var category = await _categoryService.GetByIdAsync(request.Id);
-
             if (category is null)
-                return NotFound<GetCategoryByIdResponse>(_stringLocalizer[SharedResourcesKeys.CategoryNotFound]);
+                return NotFound<GetCategoryByIdResponse>(
+                    _stringLocalizer[SharedResourcesKeys.CategoryNotFound]);
 
-            var result = _mapper.Map<GetCategoryByIdResponse>(category);
+            var mapped = _mapper.Map<GetCategoryByIdResponse>(category);
 
-            return Success(result);
+            // 3. Store in a cache for 60 minutes.
+            _cacheService.Set(cacheKey, mapped, TimeSpan.FromMinutes(60));
+
+            return Success(mapped);
         }
 
         public async Task<Response<GetCategoryByIdToEditResponse>> Handle(GetCategoryByIdToEditQuery request, CancellationToken cancellationToken)

@@ -6,6 +6,7 @@ using Sportswear.Core.Features.Product.Commands.Models;
 using Sportswear.Core.Resources;
 using Sportswear.Service.Abstract;
 using Sportswear.Service.AuthServices.Interfaces;
+using Sportswear.Service.Implementations;
 
 namespace Sportswear.Core.Features.Product.Commands.Handlers
 {
@@ -21,6 +22,7 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
         private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
         private readonly IStringLocalizer<SharedResources> _localizer;
+        private readonly ICacheService _cacheService;
         #endregion
 
         #region Constructors
@@ -29,7 +31,8 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
                                      IFileService fileService,
                                      ICurrentUserService currentUserService,
                                      IMapper mapper,
-                                     IStringLocalizer<SharedResources> stringLocalizer) : base(stringLocalizer)
+                                     IStringLocalizer<SharedResources> stringLocalizer,
+                                     ICacheService cacheService) : base(stringLocalizer)
         {
             _productService = productService;
             _product_DiscountService = product_DiscountService;
@@ -37,6 +40,7 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
             _currentUserService = currentUserService;
             _mapper = mapper;
             _localizer = stringLocalizer;
+            _cacheService = cacheService;
         }
         #endregion
 
@@ -57,9 +61,12 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
 
             var productId = await _productService.AddAsync(product);
 
-            return productId > 0
-                ? Success(productId, _localizer[SharedResourcesKeys.Created])
-                : BadRequest<int>();
+            if (productId > 0)
+            {
+                _cacheService.Remove(CacheKeys.ProductsList);
+                return Success(productId, _localizer[SharedResourcesKeys.Created]);
+            }
+            return BadRequest<int>();
         }
 
         public async Task<Response<string>> Handle(EditProductCommand request, CancellationToken cancellationToken)
@@ -87,9 +94,16 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
 
             var isSuccess = await _productService.EditAsync(existingProduct);
 
-            return isSuccess
-                ? Success<string>(_localizer[SharedResourcesKeys.Updated])
-                : BadRequest<string>();
+            if (isSuccess)
+            {
+                // ✅ Clear all product-related cache
+                _cacheService.Remove(CacheKeys.ProductsList);
+                _cacheService.Remove(string.Format(CacheKeys.ProductById, request.Id));
+                _cacheService.Remove(string.Format(CacheKeys.ProductFullDetails, request.Id));
+                _cacheService.Remove(string.Format(CacheKeys.ProductWithVariants, request.Id));
+                return Success<string>(_localizer[SharedResourcesKeys.Updated]);
+            }
+            return BadRequest<string>();
         }
 
         public async Task<Response<string>> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
@@ -133,9 +147,16 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
 
             var isDeleted = await _productService.EditAsync(existingProduct);
 
-            return isDeleted
-                ? Success<string>(_localizer[SharedResourcesKeys.Deleted])
-                : BadRequest<string>();
+            if (isDeleted)
+            {
+                // ✅ Clear all cache
+                _cacheService.Remove(CacheKeys.ProductsList);
+                _cacheService.Remove(string.Format(CacheKeys.ProductById, request.Id));
+                _cacheService.Remove(string.Format(CacheKeys.ProductFullDetails, request.Id));
+                _cacheService.Remove(string.Format(CacheKeys.ProductWithVariants, request.Id));
+                return Success<string>(_localizer[SharedResourcesKeys.Deleted]);
+            }
+            return BadRequest<string>();
         }
         #endregion
     }

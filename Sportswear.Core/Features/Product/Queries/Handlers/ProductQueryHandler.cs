@@ -7,6 +7,7 @@ using Sportswear.Core.Features.Product.Queries.Response_DTO_;
 using Sportswear.Core.Resources;
 using Sportswear.Core.Wrappers;
 using Sportswear.Service.Abstract;
+using Sportswear.Service.Implementations;
 
 namespace Sportswear.Core.Features.Product.Queries.Handlers
 {
@@ -22,26 +23,35 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
         private readonly IProductService _productService;
         private readonly IMapper _mapper;
         private readonly IStringLocalizer<SharedResources> _stringLocalizer;
+        private readonly ICacheService _cacheService;
         #endregion
 
         #region Constructors
         public ProductQueryHandler(IProductService productService, IMapper mapper,
-            IStringLocalizer<SharedResources> stringLocalizer) : base(stringLocalizer)
+            IStringLocalizer<SharedResources> stringLocalizer, ICacheService cacheService) : base(stringLocalizer)
         {
             _productService = productService;
             _mapper = mapper;
             _stringLocalizer = stringLocalizer;
+            _cacheService = cacheService;
         }
         #endregion
 
         #region Handel Functions
         public async Task<Response<GetProductFullDetailsResponse>> Handle(GetProductFullDetailsQuery request, CancellationToken cancellationToken)
         {
+            var cacheKey = string.Format(CacheKeys.ProductFullDetails, request.Id);
+
+            // 1. Check Cache
+            var cached = _cacheService.Get<GetProductFullDetailsResponse>(cacheKey);
+            if (cached != null)
+                return Success(cached);
+
+            // 2. Pocket of DB
             var product = await _productService.GetProductWithIncludesFullDetailsAsync(request.Id);
             if (product == null)
-                return NotFound<GetProductFullDetailsResponse>(_stringLocalizer[SharedResourcesKeys.ProductNotFound]);
-
-            bool isArabic = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.ToLower().Equals("ar");
+                return NotFound<GetProductFullDetailsResponse>(
+                    _stringLocalizer[SharedResourcesKeys.ProductNotFound]);
 
             var now = DateTime.UtcNow;
 
@@ -89,7 +99,7 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
                     .Select(i => i.Url)
                     .ToList(),
 
-                // Variants مع Attributes
+                // Variants With Attributes
                 Variants = product.Variants
                     .Where(v => !v.IsDeleted)
                     .Select(v => new FullProductVariantDto
@@ -106,7 +116,7 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
                         ColorHex = v.ColorHex
                     }).ToList(),
 
-                // Discounts النشطة والمنتهية
+                // Active and Expired Discounts
                 Discounts = product.Product_Discounts
                     .Where(pd => !pd.Discount.IsDeleted)
                     .Select(pd => new ProductDiscountDto
@@ -138,18 +148,26 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
                 ReviewsCount = product.Reviews.Count(r => !r.IsDeleted)
             };
 
+            // 3. Save in Cache for 5 minutes (discounts may change during this time)
+            _cacheService.Set(cacheKey, response, TimeSpan.FromMinutes(5));
+
             return Success(response);
         }
 
         public async Task<Response<List<GetProductsListResponse>>> Handle(GetProductsListQuery request, CancellationToken cancellationToken)
         {
-            var prodctsList = await _productService.GetProductsListWithIncludesAsync();
-            var prodctsListMapper = _mapper.Map<List<GetProductsListResponse>>(prodctsList);
+            // 1. Check Cache
+            var cached = _cacheService.Get<List<GetProductsListResponse>>(CacheKeys.ProductsList);
+            if (cached != null)
+                return Success(cached);
 
-            foreach (var productDto in prodctsListMapper)
+            // 2. Pocket of DB
+            var productsList = await _productService.GetProductsListWithIncludesAsync();
+            var mapped = _mapper.Map<List<GetProductsListResponse>>(productsList);
+
+            foreach (var productDto in mapped)
             {
-                var product = prodctsList.First(p => p.Id == productDto.Id);
-
+                var product = productsList.First(p => p.Id == productDto.Id);
                 productDto.MinPrice = product.MinPrice;
                 productDto.MaxPrice = product.MaxPrice;
                 productDto.HasVariants = product.HasVariants;
@@ -159,29 +177,41 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
                 productDto.MaxPriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, product.MaxPrice) ?? product.MaxPrice;
             }
 
-            var result = Success(prodctsListMapper);
-            result.Meta = new { Count = prodctsListMapper.Count() };
+            // 3. Save in Cache for 10 minutes
+            _cacheService.Set(CacheKeys.ProductsList, mapped, TimeSpan.FromMinutes(10));
+
+            var result = Success(mapped);
+            result.Meta = new { Count = mapped.Count() };
             return result;
         }
 
         public async Task<Response<GetProductByIdResponse>> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
         {
-            var product = await _productService.GetByIdWithIncludesAsync(request.Id);
+            var cacheKey = string.Format(CacheKeys.ProductById, request.Id);
 
+            // 1. Check Cache
+            var cached = _cacheService.Get<GetProductByIdResponse>(cacheKey);
+            if (cached != null)
+                return Success(cached);
+
+            // 2. Pocket of DB
+            var product = await _productService.GetByIdWithIncludesAsync(request.Id);
             if (product is null)
                 return NotFound<GetProductByIdResponse>(_stringLocalizer[SharedResourcesKeys.ProductNotFound]);
 
-            var result = _mapper.Map<GetProductByIdResponse>(product);
+            var mapped = _mapper.Map<GetProductByIdResponse>(product);
+            mapped.MinPrice = product.MinPrice;
+            mapped.MaxPrice = product.MaxPrice;
+            mapped.HasVariants = product.HasVariants;
 
-            result.MinPrice = product.MinPrice;
-            result.MaxPrice = product.MaxPrice;
-            result.HasVariants = product.HasVariants;
+            mapped.PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProduct(product) ?? product.BasePrice;
+            mapped.MinPriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, product.MinPrice) ?? product.MinPrice;
+            mapped.MaxPriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, product.MaxPrice) ?? product.MaxPrice;
 
-            result.PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProduct(product) ?? product.BasePrice;
-            result.MinPriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, product.MinPrice) ?? product.MinPrice;
-            result.MaxPriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, product.MaxPrice) ?? product.MaxPrice;
+            // 3. Save in Cache for 10 minutes
+            _cacheService.Set(cacheKey, mapped, TimeSpan.FromMinutes(10));
 
-            return Success(result);
+            return Success(mapped);
         }
 
         public async Task<Response<GetProductByIdToEditResponse>> Handle(GetProductByIdToEditQuery request, CancellationToken cancellationToken)
@@ -198,8 +228,15 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
 
         public async Task<Response<GetProductByIdWithVariantsResponse>> Handle(GetProductByIdWithVariantsQuery request, CancellationToken cancellationToken)
         {
-            var product = await _productService.GetByIdWithIncludesAsync(request.Id);
+            var cacheKey = string.Format(CacheKeys.ProductWithVariants, request.Id);
 
+            // 1. Check Cache
+            var cached = _cacheService.Get<GetProductByIdWithVariantsResponse>(cacheKey);
+            if (cached != null)
+                return Success(cached);
+
+            // 2. Pocket of DB
+            var product = await _productService.GetByIdWithIncludesAsync(request.Id);
             if (product == null)
                 return NotFound<GetProductByIdWithVariantsResponse>(_stringLocalizer[SharedResourcesKeys.ProductNotFound]);
 
@@ -231,23 +268,23 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
                 MaxPriceAfterDiscount = maxPriceAfterDiscount,
 
                 Images = product.Images.Select(i => i.Url).ToList(),
-
-                Variants = product.Variants
-                    .Where(v => !v.IsDeleted)
-                    .Select(v => new ProductVariantResponse
-                    {
-                        Id = v.Id,
-                        SKU = v.SKU,
-                        Price = v.Price,
-                        PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, v.Price) ?? v.Price,
-                        StockQuantity = v.StockQuantity,
-                        AttributeValueEn = v.AttributeValueEn,
-                        AttributeValueAr = v.AttributeValueAr,
-                        Unit = v.Unit,
-                        ColorLabel = v.ColorLabel,
-                        ColorHex = v.ColorHex
-                    }).ToList()
+                Variants = product.Variants.Where(v => !v.IsDeleted).Select(v => new ProductVariantResponse
+                {
+                    Id = v.Id,
+                    SKU = v.SKU,
+                    Price = v.Price,
+                    PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, v.Price) ?? v.Price,
+                    StockQuantity = v.StockQuantity,
+                    AttributeValueEn = v.AttributeValueEn,
+                    AttributeValueAr = v.AttributeValueAr,
+                    Unit = v.Unit,
+                    ColorLabel = v.ColorLabel,
+                    ColorHex = v.ColorHex
+                }).ToList()
             };
+
+            // 3. Save in Cache for 5 minutes
+            _cacheService.Set(cacheKey, response, TimeSpan.FromMinutes(5));
 
             return Success(response);
         }

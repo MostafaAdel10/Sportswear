@@ -5,6 +5,7 @@ using Sportswear.Core.Features.Category.Commands.Models;
 using Sportswear.Core.Resources;
 using Sportswear.Service.Abstract;
 using Sportswear.Service.AuthServices.Interfaces;
+using Sportswear.Service.Implementations;
 
 namespace Sportswear.Core.Features.Category.Commands.Handlers
 {
@@ -19,6 +20,7 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
         private readonly IFileService _fileService;
         private readonly ICurrentUserService _currentUserService;
         private readonly IStringLocalizer<SharedResources> _stringLocalizer;
+        private readonly ICacheService _cacheService;
         #endregion
 
         #region Constructors
@@ -26,13 +28,15 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
             IFileService fileService,
             IProductService productService,
             ICurrentUserService currentUserService,
-            IStringLocalizer<SharedResources> stringLocalizer) : base(stringLocalizer)
+            IStringLocalizer<SharedResources> stringLocalizer,
+            ICacheService cacheService) : base(stringLocalizer)
         {
             _categoryService = categoryService;
             _productService = productService;
             _fileService = fileService;
             _currentUserService = currentUserService;
             _stringLocalizer = stringLocalizer;
+            _cacheService = cacheService;
         }
         #endregion
 
@@ -61,9 +65,14 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
 
             var categoryId = await _categoryService.AddAsync(category);
 
-            return categoryId > 0
-                ? Success(categoryId, _stringLocalizer[SharedResourcesKeys.Created])
-                : BadRequest<int>();
+            if (categoryId > 0)
+            {
+                // ✅ Clear the cache to update
+                _cacheService.Remove(CacheKeys.Categories);
+                return Success(categoryId, _stringLocalizer[SharedResourcesKeys.Created]);
+            }
+
+            return BadRequest<int>();
         }
 
         public async Task<Response<string>> Handle(EditCategoryCommand request, CancellationToken cancellationToken)
@@ -96,7 +105,12 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
             var isSuccess = await _categoryService.EditAsync(existingCategory);
 
             if (isSuccess)
+            {
+                // ✅ Clear the cache
+                _cacheService.Remove(CacheKeys.Categories);
+                _cacheService.Remove(string.Format(CacheKeys.CategoryById, request.Id));
                 return Success<string>(_stringLocalizer[SharedResourcesKeys.Updated]);
+            }
 
             return BadRequest<string>();
         }
@@ -127,9 +141,15 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
 
             var isSuccess = await _categoryService.EditAsync(existingCategory);
 
-            return isSuccess
-                ? Success<string>(_stringLocalizer[SharedResourcesKeys.Deleted])
-                : BadRequest<string>();
+            if (isSuccess)
+            {
+                // ✅ Clear the cache
+                _cacheService.Remove(CacheKeys.Categories);
+                _cacheService.Remove(string.Format(CacheKeys.CategoryById, request.Id));
+                return Success<string>(_stringLocalizer[SharedResourcesKeys.Deleted]);
+            }
+
+            return BadRequest<string>();
         }
         #endregion
     }

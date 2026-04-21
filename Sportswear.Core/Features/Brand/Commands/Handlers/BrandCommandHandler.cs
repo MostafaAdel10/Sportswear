@@ -6,6 +6,7 @@ using Sportswear.Core.Features.Brand.Commands.Models;
 using Sportswear.Core.Resources;
 using Sportswear.Service.Abstract;
 using Sportswear.Service.AuthServices.Interfaces;
+using Sportswear.Service.Implementations;
 
 namespace Sportswear.Core.Features.Brand.Commands.Handlers
 {
@@ -21,13 +22,14 @@ namespace Sportswear.Core.Features.Brand.Commands.Handlers
         private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
         private readonly IStringLocalizer<SharedResources> _stringLocalizer;
+        private readonly ICacheService _cacheService;
         #endregion
 
         #region Constructors
         public BrandCommandHandler(IBrandService brandService, ICurrentUserService currentUserService,
             IFileService fileService,
             IMapper mapper, IProductService productService,
-            IStringLocalizer<SharedResources> stringLocalizer) : base(stringLocalizer)
+            IStringLocalizer<SharedResources> stringLocalizer, ICacheService cacheService) : base(stringLocalizer)
         {
             _brandService = brandService;
             _productService = productService;
@@ -35,6 +37,7 @@ namespace Sportswear.Core.Features.Brand.Commands.Handlers
             _currentUserService = currentUserService;
             _mapper = mapper;
             _stringLocalizer = stringLocalizer;
+            _cacheService = cacheService;
         }
         #endregion
 
@@ -64,9 +67,11 @@ namespace Sportswear.Core.Features.Brand.Commands.Handlers
             var isSuccess = await _brandService.AddAsync(brand);
 
             if (isSuccess)
+            {
+                _cacheService.Remove(CacheKeys.Brands); // ✅ امسح Cache
                 return Created("");
-            else
-                return BadRequest<string>();
+            }
+            return BadRequest<string>();
         }
 
         public async Task<Response<string>> Handle(EditBrandCommand request, CancellationToken cancellationToken)
@@ -100,9 +105,12 @@ namespace Sportswear.Core.Features.Brand.Commands.Handlers
             var isSuccess = await _brandService.EditAsync(existingBrand);
 
             if (isSuccess)
+            {
+                _cacheService.Remove(CacheKeys.Brands); // ✅ امسح Cache
+                _cacheService.Remove(string.Format(CacheKeys.BrandById, request.Id));
                 return Success<string>(_stringLocalizer[SharedResourcesKeys.Updated]);
-            else
-                return BadRequest<string>();
+            }
+            return BadRequest<string>();
         }
 
         public async Task<Response<string>> Handle(DeleteBrandCommand request, CancellationToken cancellationToken)
@@ -131,9 +139,13 @@ namespace Sportswear.Core.Features.Brand.Commands.Handlers
 
             var isSuccess = await _brandService.EditAsync(existingBrand);
 
-            return isSuccess
-                ? Success<string>(_stringLocalizer[SharedResourcesKeys.Deleted])
-                : BadRequest<string>();
+            if (isSuccess)
+            {
+                _cacheService.Remove(CacheKeys.Brands); // ✅ امسح Cache
+                _cacheService.Remove(string.Format(CacheKeys.BrandById, request.Id));
+                return Success<string>(_stringLocalizer[SharedResourcesKeys.Deleted]);
+            }
+            return BadRequest<string>();
         }
         #endregion
     }
