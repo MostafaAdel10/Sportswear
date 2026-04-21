@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Sportswear.Api.Base;
+using Sportswear.Api.Helper;
 using Sportswear.Core.Features.Product.Commands.Models;
 using Sportswear.Core.Features.Product.Queries.Models;
 using Sportswear.DataAccess.AppMetaData;
 
 namespace Sportswear.Api.Controllers
 {
-    //[Route("api/[controller]")]
-    [ApiController]
+    [EnableRateLimiting(RateLimitingPolicies.Api)]
     public class ProductController : AppControllerBase
     {
         [Authorize(Roles = "Admin")]
@@ -31,7 +32,7 @@ namespace Sportswear.Api.Controllers
         public async Task<IActionResult> GetProductsList()
         {
             var response = await Mediator.Send(new GetProductsListQuery());
-            return Ok(response);
+            return NewResult(response);
         }
 
         [AllowAnonymous]

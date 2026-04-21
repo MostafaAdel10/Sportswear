@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Sportswear.Api.Base;
+using Sportswear.Api.Helper;
 using Sportswear.Core.Features.CartItem.Commands.Models;
 using Sportswear.Core.Features.CartItem.Queries.Models;
 using Sportswear.DataAccess.AppMetaData;
@@ -9,20 +11,21 @@ namespace Sportswear.Api.Controllers
 {
     [ApiController]
     [Authorize(Roles = "User")]
+    [EnableRateLimiting(RateLimitingPolicies.Api)]
     public class CartItemController : AppControllerBase
     {
         [HttpGet(Router.CartItemRouting.List)]
         public async Task<IActionResult> GetCartItemsList()
         {
             var response = await Mediator.Send(new GetCartItemsListQuery());
-            return Ok(response);
+            return NewResult(response);
         }
 
         [HttpGet(Router.CartItemRouting.GetCartSummary)]
         public async Task<IActionResult> GetCartSummary()
         {
             var response = await Mediator.Send(new GetCartSummaryQuery());
-            return Ok(response);
+            return NewResult(response);
         }
 
         [HttpGet(Router.CartItemRouting.GetById)]

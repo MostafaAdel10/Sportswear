@@ -1,15 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Sportswear.Api.Base;
+using Sportswear.Api.Helper;
 using Sportswear.Core.Features.Review.Commands.Models;
 using Sportswear.Core.Features.Review.Queries.Models;
 using Sportswear.DataAccess.AppMetaData;
 
 namespace Sportswear.Api.Controllers
 {
+    [EnableRateLimiting(RateLimitingPolicies.Api)]
     public class ReviewController : AppControllerBase
     {
-        [Authorize(Roles = "Admin")]
+        [AllowAnonymous]
         [HttpGet(Router.ReviewRouting.GetReviewsByProductId)]
         public async Task<IActionResult> GetReviewsByProductId([FromRoute] int productId)
         {
@@ -17,7 +20,7 @@ namespace Sportswear.Api.Controllers
             return NewResult(response);
         }
 
-        [Authorize(Roles = "Admin")]
+        [AllowAnonymous]
         [HttpGet(Router.ReviewRouting.GetById)]
         public async Task<IActionResult> GetReviewById([FromRoute] int id)
         {
@@ -27,6 +30,7 @@ namespace Sportswear.Api.Controllers
 
         [Authorize(Roles = "Admin,User")]
         [HttpPost(Router.ReviewRouting.Create)]
+        [EnableRateLimiting(RateLimitingPolicies.Review)]
         public async Task<IActionResult> Create([FromBody] AddReviewCommand command)
         {
             var response = await Mediator.Send(command);
@@ -35,6 +39,7 @@ namespace Sportswear.Api.Controllers
 
         [Authorize(Roles = "Admin,User")]
         [HttpPut(Router.ReviewRouting.Edit)]
+        [EnableRateLimiting(RateLimitingPolicies.Review)]
         public async Task<IActionResult> Edit([FromBody] EditReviewCommand command)
         {
             var response = await Mediator.Send(command);

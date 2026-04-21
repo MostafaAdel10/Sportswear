@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Sportswear.Api.Base;
+using Sportswear.Api.Helper;
 using Sportswear.Core.Features.Discount.Commands.Models;
 using Sportswear.Core.Features.Discount.Queries.Models;
 using Sportswear.DataAccess.AppMetaData;
@@ -9,9 +11,9 @@ using Sportswear.DataAccess.Enums;
 namespace Sportswear.Api.Controllers
 {
     [Authorize(Roles = "Admin")]
+    [EnableRateLimiting(RateLimitingPolicies.Api)]
     public class DiscountController : AppControllerBase
     {
-        [Authorize(Roles = "Admin")]
         [HttpGet(Router.DiscountRouting.GetAll)]
         public async Task<IActionResult> GetAllDiscounts([FromQuery] DiscountStatusFilter status = DiscountStatusFilter.All)
         {
@@ -22,7 +24,7 @@ namespace Sportswear.Api.Controllers
         public async Task<IActionResult> GetActiveDiscountsList()
         {
             var response = await Mediator.Send(new GetActiveDiscountsQuery());
-            return Ok(response);
+            return NewResult(response);
         }
 
         [HttpGet(Router.DiscountRouting.GetById)]

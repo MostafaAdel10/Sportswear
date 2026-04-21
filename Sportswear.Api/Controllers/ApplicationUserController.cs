@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Sportswear.Api.Base;
+using Sportswear.Api.Helper;
 using Sportswear.Core.Features.User.Commands.Models;
 using Sportswear.Core.Features.User.Queries.Models;
 using Sportswear.DataAccess.AppMetaData;
@@ -13,6 +15,7 @@ namespace Sportswear.Api.Controllers
     {
         [AllowAnonymous]
         [HttpPost(Router.ApplicationUserRouting.Create)]
+        [EnableRateLimiting(RateLimitingPolicies.Register)]
         public async Task<IActionResult> Create([FromBody] AddUserCommand command)
         {
             var response = await Mediator.Send(command);
@@ -20,6 +23,7 @@ namespace Sportswear.Api.Controllers
         }
 
         [HttpPut(Router.ApplicationUserRouting.Edit)]
+        [EnableRateLimiting(RateLimitingPolicies.Api)]
         public async Task<IActionResult> Edit([FromBody] EditUserCommand command)
         {
             var response = await Mediator.Send(command);
@@ -33,6 +37,7 @@ namespace Sportswear.Api.Controllers
         }
 
         [HttpPut(Router.ApplicationUserRouting.ChangePassword)]
+        [EnableRateLimiting(RateLimitingPolicies.ResetPassword)]
         public async Task<IActionResult> ChangePassword([FromBody] ChangeUserPasswordCommand command)
         {
             var response = await Mediator.Send(command);

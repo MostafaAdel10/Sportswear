@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Sportswear.Api.Base;
+using Sportswear.Api.Helper;
 using Sportswear.Core.Features.ProductImage.Commands.Models;
 using Sportswear.DataAccess.AppMetaData;
 
@@ -10,6 +12,7 @@ namespace Sportswear.Api.Controllers
     public class ProductImageController : AppControllerBase
     {
         [HttpPost(Router.ProductImageRouting.CreateProductImages)]
+        [EnableRateLimiting(RateLimitingPolicies.Upload)]
         public async Task<IActionResult> CreateProductImages([FromForm] AddProductImagesCommand command)
         {
             var response = await Mediator.Send(command);
@@ -17,6 +20,7 @@ namespace Sportswear.Api.Controllers
         }
 
         [HttpPost(Router.ProductImageRouting.CreateProductImage)]
+        [EnableRateLimiting(RateLimitingPolicies.Upload)]
         public async Task<IActionResult> CreateProductImage([FromForm] AddProductImageCommand command)
         {
             var response = await Mediator.Send(command);
@@ -24,6 +28,7 @@ namespace Sportswear.Api.Controllers
         }
 
         [HttpPut(Router.ProductImageRouting.Edit)]
+        [EnableRateLimiting(RateLimitingPolicies.Upload)]
         public async Task<IActionResult> Edit([FromForm] EditProductImageCommand command)
         {
             var response = await Mediator.Send(command);

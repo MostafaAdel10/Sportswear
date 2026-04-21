@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Sportswear.Api.Base;
+using Sportswear.Api.Helper;
 using Sportswear.Core.Features.Product_Discount.Commands.Models;
 using Sportswear.Core.Features.Product_Discount.Queries.Models;
 using Sportswear.DataAccess.AppMetaData;
 
 namespace Sportswear.Api.Controllers
 {
+    [EnableRateLimiting(RateLimitingPolicies.Api)]
     public class Product_DiscountController : AppControllerBase
     {
         [AllowAnonymous]

@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Sportswear.Api.Base;
+using Sportswear.Api.Helper;
 using Sportswear.Core.Features.Order.Commands.Models;
 using Sportswear.Core.Features.Order.Queries.Models;
 using Sportswear.DataAccess.AppMetaData;
 
 namespace Sportswear.Api.Controllers
 {
+    [EnableRateLimiting(RateLimitingPolicies.Order)]
     public class OrderController : AppControllerBase
     {
         [Authorize(Roles = "Admin")]
@@ -53,7 +56,7 @@ namespace Sportswear.Api.Controllers
         public async Task<IActionResult> GetOrderListForCurrentUser()
         {
             var response = await Mediator.Send(new GetOrderListForCurrentUserQuery());
-            return Ok(response);
+            return NewResult(response);
         }
 
         [Authorize(Roles = "Admin")]
@@ -61,7 +64,7 @@ namespace Sportswear.Api.Controllers
         public async Task<IActionResult> GetAllOrders()
         {
             var response = await Mediator.Send(new GetAllOrdersQuery());
-            return Ok(response);
+            return NewResult(response);
         }
 
         [Authorize(Roles = "Admin")]

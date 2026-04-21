@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Sportswear.Api.Base;
+using Sportswear.Api.Helper;
 using Sportswear.Core.Features.Category.Commands.Models;
 using Sportswear.Core.Features.Category.Queries.Models;
 using Sportswear.DataAccess.AppMetaData;
 
 namespace Sportswear.Api.Controllers
 {
+    [EnableRateLimiting(RateLimitingPolicies.Api)]
     public class CategoryController : AppControllerBase
     {
         [AllowAnonymous]
@@ -14,7 +17,7 @@ namespace Sportswear.Api.Controllers
         public async Task<IActionResult> GetCategoriesList()
         {
             var response = await Mediator.Send(new GetCategoriesListQuery());
-            return Ok(response);
+            return NewResult(response);
         }
 
         [AllowAnonymous]

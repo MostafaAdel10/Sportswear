@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Sportswear.Api.Base;
+using Sportswear.Api.Helper;
 using Sportswear.Core.Features.Authorization.Commands.Models;
 using Sportswear.Core.Features.Authorization.Queries.Models;
 using Sportswear.DataAccess.AppMetaData;
@@ -10,6 +12,7 @@ namespace Sportswear.Api.Controllers
 {
     [ApiController]
     [Authorize(Roles = "Admin")]
+    [EnableRateLimiting(RateLimitingPolicies.Api)]
     public class AuthorizationController : AppControllerBase
     {
         [HttpPost(Router.AuthorizationRouting.Create)]
