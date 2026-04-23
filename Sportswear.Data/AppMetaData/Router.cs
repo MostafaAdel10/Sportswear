@@ -8,6 +8,15 @@
         public const string version = "V1";
         public const string Rule = root + "/" + version + "/";
 
+        public static class PosSaleRouting
+        {
+            public const string Prefix = Rule + "PosSale";
+            public const string Create = Prefix + "/Create";
+            public const string Cancel = Prefix + "/Cancel/{id}";
+            public const string GetById = Prefix + "/GetById/{id}";
+            public const string List = Prefix + "/List";
+        }
+
         public static class OrderRouting
         {
             public const string Prefix = Rule + "Order";
@@ -17,6 +26,7 @@
             public const string GetByUserId = Prefix + "/user/{userId:int}";
             public const string GetFullDetailsByOrderId = Prefix + "/full-details/{id}";
             public const string Create = Prefix + "/Create";
+            public const string Cancel = Prefix + "/Cancel/{id}";
             public const string EditOrderStatus = Prefix + "/order-status";
             public const string EditPaymentStatus = Prefix + "/payment-status";
         }

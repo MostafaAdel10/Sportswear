@@ -1,0 +1,17 @@
+﻿namespace Sportswear.Core.Features.PosSale.Queries.Response_DTO_
+{
+    public class GetPosSaleByIdResponse
+    {
+        public int Id { get; set; }
+        public string SaleNumber { get; set; }
+        public DateTime SaleDate { get; set; }
+        public decimal TotalAmount { get; set; }
+        public decimal DiscountAmount { get; set; }
+        public decimal FinalAmount { get; set; }
+        public string PaymentMethod { get; set; }
+        public string Status { get; set; }
+        public string? Notes { get; set; }
+        public string CreatedBy { get; set; }
+        public List<PosSaleItemResponse> Items { get; set; }
+    }
+}

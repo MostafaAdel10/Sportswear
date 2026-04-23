@@ -92,6 +92,11 @@ namespace Sportswear.Service.Implementations
             return await _productVariantRepository.IsProductVariantExistsAsync(productVariantId);
         }
 
+        public async Task<List<ProductVariant>> GetByIdsWithProductAsync(List<int> ids)
+        {
+            return await _productVariantRepository.GetByIdsWithProductAsync(ids);
+        }
+
         public async Task<bool> IsProductVariantExistsExcludeSelfAsync(int productVariantId, int id)
         {
             return await _productVariantRepository.IsProductVariantExistsExcludeSelfAsync(productVariantId, id);

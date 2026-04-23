@@ -35,5 +35,6 @@ namespace Sportswear.DataAccess.Entities
 
         public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+        public ICollection<PosSaleItem> PosSaleItems { get; set; } = new List<PosSaleItem>();
     }
 }

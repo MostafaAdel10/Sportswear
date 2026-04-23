@@ -46,6 +46,10 @@ namespace Sportswear.Infrastructure.Context
         // User Management
         public DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
 
+        // Pos Sale
+        public DbSet<PosSale> PosSales { get; set; }
+        public DbSet<PosSaleItem> PosSaleItems { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

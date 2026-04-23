@@ -630,4 +630,7 @@
   <data name="OrderNotFound" xml:space="preserve">
     <value>لم يتم العثور على الطلب.</value>
   </data>
+  <data name="PosSaleNotFound" xml:space="preserve">
+    <value>لم يتم العثور على عملية البيع</value>
+  </data>
 </root>

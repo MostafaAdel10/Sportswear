@@ -19,7 +19,6 @@ using Serilog.Sinks.MSSqlServer;
 using Sportswear.Api.Filters;
 using Sportswear.Api.Helper;
 using Sportswear.Core;
-using Sportswear.Core.Filters;
 using Sportswear.Core.Middleware;
 using Sportswear.DataAccess.Entities.Identity;
 using Sportswear.DataAccess.Helpers;
@@ -148,6 +147,7 @@ builder.Services.AddAuthorization(options =>
 #region Dependency Injection (Layers)
 builder.Services
     .AddInfrastructureDependencies()
+    //.AddServiceDependencies()
     .AddServiceDependencies(builder.Environment)
     .AddCoreDependencies();
 #endregion
@@ -181,6 +181,13 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
               .AllowCredentials();
     });
+
+    //options.AddPolicy(CORS, policy =>
+    //    {
+    //        policy.AllowAnyHeader();
+    //        policy.AllowAnyMethod();
+    //        policy.AllowAnyOrigin();
+    //    });
 });
 #endregion
 
@@ -196,7 +203,6 @@ builder.Services.AddTransient<IUrlHelper>(provider =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.Configure<FileUploadOptions>(
     builder.Configuration.GetSection("FileUpload"));
-builder.Services.AddScoped<AuthFilter>();
 #endregion
 
 #region Logging (Serilog)

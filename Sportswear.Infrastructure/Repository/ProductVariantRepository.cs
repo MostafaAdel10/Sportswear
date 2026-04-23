@@ -35,6 +35,25 @@ namespace Sportswear.Infrastructure.Repository
                 .FirstOrDefaultAsync(v => v.Id == id && !v.IsDeleted);
         }
 
+        public async Task<HashSet<string>> GetVariantKeysAsync(int productId, int excludeId = 0)
+        {
+            return (await _productVariants
+                .Where(v => v.ProductId == productId && !v.IsDeleted && v.Id != excludeId)
+                .ToListAsync())
+                .Select(v => $"{v.AttributeValueEn?.ToUpper()}-{v.ColorHex?.ToUpper()}")
+                .ToHashSet();
+        }
+
+        public async Task<List<ProductVariant>> GetByIdsWithProductAsync(List<int> ids)
+        {
+            return await _productVariants
+                .Include(v => v.Product)
+                    .ThenInclude(p => p.Product_Discounts)
+                        .ThenInclude(pd => pd.Discount)
+                .Where(v => ids.Contains(v.Id) && !v.IsDeleted)
+                .ToListAsync();
+        }
+
         public async Task<bool> IsProductVariantExistsAsync(int productVariantId)
         {
             return await GetTableNoTracking()
@@ -45,15 +64,6 @@ namespace Sportswear.Infrastructure.Repository
         {
             return await GetTableNoTracking()
                 .AnyAsync(v => v.Id == productVariantId && v.Id != id && !v.IsDeleted);
-        }
-
-        public async Task<HashSet<string>> GetVariantKeysAsync(int productId, int excludeId = 0)
-        {
-            return (await _productVariants
-                .Where(v => v.ProductId == productId && !v.IsDeleted && v.Id != excludeId)
-                .ToListAsync())
-                .Select(v => $"{v.AttributeValueEn?.ToUpper()}-{v.ColorHex?.ToUpper()}")
-                .ToHashSet();
         }
         #endregion
     }

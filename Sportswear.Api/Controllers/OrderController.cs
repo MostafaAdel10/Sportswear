@@ -27,6 +27,14 @@ namespace Sportswear.Api.Controllers
             return NewResult(response);
         }
 
+        [Authorize(Roles = "Admin,User")]
+        [HttpDelete(Router.OrderRouting.Cancel)]
+        public async Task<IActionResult> Cancel([FromRoute] int id)
+        {
+            var response = await Mediator.Send(new CancelOrderCommand(id));
+            return NewResult(response);
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpPut(Router.OrderRouting.EditOrderStatus)]
         public async Task<IActionResult> ChangeOrderStatus([FromBody] ChangeOrderStatusCommand command)

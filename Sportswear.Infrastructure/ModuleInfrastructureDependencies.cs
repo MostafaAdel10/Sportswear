@@ -25,6 +25,7 @@ namespace Sportswear.Infrastructure
             services.AddScoped<IOrderItemRepository, OrderItemRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IPosSaleRepository, PosSaleRepository>();
             return services;
         }
     }

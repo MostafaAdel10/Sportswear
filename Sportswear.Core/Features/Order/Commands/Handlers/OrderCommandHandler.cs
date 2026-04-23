@@ -114,6 +114,14 @@ namespace Sportswear.Core.Features.Order.Commands.Handlers
                 await _orderItemService.AddAsync(orderItem);
             }
 
+            // بعد Add order items
+            foreach (var item in cartItems)
+            {
+                var productVariant = item.ProductVariant;
+                productVariant.StockQuantity -= item.Quantity; // ✅ خصم من الـ Stock
+                await _productVariantService.EditStockOnlyAsync(productVariant);
+            }
+
             // 5️⃣ Create Payment (Default: CashOnDelivery)
             var payment = new Payment
             {

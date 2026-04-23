@@ -23,6 +23,19 @@
         Cancelled
     }
 
+    public enum PosPaymentMethod
+    {
+        Cash = 1,
+        Card = 2,
+        Mixed = 3
+    }
+
+    public enum PosSaleStatus
+    {
+        Completed = 1,
+        Cancelled = 2
+    }
+
     public enum ShippingStatus
     {
         Processing,

@@ -35,6 +35,7 @@ namespace Sportswear.Service
             services.AddScoped<ISkuGeneratorService, SkuGeneratorService>();
             services.AddMemoryCache();
             services.AddScoped<ICacheService, CacheService>();
+            services.AddScoped<IPosSaleService, PosSaleService>();
 
             // FileService — Local في Development، Azure Blob في Production
             if (environment.IsProduction())

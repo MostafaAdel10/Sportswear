@@ -630,4 +630,7 @@
   <data name="OrderNotFound" xml:space="preserve">
     <value>Order Not Found.</value>
   </data>
+  <data name="PosSaleNotFound" xml:space="preserve">
+    <value>PosSale Not Found.</value>
+  </data>
 </root>

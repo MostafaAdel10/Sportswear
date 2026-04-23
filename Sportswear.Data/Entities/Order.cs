@@ -17,7 +17,7 @@ namespace Sportswear.DataAccess.Entities
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalAmount { get; set; }
 
-        public OrderStatus Status { get; set; } // Pending, Paid, Shipped, Completed, Cancelled
+        public OrderStatus Status { get; set; }
 
         public Payment? Payment { get; set; }
         public Shipment? Shipment { get; set; }
