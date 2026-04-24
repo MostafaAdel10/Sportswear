@@ -8,5 +8,6 @@ namespace Sportswear.Infrastructure.Abstracts
         public Task<PosSale?> GetByIdWithItemsAsync(int id);
         public Task<List<PosSale>> GetAllWithItemsAsync();
         public Task<string> GenerateSaleNumberAsync();
+        public Task<List<PosSale>> GetPosSalesForDashboardAsync(DateTime from);
     }
 }

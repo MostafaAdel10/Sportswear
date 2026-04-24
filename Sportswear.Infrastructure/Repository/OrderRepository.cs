@@ -35,8 +35,6 @@ namespace Sportswear.Infrastructure.Repository
                .Include(o => o.OrderItems)
                    .ThenInclude(oi => oi.ProductVariant)
                        .ThenInclude(pv => pv.Product)
-               .Include(o => o.OrderItems)
-                   .ThenInclude(oi => oi.ProductVariant)
                .Include(o => o.Payment)
                .Include(o => o.User)
                .Include(o => o.Shipment)
@@ -58,6 +56,21 @@ namespace Sportswear.Infrastructure.Repository
                 .Include(o => o.Shipment)
                     .ThenInclude(s => s.ShippingMethod)
                 .OrderByDescending(o => o.Id)
+                .ToListAsync();
+        }
+
+        public async Task<List<Order>> GetOrdersForDashboardAsync(DateTime from)
+        {
+            return await _orders
+                .Include(o => o.User)
+                .Include(o => o.Payment)
+                .Include(o => o.Shipment)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.ProductVariant)
+                        .ThenInclude(pv => pv.Product)
+                            .ThenInclude(p => p.Images)
+                .Where(o => o.CreatedAt >= from && !o.IsDeleted)
+                .OrderByDescending(o => o.CreatedAt)
                 .ToListAsync();
         }
         #endregion

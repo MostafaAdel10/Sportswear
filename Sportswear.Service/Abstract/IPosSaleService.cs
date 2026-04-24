@@ -9,5 +9,6 @@ namespace Sportswear.Service.Abstract
         public Task<int> AddAsync(PosSale posSale);
         public Task<bool> EditAsync(PosSale posSale);
         public Task<string> GenerateSaleNumberAsync();
+        public Task<List<PosSale>> GetPosSalesForDashboardAsync(DateTime from);
     }
 }

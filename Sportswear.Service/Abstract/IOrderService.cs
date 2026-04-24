@@ -12,5 +12,6 @@ namespace Sportswear.Service.Abstract
         public Task<Order?> GetOrderWithDetailsAsync(int orderId);
         public Task<List<Order>> GetOrdersByUserAsync(int userId);
         public bool CanChangeOrderStatusAsync(Order order, OrderStatus newStatus);
+        public Task<List<Order>> GetOrdersForDashboardAsync(DateTime from);
     }
 }

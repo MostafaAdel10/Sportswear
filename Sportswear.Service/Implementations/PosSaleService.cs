@@ -39,5 +39,10 @@ namespace Sportswear.Service.Implementations
         {
             return await _posSaleRepository.GenerateSaleNumberAsync();
         }
+
+        public async Task<List<PosSale>> GetPosSalesForDashboardAsync(DateTime from)
+        {
+            return await _posSaleRepository.GetPosSalesForDashboardAsync(from);
+        }
     }
 }

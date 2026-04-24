@@ -8,6 +8,12 @@
         public const string version = "V1";
         public const string Rule = root + "/" + version + "/";
 
+        public static class DashboardOverviewRouting
+        {
+            public const string Prefix = Rule + "DashboardOverview";
+            public const string Overview = Prefix + "/Overview";
+        }
+
         public static class PosSaleRouting
         {
             public const string Prefix = Rule + "PosSale";

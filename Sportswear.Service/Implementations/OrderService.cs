@@ -76,6 +76,11 @@ namespace Sportswear.Service.Implementations
 
             return true;
         }
+
+        public async Task<List<Order>> GetOrdersForDashboardAsync(DateTime from)
+        {
+            return await _orderRepository.GetOrdersForDashboardAsync(from);
+        }
         #endregion
     }
 }

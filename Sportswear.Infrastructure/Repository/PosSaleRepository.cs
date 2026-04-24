@@ -44,5 +44,17 @@ namespace Sportswear.Infrastructure.Repository
 
             return $"POS-{nextNumber:D5}"; // POS-00001
         }
+
+        public async Task<List<PosSale>> GetPosSalesForDashboardAsync(DateTime from)
+        {
+            return await _posSales
+                .Include(s => s.Items)
+                    .ThenInclude(i => i.ProductVariant)
+                        .ThenInclude(v => v.Product)
+                            .ThenInclude(p => p.Images)
+                .Where(s => s.SaleDate >= from && !s.IsDeleted)
+                .OrderByDescending(s => s.SaleDate)
+                .ToListAsync();
+        }
     }
 }
