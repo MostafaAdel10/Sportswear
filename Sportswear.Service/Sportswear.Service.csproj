@@ -10,6 +10,10 @@
     <PackageReference Include="Azure.Storage.Blobs" Version="12.27.0" />
     <PackageReference Include="FluentValidation" Version="12.1.0" />
     <PackageReference Include="MailKit" Version="4.16.0" />
+    <PackageReference Include="MassTransit" Version="9.2.0-develop.129" />
+    <PackageReference Include="MassTransit.Azure.ServiceBus.Core" Version="9.2.0-develop.129" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="9.2.0-develop.129" />
+    <PackageReference Include="Serilog" Version="4.3.1" />
 	  <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 

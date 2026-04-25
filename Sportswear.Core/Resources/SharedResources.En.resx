@@ -633,4 +633,7 @@
   <data name="PosSaleNotFound" xml:space="preserve">
     <value>PosSale Not Found.</value>
   </data>
+  <data name="EmailSentSuccessfully" xml:space="preserve">
+    <value>Email Sent Successfully.</value>
+  </data>
 </root>

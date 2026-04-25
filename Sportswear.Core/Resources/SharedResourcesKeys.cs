@@ -12,6 +12,7 @@
         public const string InvalidColorHex = "InvalidColorHex";
         public const string OrderNotFound = "OrderNotFound";
         public const string PosSaleNotFound = "PosSaleNotFound";
+        public const string EmailSentSuccessfully = "EmailSentSuccessfully";
 
         public const string CategoryNotFound = "CategoryNotFound";
         public const string CannotDeleteCategoryWithVariants = "CannotDeleteCategoryWithVariants";

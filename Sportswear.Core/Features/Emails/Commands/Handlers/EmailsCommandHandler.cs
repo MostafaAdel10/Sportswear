@@ -27,10 +27,19 @@ namespace Sportswear.Core.Features.Emails.Commands.Handlers
         #region Handle Functions
         public async Task<Response<string>> Handle(SendEmailCommand request, CancellationToken cancellationToken)
         {
-            var response = await _emailsService.SendEmail(request.Email, request.Message, request.Reason);
-            if (response == "Success")
-                return Success<string>("");
-            return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.SendEmailFailed]);
+            try
+            {
+                await _emailsService.SendEmailAsync(
+                    request.Email,
+                    request.Subject ?? "Message from Aboutrika store",
+                    request.Message);
+
+                return Success<string>(_stringLocalizer[SharedResourcesKeys.EmailSentSuccessfully]);
+            }
+            catch
+            {
+                return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.SendEmailFailed]);
+            }
         }
         #endregion
     }

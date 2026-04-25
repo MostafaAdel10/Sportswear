@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using Sportswear.DataAccess.Entities.Identity;
 using Sportswear.Infrastructure.Context;
 using Sportswear.Service.Abstract;
@@ -19,10 +20,10 @@ namespace Sportswear.Service.Implementations
 
         #region Contractors
         public ApplicationUserService(UserManager<ApplicationUser> userManager,
-                                      ApplicationDbContext applicationDBContext,
-                                      IHttpContextAccessor httpContextAccessor,
-                                      IUrlHelper urlHelper,
-                                      IEmailsService emailsService)
+            ApplicationDbContext applicationDBContext,
+            IHttpContextAccessor httpContextAccessor,
+            IUrlHelper urlHelper,
+            IEmailsService emailsService)
         {
             _userManager = userManager;
             _applicationDBContext = applicationDBContext;
@@ -55,14 +56,16 @@ namespace Sportswear.Service.Implementations
 
                 await _userManager.AddToRoleAsync(user, "User");
 
-                //Send Confirm Email
+                // Send Confirm Email
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var resquestAccessor = _httpContextAccessor.HttpContext.Request;
-                var returnUrl = resquestAccessor.Scheme + "://" + resquestAccessor.Host + _urlHelper.Action("ConfirmEmail", "Authentication", new { userId = user.Id, code = code });
+                var requestAccessor = _httpContextAccessor.HttpContext.Request;
+                var returnUrl = requestAccessor.Scheme + "://" + requestAccessor.Host +
+                    _urlHelper.Action("ConfirmEmail", "Authentication",
+                        new { userId = user.Id, code = code });
+
                 var message = $"To Confirm Email Click Link: <a href='{returnUrl}'>Link Of Confirmation</a>";
-                //$"/Api/V1/Authentication/ConfirmEmail?userId={user.Id}&code={code}";
-                //message or body
-                await _emailsService.SendEmail(user.Email, message, "ConFirm Email");
+
+                await _emailsService.SendEmailAsync(user.Email, "Confirm Email ✅", message);
 
                 await trans.CommitAsync();
                 return "Success";
@@ -70,6 +73,7 @@ namespace Sportswear.Service.Implementations
             catch (Exception ex)
             {
                 await trans.RollbackAsync();
+                Log.Error(ex, "Failed to create user {Email}", user.Email);
                 return "Failed";
             }
         }

@@ -1,5 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using MimeKit;
+using Serilog;
 using Sportswear.DataAccess.Helpers;
 using Sportswear.Service.Abstract;
 
@@ -10,44 +11,45 @@ namespace Sportswear.Service.Implementations
         #region Fields
         private readonly EmailSettings _emailSettings;
         #endregion
+
         #region Constructors
         public EmailsService(EmailSettings emailSettings)
         {
             _emailSettings = emailSettings;
         }
-
         #endregion
+
         #region Handle Functions
-        public async Task<string> SendEmail(string email, string Message, string? reason)
+        public async Task SendEmailAsync(string email, string subject, string body)
         {
             try
             {
-                //sending the Message of passwordResetLink
-                using (var client = new SmtpClient())
+                using var client = new SmtpClient();
+
+                await client.ConnectAsync(_emailSettings.Host, _emailSettings.Port, true);
+                client.Authenticate(_emailSettings.FromEmail, _emailSettings.Password);
+
+                var bodyBuilder = new BodyBuilder
                 {
-                    await client.ConnectAsync(_emailSettings.Host, _emailSettings.Port, true);
-                    client.Authenticate(_emailSettings.FromEmail, _emailSettings.Password);
-                    var bodybuilder = new BodyBuilder
-                    {
-                        HtmlBody = $"{Message}",
-                        TextBody = "wellcome",
-                    };
-                    var message = new MimeMessage
-                    {
-                        Body = bodybuilder.ToMessageBody()
-                    };
-                    message.From.Add(new MailboxAddress("Sportswear", _emailSettings.FromEmail));
-                    message.To.Add(new MailboxAddress("testing", email));
-                    message.Subject = reason == null ? "No Submitted" : reason;
-                    await client.SendAsync(message);
-                    await client.DisconnectAsync(true);
-                }
-                //end of sending email
-                return "Success";
+                    HtmlBody = body,
+                    TextBody = body
+                };
+
+                var message = new MimeMessage();
+                message.From.Add(new MailboxAddress("ABOUTRIKA", _emailSettings.FromEmail));
+                message.To.Add(new MailboxAddress(email, email));
+                message.Subject = subject;
+                message.Body = bodyBuilder.ToMessageBody();
+
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
+
+                Log.Information("Email sent successfully to {Email}", email);
             }
             catch (Exception ex)
             {
-                return "Failed";
+                Log.Error(ex, "Failed to send email to {Email}", email);
+                throw; // ✅ رجّع الـ Exception عشان MassTransit يعمل retry
             }
         }
         #endregion

@@ -7,6 +7,6 @@ namespace Sportswear.Core.Features.Emails.Commands.Models
     {
         public string Email { get; set; }
         public string Message { get; set; }
-        public string? Reason { get; set; }
+        public string? Subject { get; set; }
     }
 }

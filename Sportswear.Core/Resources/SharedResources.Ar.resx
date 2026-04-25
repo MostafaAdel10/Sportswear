@@ -633,4 +633,7 @@
   <data name="PosSaleNotFound" xml:space="preserve">
     <value>لم يتم العثور على عملية البيع</value>
   </data>
+  <data name="EmailSentSuccessfully" xml:space="preserve">
+    <value>تم إرسال البريد الإلكتروني بنجاح.</value>
+  </data>
 </root>

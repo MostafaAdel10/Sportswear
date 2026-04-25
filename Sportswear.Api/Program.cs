@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.RateLimiting;
@@ -147,8 +148,7 @@ builder.Services.AddAuthorization(options =>
 #region Dependency Injection (Layers)
 builder.Services
     .AddInfrastructureDependencies()
-    //.AddServiceDependencies()
-    .AddServiceDependencies(builder.Environment)
+    .AddServiceDependencies(builder.Configuration, builder.Environment)
     .AddCoreDependencies();
 #endregion
 
@@ -187,7 +187,7 @@ builder.Services.AddCors(options =>
     //        policy.AllowAnyHeader();
     //        policy.AllowAnyMethod();
     //        policy.AllowAnyOrigin();
-    //    });
+    //});
 });
 #endregion
 
@@ -196,7 +196,12 @@ builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddTransient<IUrlHelper>(provider =>
 {
     var actionContext = provider
-        .GetRequiredService<IActionContextAccessor>().ActionContext;
+        .GetRequiredService<IActionContextAccessor>().ActionContext
+        ?? new ActionContext(
+            provider.GetRequiredService<IHttpContextAccessor>().HttpContext!,
+            new RouteData(),
+            new ActionDescriptor());
+
     var factory = provider.GetRequiredService<IUrlHelperFactory>();
     return factory.GetUrlHelper(actionContext);
 });

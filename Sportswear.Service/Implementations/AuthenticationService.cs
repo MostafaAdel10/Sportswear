@@ -270,7 +270,7 @@ namespace Sportswear.Service.Implementations
                     return "ErrorInUpdateUser";
                 var message = "Code To Reset Password : " + user.Code;
                 //Send Code To  Email 
-                await _emailsService.SendEmail(user.Email, message, "Reset Password");
+                await _emailsService.SendEmailAsync(user.Email, "Reset Password 🔑", message);
                 await trans.CommitAsync();
                 return "Success";
             }

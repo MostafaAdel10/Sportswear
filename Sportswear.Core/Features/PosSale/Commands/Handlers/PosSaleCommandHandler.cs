@@ -7,6 +7,7 @@ using Sportswear.DataAccess.Entities;
 using Sportswear.DataAccess.Enums;
 using Sportswear.Service.Abstract;
 using Sportswear.Service.AuthServices.Interfaces;
+using Sportswear.Service.Messages;
 
 namespace Sportswear.Core.Features.PosSale.Commands.Handlers
 {
@@ -20,6 +21,7 @@ namespace Sportswear.Core.Features.PosSale.Commands.Handlers
         private readonly IProductService _productService;
         private readonly ICurrentUserService _currentUserService;
         private readonly IStringLocalizer<SharedResources> _localizer;
+        private readonly MassTransit.IPublishEndpoint _publishEndpoint;
         #endregion
 
         #region Constructor
@@ -28,13 +30,15 @@ namespace Sportswear.Core.Features.PosSale.Commands.Handlers
             IProductVariantService productVariantService,
             IProductService productService,
             ICurrentUserService currentUserService,
-            IStringLocalizer<SharedResources> localizer) : base(localizer)
+            IStringLocalizer<SharedResources> localizer,
+            MassTransit.IPublishEndpoint publishEndpoint) : base(localizer)
         {
             _posSaleService = posSaleService;
             _productVariantService = productVariantService;
             _productService = productService;
             _currentUserService = currentUserService;
             _localizer = localizer;
+            _publishEndpoint = publishEndpoint;
         }
         #endregion
 
@@ -121,6 +125,16 @@ namespace Sportswear.Core.Features.PosSale.Commands.Handlers
                 variant.StockQuantity -= item.Quantity;
                 await _productVariantService.EditStockOnlyAsync(variant);
             }
+
+            // ✅ Publish Event
+            await _publishEndpoint.Publish(new PosSaleCreatedMessage
+            {
+                SaleId = saleId,
+                SaleNumber = saleNumber,
+                FinalAmount = finalAmount,
+                CreatedBy = currentUser.UserName,
+                SaleDate = DateTime.UtcNow
+            }, cancellationToken);
 
             return Success(saleId, _localizer[SharedResourcesKeys.Created]);
         }
