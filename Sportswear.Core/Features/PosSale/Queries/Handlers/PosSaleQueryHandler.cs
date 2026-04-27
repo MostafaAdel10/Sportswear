@@ -55,6 +55,7 @@ namespace Sportswear.Core.Features.PosSale.Queries.Handlers
                     ProductVariantId = i.ProductVariantId,
                     ProductName = isArabic ? i.ProductVariant.Product.NameAr : i.ProductVariant.Product.NameEn,
                     AttributeValue = isArabic ? i.ProductVariant.AttributeValueAr : i.ProductVariant.AttributeValueEn,
+                    Color = i.ProductVariant.ColorLabel,
                     SKU = i.ProductVariant.SKU,
                     Quantity = i.Quantity,
                     UnitPrice = i.UnitPrice,

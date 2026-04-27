@@ -171,23 +171,23 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 const string CORS = "_cors";
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(CORS, policy =>
-    {
-        var allowedOrigins = builder.Configuration
-            .GetSection("Cors:AllowedOrigins")
-            .Get<string[]>();
-        policy.WithOrigins(allowedOrigins!)
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
-    });
-
     //options.AddPolicy(CORS, policy =>
-    //    {
-    //        policy.AllowAnyHeader();
-    //        policy.AllowAnyMethod();
-    //        policy.AllowAnyOrigin();
+    //{
+    //    var allowedOrigins = builder.Configuration
+    //        .GetSection("Cors:AllowedOrigins")
+    //        .Get<string[]>();
+    //    policy.WithOrigins(allowedOrigins!)
+    //          .AllowAnyHeader()
+    //          .AllowAnyMethod()
+    //          .AllowCredentials();
     //});
+
+    options.AddPolicy(CORS, policy =>
+        {
+            policy.AllowAnyHeader();
+            policy.AllowAnyMethod();
+            policy.AllowAnyOrigin();
+        });
 });
 #endregion
 

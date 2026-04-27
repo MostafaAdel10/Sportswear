@@ -8,6 +8,7 @@ namespace Sportswear.Service.Abstract
         public Task<Product?> GetProductWithIncludesFullDetailsAsync(int id);
         public Task<List<Product>> GetProductsListWithIncludesAsync();
         public Task<Product> GetByIdWithIncludesAsync(int id);
+        public Task<Product> GetByCodeWithIncludesAsync(string code);
         public Task<List<Product>> GetByIdsAsync(List<int> ids);
         public Task<Product> GetByIdAsync(int id);
         public Task<int> AddAsync(Product product);

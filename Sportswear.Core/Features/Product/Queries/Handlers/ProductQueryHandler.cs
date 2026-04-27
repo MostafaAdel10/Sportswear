@@ -17,6 +17,7 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
         IRequestHandler<GetProductByIdQuery, Response<GetProductByIdResponse>>,
         IRequestHandler<GetProductByIdToEditQuery, Response<GetProductByIdToEditResponse>>,
         IRequestHandler<GetProductByIdWithVariantsQuery, Response<GetProductByIdWithVariantsResponse>>,
+        IRequestHandler<GetProductByCodeWithVariantsQuery, Response<GetProductByCodeWithVariantsResponse>>,
         IRequestHandler<GetProductPaginatedListQuery, PaginatedResult<GetProductPaginatedListResponse>>
     {
         #region Fields
@@ -328,6 +329,68 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
 
             result.Meta = new { Count = result.Data.Count() };
             return result;
+        }
+
+        public async Task<Response<GetProductByCodeWithVariantsResponse>> Handle(GetProductByCodeWithVariantsQuery request, CancellationToken cancellationToken)
+        {
+            // ✅ Check Cache
+            var cacheKey = string.Format(CacheKeys.ProductByCode, request.Code);
+
+            var cached = _cacheService.Get<GetProductByCodeWithVariantsResponse>(cacheKey);
+            if (cached != null)
+                return Success(cached);
+
+            var product = await _productService.GetByCodeWithIncludesAsync(request.Code);
+            if (product == null)
+                return NotFound<GetProductByCodeWithVariantsResponse>(_stringLocalizer[SharedResourcesKeys.ProductNotFound]);
+
+            bool isArabic = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.ToLower().Equals("ar");
+
+            var minPriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, product.MinPrice) ?? product.MinPrice;
+            var maxPriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, product.MaxPrice) ?? product.MaxPrice;
+
+            var response = new GetProductByCodeWithVariantsResponse
+            {
+                Id = product.Id,
+                Code = product.Code,
+                Name = isArabic ? product.NameAr : product.NameEn,
+                Description = isArabic ? product.DescriptionAr : product.DescriptionEn,
+                Season = product.Season,
+                Club = isArabic ? product.ClubAr : product.ClubEn,
+                BrandName = product.Brand?.NameEn ?? string.Empty,
+                CategoryName = product.Category?.NameEn ?? string.Empty,
+                BasePrice = product.BasePrice,
+
+                MinPrice = product.MinPrice,
+                MaxPrice = product.MaxPrice,
+                HasVariants = product.HasVariants,
+
+                AttributeKey = isArabic ? product.AttributeKeyAr : product.AttributeKeyEn,
+
+                PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProduct(product) ?? product.BasePrice,
+                MinPriceAfterDiscount = minPriceAfterDiscount,
+                MaxPriceAfterDiscount = maxPriceAfterDiscount,
+
+                Images = product.Images.Select(i => i.Url).ToList(),
+                Variants = product.Variants.Where(v => !v.IsDeleted).Select(v => new ProductVariantResponse
+                {
+                    Id = v.Id,
+                    SKU = v.SKU,
+                    Price = v.Price,
+                    PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProductVariants(product, v.Price) ?? v.Price,
+                    StockQuantity = v.StockQuantity,
+                    AttributeValueEn = v.AttributeValueEn,
+                    AttributeValueAr = v.AttributeValueAr,
+                    Unit = v.Unit,
+                    ColorLabel = v.ColorLabel,
+                    ColorHex = v.ColorHex
+                }).ToList()
+            };
+
+            // ✅ Save in Cache
+            _cacheService.Set(cacheKey, response, TimeSpan.FromMinutes(5));
+
+            return Success(response);
         }
         #endregion
     }

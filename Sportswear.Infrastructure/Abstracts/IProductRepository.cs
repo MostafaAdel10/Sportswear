@@ -9,6 +9,7 @@ namespace Sportswear.Infrastructure.Abstracts
         public Task<List<Product>> GetProductsListWithIncludesAsync();
         public IQueryable<Product> GetProductQueryableWithIncludes();
         public Task<Product?> GetByIdWithIncludesAsync(int id);
+        public Task<Product?> GetByCodeWithIncludesAsync(string code);
         public Task<List<Product>> GetByIdsAsync(List<int> ids);
         public Task<bool> IsCodeExistsAsync(string code);
         public Task<bool> IsCodeExistsExcludeSelfAsync(string code, int id);

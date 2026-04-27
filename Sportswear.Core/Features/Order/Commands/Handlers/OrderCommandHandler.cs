@@ -7,7 +7,6 @@ using Sportswear.DataAccess.Entities;
 using Sportswear.DataAccess.Enums;
 using Sportswear.Service.Abstract;
 using Sportswear.Service.AuthServices.Interfaces;
-using Sportswear.Service.Messages;
 
 namespace Sportswear.Core.Features.Order.Commands.Handlers
 {
@@ -28,7 +27,7 @@ namespace Sportswear.Core.Features.Order.Commands.Handlers
         private readonly IShippingMethodService _shippingMethodService;
         private readonly ICurrentUserService _currentUserService;
         private readonly IStringLocalizer<SharedResources> _stringLocalizer;
-        private readonly MassTransit.IPublishEndpoint _publishEndpoint;
+        //private readonly MassTransit.IPublishEndpoint _publishEndpoint;
 
         public OrderCommandHandler(
             IOrderService orderService,
@@ -41,8 +40,7 @@ namespace Sportswear.Core.Features.Order.Commands.Handlers
             IShipmentService shipmentService,
             IShippingMethodService shippingMethodService,
             ICurrentUserService currentUserService,
-            IStringLocalizer<SharedResources> stringLocalizer,
-            MassTransit.IPublishEndpoint publishEndpoint) : base(stringLocalizer)
+            IStringLocalizer<SharedResources> stringLocalizer) : base(stringLocalizer)
         {
             _orderService = orderService;
             _orderItemService = orderItemService;
@@ -55,7 +53,6 @@ namespace Sportswear.Core.Features.Order.Commands.Handlers
             _shippingMethodService = shippingMethodService;
             _currentUserService = currentUserService;
             _stringLocalizer = stringLocalizer;
-            _publishEndpoint = publishEndpoint;
         }
 
         public async Task<Response<int>> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
@@ -157,15 +154,15 @@ namespace Sportswear.Core.Features.Order.Commands.Handlers
             // 7️⃣ Clear Cart
             await _cartItemService.ClearCartAsync(userId);
 
-            // ✅ Publish Event
-            await _publishEndpoint.Publish(new OrderCreatedMessage
-            {
-                OrderId = orderId,
-                CustomerEmail = currentUser.Email,
-                CustomerName = currentUser.UserName,
-                TotalAmount = totalAmount,
-                CreatedAt = DateTime.UtcNow
-            }, cancellationToken);
+            //// ✅ Publish Event
+            //await _publishEndpoint.Publish(new OrderCreatedMessage
+            //{
+            //    OrderId = orderId,
+            //    CustomerEmail = currentUser.Email,
+            //    CustomerName = currentUser.UserName,
+            //    TotalAmount = totalAmount,
+            //    CreatedAt = DateTime.UtcNow
+            //}, cancellationToken);
 
             return Success(orderId, _stringLocalizer[SharedResourcesKeys.Created]);
         }
@@ -241,14 +238,14 @@ namespace Sportswear.Core.Features.Order.Commands.Handlers
                 await _productVariantService.EditStockOnlyAsync(productVariant);
             }
 
-            // ✅ Publish Event
-            await _publishEndpoint.Publish(new OrderCancelledMessage
-            {
-                OrderId = order.Id,
-                CustomerEmail = order.User.Email,
-                CustomerName = order.User.UserName,
-                CancelledAt = DateTime.UtcNow
-            }, cancellationToken);
+            //// ✅ Publish Event
+            //await _publishEndpoint.Publish(new OrderCancelledMessage
+            //{
+            //    OrderId = order.Id,
+            //    CustomerEmail = order.User.Email,
+            //    CustomerName = order.User.UserName,
+            //    CancelledAt = DateTime.UtcNow
+            //}, cancellationToken);
 
             return Success<string>(_stringLocalizer[SharedResourcesKeys.CanceledOrder]);
         }

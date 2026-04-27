@@ -83,11 +83,13 @@ namespace Sportswear.Service
                 }
             });
 
-            // FileService — Local في Development، Azure Blob في Production
-            if (environment.IsProduction())
-                services.AddScoped<IFileService, AzureBlobFileService>();
-            else
-                services.AddScoped<IFileService, FileService>();
+            //// FileService — Local في Development، Azure Blob في Production
+            //if (environment.IsProduction())
+            //    services.AddScoped<IFileService, AzureBlobFileService>();
+            //else
+            //    services.AddScoped<IFileService, FileService>();
+
+            services.AddScoped<IFileService, FileService>();
 
             return services;
         }

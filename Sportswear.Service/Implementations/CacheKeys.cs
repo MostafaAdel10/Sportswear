@@ -15,5 +15,6 @@
         public const string ProductById = "product_{0}";
         public const string ProductFullDetails = "product_full_{0}";
         public const string ProductWithVariants = "product_variants_{0}";
+        public const string ProductByCode = "product_code_{0}";
     }
 }

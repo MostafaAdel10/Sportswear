@@ -59,6 +59,19 @@ namespace Sportswear.Infrastructure.Repository
                 .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
         }
 
+        public async Task<Product?> GetByCodeWithIncludesAsync(string code)
+        {
+            return await _products.AsNoTracking()
+                .Include(b => b.Brand)
+                .Include(c => c.Category)
+                .Include(i => i.Images)
+                .Include(v => v.Variants)
+                .Include(r => r.Reviews)
+                .Include(d => d.Product_Discounts)
+                    .ThenInclude(pd => pd.Discount)
+                .FirstOrDefaultAsync(p => p.Code == code && !p.IsDeleted);
+        }
+
         public async Task<List<Product>> GetByIdsAsync(List<int> ids)
         {
             if (!ids.Any()) return new List<Product>();

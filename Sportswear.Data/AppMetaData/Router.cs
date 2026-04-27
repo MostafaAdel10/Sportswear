@@ -153,6 +153,7 @@
             public const string GetById = Prefix + SingleRoute;
             public const string GetByIdToEdit = Prefix + SingleRoute + "/To-Edit";
             public const string GetByIdWithVariants = Prefix + SingleRoute + "/With-Variants";
+            public const string GetByCodeWithVariants = Prefix + "/code/{code}/With-Variants";
             public const string Create = Prefix + "/Create";
             public const string Edit = Prefix + "/Edit";
             public const string Delete = Prefix + SingleRoute;

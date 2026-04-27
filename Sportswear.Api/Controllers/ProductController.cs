@@ -59,6 +59,15 @@ namespace Sportswear.Api.Controllers
             return NewResult(response);
         }
 
+        [AllowAnonymous]
+        [HttpGet(Router.ProductRouting.GetByCodeWithVariants)]
+        [EnableRateLimiting(RateLimitingPolicies.Api)]
+        public async Task<IActionResult> GetProductByCodeWithVariants([FromRoute] string code)
+        {
+            var response = await Mediator.Send(new GetProductByCodeWithVariantsQuery(code));
+            return NewResult(response);
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpPost(Router.ProductRouting.Create)]
         public async Task<IActionResult> Create([FromBody] CreateProductCommand command)

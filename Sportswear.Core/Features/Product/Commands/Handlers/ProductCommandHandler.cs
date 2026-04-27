@@ -101,6 +101,7 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
                 _cacheService.Remove(string.Format(CacheKeys.ProductById, request.Id));
                 _cacheService.Remove(string.Format(CacheKeys.ProductFullDetails, request.Id));
                 _cacheService.Remove(string.Format(CacheKeys.ProductWithVariants, request.Id));
+                _cacheService.Remove(string.Format(CacheKeys.ProductByCode, existingProduct.Code));
                 return Success<string>(_localizer[SharedResourcesKeys.Updated]);
             }
             return BadRequest<string>();
@@ -154,6 +155,7 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
                 _cacheService.Remove(string.Format(CacheKeys.ProductById, request.Id));
                 _cacheService.Remove(string.Format(CacheKeys.ProductFullDetails, request.Id));
                 _cacheService.Remove(string.Format(CacheKeys.ProductWithVariants, request.Id));
+                _cacheService.Remove(string.Format(CacheKeys.ProductByCode, existingProduct.Code));
                 return Success<string>(_localizer[SharedResourcesKeys.Deleted]);
             }
             return BadRequest<string>();

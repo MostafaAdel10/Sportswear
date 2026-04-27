@@ -39,6 +39,12 @@ namespace Sportswear.Service.Implementations
             return product;
         }
 
+        public async Task<Product> GetByCodeWithIncludesAsync(string code)
+        {
+            var product = await _productRepository.GetByCodeWithIncludesAsync(code);
+            return product;
+        }
+
         public async Task<Product> GetByIdAsync(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
