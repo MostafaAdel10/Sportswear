@@ -269,7 +269,7 @@ namespace Sportswear.Service.Implementations
                 if (!updateResult.Succeeded)
                     return "ErrorInUpdateUser";
                 var message = "Code To Reset Password : " + user.Code;
-                //Send Code To  Email 
+                //Send Code To  Email  
                 await _emailsService.SendEmailAsync(user.Email, "Reset Password 🔑", message);
                 await trans.CommitAsync();
                 return "Success";

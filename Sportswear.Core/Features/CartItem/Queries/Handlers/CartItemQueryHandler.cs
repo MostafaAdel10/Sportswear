@@ -70,6 +70,7 @@ namespace Sportswear.Core.Features.CartItem.Queries.Handlers
                     OriginalPrice = x.ProductVariant.Price,
                     FinalPrice = finalPrice,
                     Quantity = x.Quantity,
+                    StockQuantity = x.ProductVariant.StockQuantity,
                     TotalPrice = finalPrice * x.Quantity,
                     AttributeValue = isArabic
                         ? x.ProductVariant.AttributeValueAr
@@ -113,6 +114,7 @@ namespace Sportswear.Core.Features.CartItem.Queries.Handlers
                 OriginalPrice = item.ProductVariant.Price,
                 FinalPrice = finalPrice,
                 Quantity = item.Quantity,
+                StockQuantity = item.ProductVariant.StockQuantity,
                 TotalPrice = finalPrice * item.Quantity,
                 AttributeValue = isArabic
                         ? item.ProductVariant.AttributeValueAr

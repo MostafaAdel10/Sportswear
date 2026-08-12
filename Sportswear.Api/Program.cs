@@ -148,7 +148,8 @@ builder.Services.AddAuthorization(options =>
 #region Dependency Injection (Layers)
 builder.Services
     .AddInfrastructureDependencies()
-    .AddServiceDependencies(builder.Configuration, builder.Environment)
+    .AddServiceDependencies()
+    //.AddServiceDependencies(builder.Configuration, builder.Environment)
     .AddCoreDependencies();
 #endregion
 

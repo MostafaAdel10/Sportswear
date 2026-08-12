@@ -15,6 +15,7 @@
         public decimal OriginalPrice { get; set; }
         public decimal FinalPrice { get; set; }
         public int Quantity { get; set; }
+        public int StockQuantity { get; set; }
         public decimal TotalPrice { get; set; }
     }
 }

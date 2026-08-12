@@ -14,7 +14,25 @@ namespace Sportswear.DataAccess.Entities.Identity
             Carts = new List<Cart>();
             UserRefreshTokens = new HashSet<UserRefreshToken>();
         }
+        [MaxLength(100)]
+        public string? FirstName { get; set; }
+
+        [MaxLength(100)]
+        public string? LastName { get; set; }
+
         public DateTime? BirthDate { get; set; }
+
+        [MaxLength(100)]
+        public string? City { get; set; }
+
+        [MaxLength(100)]
+        public string? Region { get; set; }
+
+        [MaxLength(20)]
+        public string? PostalCode { get; set; }
+
+        [MaxLength(100)]
+        public string? Country { get; set; }
 
         [EncryptColumn]
         [MaxLength(100)]

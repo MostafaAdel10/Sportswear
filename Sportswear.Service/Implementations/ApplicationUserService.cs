@@ -73,8 +73,9 @@ namespace Sportswear.Service.Implementations
             catch (Exception ex)
             {
                 await trans.RollbackAsync();
-                Log.Error(ex, "Failed to create user {Email}", user.Email);
-                return "Failed";
+                Log.Error(ex, ex.ToString());
+
+                return ex.ToString();
             }
         }
         #endregion

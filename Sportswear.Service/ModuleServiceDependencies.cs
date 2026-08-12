@@ -1,11 +1,7 @@
-﻿using MassTransit;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Sportswear.Service.Abstract;
 using Sportswear.Service.AuthServices.Implementations;
 using Sportswear.Service.AuthServices.Interfaces;
-using Sportswear.Service.Consumers;
 using Sportswear.Service.Implementations;
 
 namespace Sportswear.Service
@@ -13,7 +9,7 @@ namespace Sportswear.Service
     public static class ModuleServiceDependencies
     {
         public static IServiceCollection AddServiceDependencies(
-            this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
+            this IServiceCollection services)//, IConfiguration configuration, IHostEnvironment environment)
         {
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IProductService, ProductService>();
@@ -40,54 +36,56 @@ namespace Sportswear.Service
             services.AddScoped<ICacheService, CacheService>();
             services.AddScoped<IPosSaleService, PosSaleService>();
 
-            // ✅ MassTransit + RabbitMQ
-            services.AddMassTransit(x =>
-            {
-                x.AddConsumer<OrderCreatedConsumer>();
-                x.AddConsumer<OrderCancelledConsumer>();
-                x.AddConsumer<PosSaleCreatedConsumer>();
+            //// ✅ MassTransit + RabbitMQ
+            //services.AddMassTransit(x =>
+            //{
+            //    x.AddConsumer<OrderCreatedConsumer>();
+            //    x.AddConsumer<OrderCancelledConsumer>();
+            //    x.AddConsumer<PosSaleCreatedConsumer>();
 
-                if (environment.IsProduction())
-                {
-                    // ✅ Azure Service Bus في Production
-                    x.UsingAzureServiceBus((context, cfg) =>
-                    {
-                        cfg.Host(configuration["AzureServiceBus:ConnectionString"]);
+            //    if (environment.IsProduction())
+            //    {
+            //        // ✅ Azure Service Bus في Production
+            //        x.UsingAzureServiceBus((context, cfg) =>
+            //        {
+            //            cfg.Host(configuration["AzureServiceBus:ConnectionString"]);
 
-                        cfg.UseMessageRetry(r =>
-                            r.Incremental(3,
-                                TimeSpan.FromSeconds(1),
-                                TimeSpan.FromSeconds(2)));
+            //            cfg.UseMessageRetry(r =>
+            //                r.Incremental(3,
+            //                    TimeSpan.FromSeconds(1),
+            //                    TimeSpan.FromSeconds(2)));
 
-                        cfg.ConfigureEndpoints(context);
-                    });
-                }
-                else
-                {
-                    // ✅ RabbitMQ في Development
-                    x.UsingRabbitMq((context, cfg) =>
-                    {
-                        cfg.Host(configuration["RabbitMQ:Host"], h =>
-                        {
-                            h.Username(configuration["RabbitMQ:Username"]!);
-                            h.Password(configuration["RabbitMQ:Password"]!);
-                        });
+            //            cfg.ConfigureEndpoints(context);
+            //        });
+            //    }
+            //    else
+            //    {
+            //        // ✅ RabbitMQ في Development
+            //        x.UsingRabbitMq((context, cfg) =>
+            //        {
+            //            cfg.Host(configuration["RabbitMQ:Host"], h =>
+            //            {
+            //                h.Username(configuration["RabbitMQ:Username"]!);
+            //                h.Password(configuration["RabbitMQ:Password"]!);
+            //            });
 
-                        cfg.UseMessageRetry(r =>
-                            r.Incremental(3,
-                                TimeSpan.FromSeconds(1),
-                                TimeSpan.FromSeconds(2)));
+            //            cfg.UseMessageRetry(r =>
+            //                r.Incremental(3,
+            //                    TimeSpan.FromSeconds(1),
+            //                    TimeSpan.FromSeconds(2)));
 
-                        cfg.ConfigureEndpoints(context);
-                    });
-                }
-            });
+            //            cfg.ConfigureEndpoints(context);
+            //        });
+            //    }
+            //});
 
-            // FileService — Local في Development، Azure Blob في Production
-            if (environment.IsProduction())
-                services.AddScoped<IFileService, AzureBlobFileService>();
-            else
-                services.AddScoped<IFileService, FileService>();
+            //// FileService — Local في Development، Azure Blob في Production
+            //if (environment.IsProduction())
+            //    services.AddScoped<IFileService, AzureBlobFileService>();
+            //else
+            //    services.AddScoped<IFileService, FileService>();
+
+            services.AddScoped<IFileService, FileService>();
 
             return services;
         }

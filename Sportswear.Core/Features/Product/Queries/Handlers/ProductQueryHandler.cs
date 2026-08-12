@@ -8,6 +8,7 @@ using Sportswear.Core.Resources;
 using Sportswear.Core.Wrappers;
 using Sportswear.Service.Abstract;
 using Sportswear.Service.Implementations;
+using System.Globalization;
 
 namespace Sportswear.Core.Features.Product.Queries.Handlers
 {
@@ -38,10 +39,18 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
         }
         #endregion
 
+        #region Helpers
+        private static string CurrentCultureSuffix() =>
+            CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+
+        private static string WithCulture(string baseKey) =>
+            $"{baseKey}_{CurrentCultureSuffix()}";
+        #endregion
+
         #region Handel Functions
         public async Task<Response<GetProductFullDetailsResponse>> Handle(GetProductFullDetailsQuery request, CancellationToken cancellationToken)
         {
-            var cacheKey = string.Format(CacheKeys.ProductFullDetails, request.Id);
+            var cacheKey = WithCulture(string.Format(CacheKeys.ProductFullDetails, request.Id));
 
             // 1. Check Cache
             var cached = _cacheService.Get<GetProductFullDetailsResponse>(cacheKey);
@@ -157,8 +166,10 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
 
         public async Task<Response<List<GetProductsListResponse>>> Handle(GetProductsListQuery request, CancellationToken cancellationToken)
         {
+            var cacheKey = WithCulture(CacheKeys.ProductsList);
+
             // 1. Check Cache
-            var cached = _cacheService.Get<List<GetProductsListResponse>>(CacheKeys.ProductsList);
+            var cached = _cacheService.Get<List<GetProductsListResponse>>(cacheKey);
             if (cached != null)
                 return Success(cached);
 
@@ -179,7 +190,7 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
             }
 
             // 3. Save in Cache for 10 minutes
-            _cacheService.Set(CacheKeys.ProductsList, mapped, TimeSpan.FromMinutes(10));
+            _cacheService.Set(cacheKey, mapped, TimeSpan.FromMinutes(10));
 
             var result = Success(mapped);
             result.Meta = new { Count = mapped.Count() };
@@ -188,7 +199,7 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
 
         public async Task<Response<GetProductByIdResponse>> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
         {
-            var cacheKey = string.Format(CacheKeys.ProductById, request.Id);
+            var cacheKey = WithCulture(string.Format(CacheKeys.ProductById, request.Id));
 
             // 1. Check Cache
             var cached = _cacheService.Get<GetProductByIdResponse>(cacheKey);
@@ -229,7 +240,7 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
 
         public async Task<Response<GetProductByIdWithVariantsResponse>> Handle(GetProductByIdWithVariantsQuery request, CancellationToken cancellationToken)
         {
-            var cacheKey = string.Format(CacheKeys.ProductWithVariants, request.Id);
+            var cacheKey = WithCulture(string.Format(CacheKeys.ProductWithVariants, request.Id));
 
             // 1. Check Cache
             var cached = _cacheService.Get<GetProductByIdWithVariantsResponse>(cacheKey);
@@ -254,8 +265,8 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
                 Description = isArabic ? product.DescriptionAr : product.DescriptionEn,
                 Season = product.Season,
                 Club = isArabic ? product.ClubAr : product.ClubEn,
-                BrandName = product.Brand?.NameEn ?? string.Empty,
-                CategoryName = product.Category?.NameEn ?? string.Empty,
+                BrandName = isArabic ? (product.Brand?.NameAr ?? string.Empty) : (product.Brand?.NameEn ?? string.Empty),
+                CategoryName = isArabic ? (product.Category?.NameAr ?? string.Empty) : (product.Category?.NameEn ?? string.Empty),
                 BasePrice = product.BasePrice,
 
                 MinPrice = product.MinPrice,
@@ -334,7 +345,7 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
         public async Task<Response<GetProductByCodeWithVariantsResponse>> Handle(GetProductByCodeWithVariantsQuery request, CancellationToken cancellationToken)
         {
             // ✅ Check Cache
-            var cacheKey = string.Format(CacheKeys.ProductByCode, request.Code);
+            var cacheKey = WithCulture(string.Format(CacheKeys.ProductByCode, request.Code));
 
             var cached = _cacheService.Get<GetProductByCodeWithVariantsResponse>(cacheKey);
             if (cached != null)
@@ -357,8 +368,8 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
                 Description = isArabic ? product.DescriptionAr : product.DescriptionEn,
                 Season = product.Season,
                 Club = isArabic ? product.ClubAr : product.ClubEn,
-                BrandName = product.Brand?.NameEn ?? string.Empty,
-                CategoryName = product.Category?.NameEn ?? string.Empty,
+                BrandName = isArabic ? (product.Brand?.NameAr ?? string.Empty) : (product.Brand?.NameEn ?? string.Empty),
+                CategoryName = isArabic ? (product.Category?.NameAr ?? string.Empty) : (product.Category?.NameEn ?? string.Empty),
                 BasePrice = product.BasePrice,
 
                 MinPrice = product.MinPrice,

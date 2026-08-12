@@ -219,7 +219,7 @@ namespace Sportswear.Core.Features.DashboardOverview.Queries.Handlers
                         : 0
                 })
                 .OrderByDescending(c => c.OrdersCount)
-                .Take(10)
+                .Take(5)
                 .ToList();
 
             // ─── Ratings Overview ───
