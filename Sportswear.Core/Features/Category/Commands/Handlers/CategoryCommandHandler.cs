@@ -59,6 +59,7 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
             {
                 NameEn = request.NameEn,
                 NameAr = request.NameAr,
+                Slug = request.NameEn.ToLowerInvariant(),
                 ImageUrl = url,
                 CreatedBy = currentUser.UserName
             };
@@ -99,6 +100,7 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
             // تحديث باقي البيانات
             existingCategory.NameEn = request.NameEn;
             existingCategory.NameAr = request.NameAr;
+            existingCategory.Slug = request.NameEn.ToLowerInvariant();
             existingCategory.UpdatedAt = DateTime.UtcNow;
             existingCategory.UpdatedBy = currentUser.UserName;
 

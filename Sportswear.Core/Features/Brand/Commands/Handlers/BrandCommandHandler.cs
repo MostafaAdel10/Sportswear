@@ -60,6 +60,7 @@ namespace Sportswear.Core.Features.Brand.Commands.Handlers
             {
                 NameEn = request.NameEn,
                 NameAr = request.NameAr,
+                Slug = request.NameEn.ToLowerInvariant(),
                 ImageUrl = url,
                 CreatedBy = currentUser.UserName
             };
@@ -99,6 +100,7 @@ namespace Sportswear.Core.Features.Brand.Commands.Handlers
             // تحديث باقي البيانات
             existingBrand.NameEn = request.NameEn;
             existingBrand.NameAr = request.NameAr;
+            existingBrand.Slug = request.NameEn.ToLowerInvariant();
             existingBrand.UpdatedAt = DateTime.UtcNow;
             existingBrand.UpdatedBy = currentUser.UserName;
 

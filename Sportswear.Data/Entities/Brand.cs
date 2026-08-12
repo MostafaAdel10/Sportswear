@@ -13,6 +13,9 @@ namespace Sportswear.DataAccess.Entities
         [Required]
         public string ImageUrl { get; set; }
 
+        [Required, MaxLength(220)]
+        public string Slug { get; set; }
+
         public ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }
