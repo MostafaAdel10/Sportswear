@@ -19,5 +19,7 @@
         public string? Season { get; set; }
         public string? AttributeKey { get; set; }
         public List<string> Images { get; set; }
+        public string BrandSlug { get; set; }
+        public string CategorySlug { get; set; }
     }
 }

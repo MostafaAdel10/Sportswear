@@ -20,5 +20,7 @@
         public string? AttributeKey { get; set; }
         public List<string> Images { get; set; } = new();
         public List<ProductVariantResponse> Variants { get; set; } = new();
+        public string BrandSlug { get; set; }
+        public string CategorySlug { get; set; }
     }
 }

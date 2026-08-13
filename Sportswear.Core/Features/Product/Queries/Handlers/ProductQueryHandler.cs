@@ -322,6 +322,8 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
                 MaxPrice = p.MaxPrice,
                 HasVariants = p.HasVariants,
                 Season = p.Season,
+                BrandSlug = p.Brand.Slug,
+                CategorySlug = p.Category.Slug,
                 Images = p.Images.Select(i => i.Url).ToList()
             }).ToPaginatedListAsync(request.PageNumber, request.PageSize);
 
@@ -381,6 +383,9 @@ namespace Sportswear.Core.Features.Product.Queries.Handlers
                 PriceAfterDiscount = _productService.CalculateDiscountedPriceOnProduct(product) ?? product.BasePrice,
                 MinPriceAfterDiscount = minPriceAfterDiscount,
                 MaxPriceAfterDiscount = maxPriceAfterDiscount,
+
+                BrandSlug = product.Brand?.Slug ?? string.Empty,
+                CategorySlug = product.Category?.Slug ?? string.Empty,
 
                 Images = product.Images.Select(i => i.Url).ToList(),
                 Variants = product.Variants.Where(v => !v.IsDeleted).Select(v => new ProductVariantResponse
