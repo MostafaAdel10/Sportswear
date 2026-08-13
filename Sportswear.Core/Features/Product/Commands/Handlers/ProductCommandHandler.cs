@@ -63,7 +63,7 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
 
             if (productId > 0)
             {
-                _cacheService.Remove(CacheKeys.ProductsList);
+                InvalidateProductsListCache();
                 return Success(productId, _localizer[SharedResourcesKeys.Created]);
             }
             return BadRequest<int>();
@@ -79,6 +79,9 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
             var existingProduct = await _productService.GetByIdWithIncludesAsync(request.Id);
             if (existingProduct == null)
                 return NotFound<string>(_localizer[SharedResourcesKeys.ProductNotFound]);
+
+            // احفظ الـ Code الأصلي قبل الـ mapping لأن Edit ممكن يغيّره
+            var oldCode = existingProduct.Code;
 
             // Map new values to existing entity
             existingProduct = _mapper.Map(request, existingProduct);
@@ -96,12 +99,13 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
 
             if (isSuccess)
             {
-                // ✅ Clear all product-related cache
-                _cacheService.Remove(CacheKeys.ProductsList);
-                _cacheService.Remove(string.Format(CacheKeys.ProductById, request.Id));
-                _cacheService.Remove(string.Format(CacheKeys.ProductFullDetails, request.Id));
-                _cacheService.Remove(string.Format(CacheKeys.ProductWithVariants, request.Id));
-                _cacheService.Remove(string.Format(CacheKeys.ProductByCode, existingProduct.Code));
+                // ✅ Clear all product-related cache (كل الـ culture variants)
+                InvalidateProductCache(request.Id, oldCode);
+
+                // لو الـ Code اتغير في الـ Edit، امسح المفتاح الجديد كمان
+                if (!string.Equals(oldCode, existingProduct.Code, StringComparison.OrdinalIgnoreCase))
+                    InvalidateProductByCodeCache(existingProduct.Code);
+
                 return Success<string>(_localizer[SharedResourcesKeys.Updated]);
             }
             return BadRequest<string>();
@@ -150,15 +154,50 @@ namespace Sportswear.Core.Features.Product.Commands.Handlers
 
             if (isDeleted)
             {
-                // ✅ Clear all cache
-                _cacheService.Remove(CacheKeys.ProductsList);
-                _cacheService.Remove(string.Format(CacheKeys.ProductById, request.Id));
-                _cacheService.Remove(string.Format(CacheKeys.ProductFullDetails, request.Id));
-                _cacheService.Remove(string.Format(CacheKeys.ProductWithVariants, request.Id));
-                _cacheService.Remove(string.Format(CacheKeys.ProductByCode, existingProduct.Code));
+                // ✅ Clear all cache (كل الـ culture variants)
+                InvalidateProductCache(request.Id, existingProduct.Code);
                 return Success<string>(_localizer[SharedResourcesKeys.Deleted]);
             }
             return BadRequest<string>();
+        }
+        #endregion
+
+        #region Cache Invalidation Helpers
+        private static readonly string[] SupportedCultures = { "en", "ar" };
+
+        private void InvalidateProductsListCache()
+        {
+            foreach (var culture in SupportedCultures)
+                _cacheService.Remove($"{CacheKeys.ProductsList}_{culture}");
+        }
+
+        private void InvalidateProductByCodeCache(string code)
+        {
+            var baseKey = string.Format(CacheKeys.ProductByCode, code);
+            foreach (var culture in SupportedCultures)
+                _cacheService.Remove($"{baseKey}_{culture}");
+        }
+
+        /// <summary>
+        /// بتمسح كل مفاتيح الكاش الخاصة بمنتج معين (List + ById + FullDetails + WithVariants + ByCode)
+        /// عبر كل الـ cultures المدعومة.
+        /// </summary>
+        private void InvalidateProductCache(int id, string code)
+        {
+            InvalidateProductsListCache();
+
+            var byIdKey = string.Format(CacheKeys.ProductById, id);
+            var fullDetailsKey = string.Format(CacheKeys.ProductFullDetails, id);
+            var withVariantsKey = string.Format(CacheKeys.ProductWithVariants, id);
+            var byCodeKey = string.Format(CacheKeys.ProductByCode, code);
+
+            foreach (var culture in SupportedCultures)
+            {
+                _cacheService.Remove($"{byIdKey}_{culture}");
+                _cacheService.Remove($"{fullDetailsKey}_{culture}");
+                _cacheService.Remove($"{withVariantsKey}_{culture}");
+                _cacheService.Remove($"{byCodeKey}_{culture}");
+            }
         }
         #endregion
     }
