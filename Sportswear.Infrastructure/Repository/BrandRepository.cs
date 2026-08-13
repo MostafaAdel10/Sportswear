@@ -30,6 +30,21 @@ namespace Sportswear.Infrastructure.Repository
                 .OrderByDescending(b => b.Id)
                 .ToListAsync();
         }
+        public async Task<string> GenerateUniqueSlugAsync(string nameEn, int? excludeId = null)
+        {
+            var baseSlug = nameEn.ToLowerInvariant();
+            var slug = baseSlug;
+            var counter = 1;
+
+            while (await _dbContext.Brands.AnyAsync(b =>
+                b.Slug == slug && !b.IsDeleted && (excludeId == null || b.Id != excludeId)))
+            {
+                slug = $"{baseSlug}-{counter}";
+                counter++;
+            }
+
+            return slug;
+        }
         #endregion
     }
 }

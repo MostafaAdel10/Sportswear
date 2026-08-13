@@ -13,6 +13,9 @@ namespace Sportswear.Infrastructure.Configurations
                    .HasForeignKey(p => p.CategoryId)
                    .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Property(c => c.Slug).HasMaxLength(220).IsRequired();
+            builder.HasIndex(c => c.Slug).IsUnique();
+
             builder.HasQueryFilter(c => !c.IsDeleted);
         }
     }

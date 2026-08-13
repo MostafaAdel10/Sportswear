@@ -55,11 +55,13 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
             if (url == null)
                 return BadRequest<int>(_stringLocalizer[SharedResourcesKeys.FailedToUploadImage]);
 
+            var slug = await _categoryService.GenerateUniqueSlugAsync(request.NameEn);
+
             var category = new DataAccess.Entities.Category
             {
                 NameEn = request.NameEn,
                 NameAr = request.NameAr,
-                Slug = request.NameEn.ToLowerInvariant(),
+                Slug = slug,
                 ImageUrl = url,
                 CreatedBy = currentUser.UserName
             };
@@ -68,8 +70,7 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
 
             if (categoryId > 0)
             {
-                // ✅ Clear the cache to update
-                _cacheService.Remove(CacheKeys.Categories);
+                InvalidateCategoriesListCache();
                 return Success(categoryId, _stringLocalizer[SharedResourcesKeys.Created]);
             }
 
@@ -97,10 +98,13 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
                 existingCategory.ImageUrl = newUrl;
             }
 
+            // ✅ رجّن الـ Slug بس لو الاسم الإنجليزي اتغير فعلاً
+            if (!string.Equals(existingCategory.NameEn, request.NameEn, StringComparison.OrdinalIgnoreCase))
+                existingCategory.Slug = await _categoryService.GenerateUniqueSlugAsync(request.NameEn, existingCategory.Id);
+
             // تحديث باقي البيانات
             existingCategory.NameEn = request.NameEn;
             existingCategory.NameAr = request.NameAr;
-            existingCategory.Slug = request.NameEn.ToLowerInvariant();
             existingCategory.UpdatedAt = DateTime.UtcNow;
             existingCategory.UpdatedBy = currentUser.UserName;
 
@@ -108,9 +112,8 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
 
             if (isSuccess)
             {
-                // ✅ Clear the cache
-                _cacheService.Remove(CacheKeys.Categories);
-                _cacheService.Remove(string.Format(CacheKeys.CategoryById, request.Id));
+                InvalidateCategoriesListCache();
+                InvalidateCategoryByIdCache(request.Id);
                 return Success<string>(_stringLocalizer[SharedResourcesKeys.Updated]);
             }
 
@@ -145,13 +148,29 @@ namespace Sportswear.Core.Features.Category.Commands.Handlers
 
             if (isSuccess)
             {
-                // ✅ Clear the cache
-                _cacheService.Remove(CacheKeys.Categories);
-                _cacheService.Remove(string.Format(CacheKeys.CategoryById, request.Id));
+                InvalidateCategoriesListCache();
+                InvalidateCategoryByIdCache(request.Id);
                 return Success<string>(_stringLocalizer[SharedResourcesKeys.Deleted]);
             }
 
             return BadRequest<string>();
+        }
+        #endregion
+
+        #region Cache Invalidation Helpers
+        private static readonly string[] SupportedCultures = { "en", "ar" };
+
+        private void InvalidateCategoriesListCache()
+        {
+            foreach (var culture in SupportedCultures)
+                _cacheService.Remove($"{CacheKeys.Categories}_{culture}");
+        }
+
+        private void InvalidateCategoryByIdCache(int id)
+        {
+            var baseKey = string.Format(CacheKeys.CategoryById, id);
+            foreach (var culture in SupportedCultures)
+                _cacheService.Remove($"{baseKey}_{culture}");
         }
         #endregion
     }

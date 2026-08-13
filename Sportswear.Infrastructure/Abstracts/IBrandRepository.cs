@@ -7,5 +7,6 @@ namespace Sportswear.Infrastructure.Abstracts
     {
         public Task<bool> IsBrandIdExist(int brandId);
         public Task<List<Brand>> GetBrandsListAsync();
+        public Task<string> GenerateUniqueSlugAsync(string nameEn, int? excludeId = null);
     }
 }

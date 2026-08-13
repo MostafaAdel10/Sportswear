@@ -62,6 +62,11 @@ namespace Sportswear.Service.Implementations
                 return false;
             }
         }
+        public async Task<string> GenerateUniqueSlugAsync(string nameEn, int? excludeId = null)
+        {
+            var slug = await _brandRepository.GenerateUniqueSlugAsync(nameEn, excludeId);
+            return slug;
+        }
         #endregion
     }
 }

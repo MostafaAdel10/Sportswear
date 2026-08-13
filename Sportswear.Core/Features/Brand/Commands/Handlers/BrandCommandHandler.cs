@@ -56,11 +56,13 @@ namespace Sportswear.Core.Features.Brand.Commands.Handlers
             if (url == null)
                 return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.FailedToUploadImage]);
 
+            var slug = await _brandService.GenerateUniqueSlugAsync(request.NameEn);
+
             var brand = new DataAccess.Entities.Brand
             {
                 NameEn = request.NameEn,
                 NameAr = request.NameAr,
-                Slug = request.NameEn.ToLowerInvariant(),
+                Slug = slug,
                 ImageUrl = url,
                 CreatedBy = currentUser.UserName
             };
@@ -69,7 +71,7 @@ namespace Sportswear.Core.Features.Brand.Commands.Handlers
 
             if (isSuccess)
             {
-                _cacheService.Remove(CacheKeys.Brands); // ✅ امسح Cache
+                InvalidateBrandsListCache();
                 return Created("");
             }
             return BadRequest<string>();
@@ -97,10 +99,13 @@ namespace Sportswear.Core.Features.Brand.Commands.Handlers
                 existingBrand.ImageUrl = newUrl;
             }
 
+            // ✅ رجّن الـ Slug بس لو الاسم الإنجليزي اتغير فعلاً
+            if (!string.Equals(existingBrand.NameEn, request.NameEn, StringComparison.OrdinalIgnoreCase))
+                existingBrand.Slug = await _brandService.GenerateUniqueSlugAsync(request.NameEn, existingBrand.Id);
+
             // تحديث باقي البيانات
             existingBrand.NameEn = request.NameEn;
             existingBrand.NameAr = request.NameAr;
-            existingBrand.Slug = request.NameEn.ToLowerInvariant();
             existingBrand.UpdatedAt = DateTime.UtcNow;
             existingBrand.UpdatedBy = currentUser.UserName;
 
@@ -108,8 +113,8 @@ namespace Sportswear.Core.Features.Brand.Commands.Handlers
 
             if (isSuccess)
             {
-                _cacheService.Remove(CacheKeys.Brands); // ✅ امسح Cache
-                _cacheService.Remove(string.Format(CacheKeys.BrandById, request.Id));
+                InvalidateBrandsListCache();
+                InvalidateBrandByIdCache(request.Id);
                 return Success<string>(_stringLocalizer[SharedResourcesKeys.Updated]);
             }
             return BadRequest<string>();
@@ -143,11 +148,28 @@ namespace Sportswear.Core.Features.Brand.Commands.Handlers
 
             if (isSuccess)
             {
-                _cacheService.Remove(CacheKeys.Brands); // ✅ امسح Cache
-                _cacheService.Remove(string.Format(CacheKeys.BrandById, request.Id));
+                InvalidateBrandsListCache();
+                InvalidateBrandByIdCache(request.Id);
                 return Success<string>(_stringLocalizer[SharedResourcesKeys.Deleted]);
             }
             return BadRequest<string>();
+        }
+        #endregion
+
+        #region Cache Invalidation Helpers
+        private static readonly string[] SupportedCultures = { "en", "ar" };
+
+        private void InvalidateBrandsListCache()
+        {
+            foreach (var culture in SupportedCultures)
+                _cacheService.Remove($"{CacheKeys.Brands}_{culture}");
+        }
+
+        private void InvalidateBrandByIdCache(int id)
+        {
+            var baseKey = string.Format(CacheKeys.BrandById, id);
+            foreach (var culture in SupportedCultures)
+                _cacheService.Remove($"{baseKey}_{culture}");
         }
         #endregion
     }

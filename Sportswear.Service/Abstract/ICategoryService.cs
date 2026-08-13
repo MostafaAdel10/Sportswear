@@ -10,5 +10,6 @@ namespace Sportswear.Service.Abstract
         public Task<int> AddAsync(Category category);
         public Task<bool> EditAsync(Category category);
         public Task<bool> DeleteAsync(Category category);
+        public Task<string> GenerateUniqueSlugAsync(string nameEn, int? excludeId = null);
     }
 }
